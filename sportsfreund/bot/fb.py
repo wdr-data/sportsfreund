@@ -6,8 +6,8 @@ import requests
 
 from .models import Attachment
 
-PAGE_TOKEN = os.environ.get('PROJECT_PAGE_TOKEN', 'na')
-HUB_VERIFY_TOKEN = os.environ.get('PROJECT_HUB_VERIFY_TOKEN', 'na')
+PAGE_TOKEN = os.environ.get('SPORTSFREUND_PAGE_TOKEN', 'na')
+HUB_VERIFY_TOKEN = os.environ.get('SPORTSFREUND_HUB_VERIFY_TOKEN', 'na')
 
 logger = logging.getLogger(__name__)
 

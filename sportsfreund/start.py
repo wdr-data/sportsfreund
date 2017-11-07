@@ -4,7 +4,7 @@
 import os
 import logging
 
-os.environ["DJANGO_SETTINGS_MODULE"] = "project_name.settings"
+os.environ["DJANGO_SETTINGS_MODULE"] = "sportsfreund.settings"
 
 import cherrypy
 import django
@@ -19,7 +19,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.DEBUG)
 
 
-class ProjectNameApplication(object):
+class SportsfreundApplication(object):
     HOST = "127.0.0.1"
     PORT = 8000
 
@@ -56,4 +56,4 @@ class ProjectNameApplication(object):
 
 
 if __name__ == "__main__":
-    ProjectNameApplication().run()
+    SportsfreundApplication().run()

@@ -19,7 +19,7 @@ from .callbacks.shared import get_pushes, schema, send_push
 
 logger = logging.getLogger(__name__)
 
-API_AI_TOKEN = os.environ.get('PROJECT_API_AI_TOKEN', 'na')
+API_AI_TOKEN = os.environ.get('SPORTSFREUND_API_AI_TOKEN', 'na')
 
 ADMINS = [
 ]
