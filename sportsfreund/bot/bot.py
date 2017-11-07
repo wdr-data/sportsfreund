@@ -41,8 +41,6 @@ def make_event_handler():
         PayloadHandler(unsubscribe, ['unsubscribe']),
 
         ApiAiHandler(push, 'push'),
-        PayloadHandler(push, ['push']),
-
         PayloadHandler(push_step, ['push', 'next_state']),
 
         ApiAiHandler(wiki, 'wiki'),

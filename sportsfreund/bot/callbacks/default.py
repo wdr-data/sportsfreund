@@ -40,7 +40,7 @@ def get_started(event, **kwargs):
     send_text(sender_id, 'Guten Tag!')
 
 
-def push(event, parameters=None, **kwargs):
+def push(event, parameters, **kwargs):
     sender_id = event['sender']['id']
     date = parameters and parameters.get('date')
 
