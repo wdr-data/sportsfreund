@@ -40,9 +40,9 @@ def get_started(event, **kwargs):
     send_text(sender_id, 'Guten Tag!')
 
 
-def push(event, parameters, **kwargs):
+def push(event, parameters=None, **kwargs):
     sender_id = event['sender']['id']
-    date = parameters.get('date')
+    date = parameters and parameters.get('date')
 
     if not date:
         data = get_pushes(force_latest=True)
