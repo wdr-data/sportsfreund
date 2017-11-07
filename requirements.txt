@@ -1,0 +1,8 @@
+django
+cherrypy
+requests
+paste
+schedule
+fuzzywuzzy[speedup]
+redis
+apiai

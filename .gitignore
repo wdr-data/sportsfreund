@@ -1,0 +1,8 @@
+.idea
+venv
+project_skeleton/bot/output
+project_skeleton/static
+
+db.sqlite3
+
+*.pyc
