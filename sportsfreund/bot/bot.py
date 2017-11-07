@@ -15,7 +15,7 @@ from .handlers.texthandler import TextHandler
 from .handlers.apiaihandler import ApiAiHandler
 from .callbacks.default import (get_started, greetings, push, push_step, subscribe, unsubscribe,
                                 apiai_fulfillment, wiki)
-from .callbacks.shared import get_pushes, schema, send_push
+from .callbacks.shared import get_pushes, schema, send_push, get_breaking
 
 logger = logging.getLogger(__name__)
 
