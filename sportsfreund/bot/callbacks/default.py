@@ -5,7 +5,7 @@ import datetime
 from fuzzywuzzy import fuzz, process
 from django.utils import timezone
 
-from ...backend.models import FacebookUser, Wiki, Push, Info
+from backend.models import FacebookUser, Wiki, Push, Info
 from ..fb import (send_buttons, button_postback, send_text, send_attachment_by_id,
                   guess_attachment_type)
 from .shared import get_pushes, schema, send_push, get_pushes_by_date

@@ -8,7 +8,7 @@ import schedule
 #from django.utils.timezone import localtime, now
 from apiai import ApiAI
 
-from ..backend.models import FacebookUser
+from backend.models import FacebookUser
 from .fb import send_text, PAGE_TOKEN
 from .handlers.payloadhandler import PayloadHandler
 from .handlers.texthandler import TextHandler

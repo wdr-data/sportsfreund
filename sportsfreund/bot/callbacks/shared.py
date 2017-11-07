@@ -3,7 +3,7 @@ import logging
 
 from django.utils import timezone
 
-from ...backend.models import Push, FacebookUser
+from backend.models import Push, FacebookUser
 from ..fb import (send_text, send_attachment_by_id, guess_attachment_type, quick_reply,
                   send_buttons, button_postback)
 
