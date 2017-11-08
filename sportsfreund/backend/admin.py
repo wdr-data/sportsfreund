@@ -166,7 +166,7 @@ class StoryFragmentModelForm(forms.ModelForm):
 
 
 class StoryFragmentAdmin(admin.ModelAdmin):
-    form = ReportFragmentModelForm
+    form = StoryFragmentModelForm
 
 
 class StoryFragmentAdminInline(admin.TabularInline):
