@@ -44,8 +44,7 @@ Meine Leidenschaft zur Zeit: Wintersport und Daten. Noch bin ich in der Testphas
 
     send_buttons(sender_id, reply,
                  buttons=[
-                    button_postback('Fragt mich schlau',
-                                    {'start_message': next_state}),
+                    button_postback('Fragt mich schlau', next_state),
                  ])
 
 def start_message(event, parameters, **kwargs):
@@ -67,8 +66,7 @@ und die stärksten Geschichten des Wintersports bequem per Messenger Nachricht."
     if next_state:
         send_buttons(sender_id, reply,
                      buttons=[
-                        button_postback(button_title,
-                                        {'start_message': next_state}),
+                        button_postback(button_title,  next_state),
                      ])
     else:
         send_text(sender_id, reply)
