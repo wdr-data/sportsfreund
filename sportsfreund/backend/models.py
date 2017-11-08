@@ -30,7 +30,7 @@ class Push(models.Model):
     published = models.BooleanField('Freigegeben', null=False, default=False)
 
     delivered = models.BooleanField(
-        'Versendet', null=False, default=False, editable=False,
+        'Versendet', null=False, default=False,
         help_text="Wurde dieser Push bereits versendet?")
 
     def __str__(self):
