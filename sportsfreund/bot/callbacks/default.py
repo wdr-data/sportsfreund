@@ -35,10 +35,36 @@ def greetings(event, **kwargs):
     send_text(sender_id, reply)
 
 
-def get_started(event, **kwargs):
+def get_started(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    send_text(sender_id, 'Guten Tag!')
+    state = payload.get('get_started')
 
+    if state == '["start"]':
+        reply = """
+Tach, ich bin Sportsfreund, ein Facebook Messenger Dienst der Sportschau.
+Meine Leidenschaft zur Zeit: Wintersport und Daten. Noch bin ich in der Testphase und kenne mich deshalb nur mit Wintersport aus."""
+        button_title = 'Fragt mich schlau'
+        next_state = 'step_one'
+    elif state == 'step_one':
+        reply = """
+Je mehr Fragen Ihr mir nach Ergebnissen, Sportlern, Live-Streams oder Sportstätten stellt, desto schneller lerne ich dazu.
+Schreibt mir dafür einfach eine Nachricht. Mein Ziel: Bei den Olympischen Winterspielen euer Freund und Helfer zu werden - Immer da, wenn Ihr etwas wissen wollt."""
+        button_title = 'Highlights als Abo'
+        next_state = 'step_two'
+    elif state == 'step_two':
+        reply = """
+Unten neben der Texteingabe gibt es ein Menü. Da findet Ihr mehr Infos zu mir und meinen Funktionen.
+Abonniert meine Highlights und Ihr bekommt - zurzeit noch unregelmäßig - Ergebnisse, Fun-Facts
+und die stärksten Geschichten des Wintersports bequem per Messenger Nachricht."""
+
+    if next_state:
+        send_buttons(sender_id, reply,
+                     buttons=[
+                        button_postback(button_title,
+                                        {'get_started': next_state}),
+                     ])
+    else:
+        send_text(sender_id, reply)
 
 def push(event, parameters, **kwargs):
     sender_id = event['sender']['id']
@@ -93,8 +119,8 @@ def subscribe(event, **kwargs):
         logger.debug('subscribed user with ID ' + str(FacebookUser.objects.latest('add_date')))
         reply = """
 Danke für deine Anmeldung! Du erhältst nun täglich um 18 Uhr dein Update.
-Möchtest du jetzt das aktuellste Update aufrufen, klicke auf \'Aktuelle Nachricht\'. 
-Wenn du irgendwann genug Informationen hast, kannst du dich über das Menü natürlich jederzeit 
+Möchtest du jetzt das aktuellste Update aufrufen, klicke auf \'Aktuelle Nachricht\'.
+Wenn du irgendwann genug Informationen hast, kannst du dich über das Menü natürlich jederzeit
 wieder abmeden."""
         send_buttons(user_id, reply,
                      buttons=[
