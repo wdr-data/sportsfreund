@@ -48,7 +48,10 @@ def send_push(user_id, push, report_nr, state):
     next_state = None
     next_report_nr = None
 
-    report = report_nr and push.reports.all()[report_nr]
+    if report_nr is not None:
+        report = push.reports.all()[report_nr]
+    else:
+        report = None
 
     if not report:
         reply = push.text
