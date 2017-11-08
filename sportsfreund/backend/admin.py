@@ -194,8 +194,7 @@ class StoryModelForm(forms.ModelForm):
 class StoryAdmin(admin.ModelAdmin):
     form = ReportModelForm
     date_hierarchy = 'created'
-    list_filter = ['published']
-    search_fields = ['headline']
+    search_fields = ['name', 'slug']
     list_display = ('name', 'slug')
     inlines = (ReportFragmentAdminInline, )
 
