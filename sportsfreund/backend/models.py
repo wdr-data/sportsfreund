@@ -33,6 +33,9 @@ class Push(models.Model):
         'Versendet', null=False, default=False, editable=False,
         help_text="Wurde dieser Push bereits versendet?")
 
+    def __str__(self):
+        return '%s - %s' % (self.pub_date.strftime('%d.%m.%Y'), self.headline)
+
 
 class Report(models.Model):
 
