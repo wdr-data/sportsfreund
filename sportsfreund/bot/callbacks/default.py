@@ -47,9 +47,9 @@ Meine Leidenschaft zur Zeit: Wintersport und Daten. Noch bin ich in der Testphas
                     button_postback('Fragt mich schlau', {'start_message': next_state}),
                  ])
 
-def start_message(event, parameters, **kwargs):
+def start_message(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    state = parameters.get('start_message')
+    state = payload.get('start_message')
 
     if state == 'step_one':
         reply = """
