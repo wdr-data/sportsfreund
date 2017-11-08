@@ -35,17 +35,24 @@ def greetings(event, **kwargs):
     send_text(sender_id, reply)
 
 
-def get_started(event, payload, **kwargs):
+def get_started(event, **kwargs):
     sender_id = event['sender']['id']
-    state = payload.get('state', None)
-
-    if state == None:
-        reply = """
+    reply = """
 Tach, ich bin Sportsfreund, ein Facebook Messenger Dienst der Sportschau.
 Meine Leidenschaft zur Zeit: Wintersport und Daten. Noch bin ich in der Testphase und kenne mich deshalb nur mit Wintersport aus."""
-        button_title = 'Fragt mich schlau'
-        next_state = 'step_one'
-    elif state == 'step_one':
+    next_state = 'step_one'
+
+    send_buttons(sender_id, reply,
+                 buttons=[
+                    button_postback(Fragt mich schlau,
+                                    {'start_message': next_state}),
+                 ])
+
+def start_message(event, parameters, **kwargs):
+    sender_id =
+    state = parameters.get('start_message')
+
+    if state == 'step_one':
         reply = """
 Je mehr Fragen Ihr mir nach Ergebnissen, Sportlern, Live-Streams oder Sportstätten stellt, desto schneller lerne ich dazu.
 Schreibt mir dafür einfach eine Nachricht. Mein Ziel: Bei den Olympischen Winterspielen euer Freund und Helfer zu werden - Immer da, wenn Ihr etwas wissen wollt."""
@@ -61,7 +68,7 @@ und die stärksten Geschichten des Wintersports bequem per Messenger Nachricht."
         send_buttons(sender_id, reply,
                      buttons=[
                         button_postback(button_title,
-                                        {'get_started': 'start', 'state': next_state}),
+                                        {'start_message': next_state}),
                      ])
     else:
         send_text(sender_id, reply)
