@@ -141,6 +141,7 @@ def push_notification():
             logging.exception('Removing user %s failed', user)
 
     push.delivered = True
+    push.save()
 
 
 def schedule_loop():
