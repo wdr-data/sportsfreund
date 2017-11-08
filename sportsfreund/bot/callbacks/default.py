@@ -44,7 +44,7 @@ Meine Leidenschaft zur Zeit: Wintersport und Daten. Noch bin ich in der Testphas
 
     send_buttons(sender_id, reply,
                  buttons=[
-                    button_postback(Fragt mich schlau,
+                    button_postback('Fragt mich schlau',
                                     {'start_message': next_state}),
                  ])
 
