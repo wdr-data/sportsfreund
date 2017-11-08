@@ -37,9 +37,9 @@ def greetings(event, **kwargs):
 
 def get_started(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    state = payload['get_started']
+    state = payload.get('state', None)
 
-    if state == '["start"]':
+    if state == None:
         reply = """
 Tach, ich bin Sportsfreund, ein Facebook Messenger Dienst der Sportschau.
 Meine Leidenschaft zur Zeit: Wintersport und Daten. Noch bin ich in der Testphase und kenne mich deshalb nur mit Wintersport aus."""
@@ -61,7 +61,7 @@ und die stärksten Geschichten des Wintersports bequem per Messenger Nachricht."
         send_buttons(sender_id, reply,
                      buttons=[
                         button_postback(button_title,
-                                        {'get_started': next_state}),
+                                        {'get_started', 'state': next_state}),
                      ])
     else:
         send_text(sender_id, reply)
