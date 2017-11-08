@@ -55,20 +55,15 @@ def start_message(event, payload, **kwargs):
         reply = """
 Je mehr Fragen Ihr mir nach Ergebnissen, Sportlern, Live-Streams oder Sportstätten stellt, desto schneller lerne ich dazu.
 Schreibt mir dafür einfach eine Nachricht. Mein Ziel: Bei den Olympischen Winterspielen euer Freund und Helfer zu werden - Immer da, wenn Ihr etwas wissen wollt."""
-        button_title = 'Highlights als Abo'
-        next_state = 'step_two'
+        send_buttons(sender_id, reply,
+                     buttons=[
+                        button_postback('Highlights als Abo',  'step_two'),
+                     ])
     elif state == 'step_two':
         reply = """
 Unten neben der Texteingabe gibt es ein Menü. Da findet Ihr mehr Infos zu mir und meinen Funktionen.
 Abonniert meine Highlights und Ihr bekommt - zurzeit noch unregelmäßig - Ergebnisse, Fun-Facts
 und die stärksten Geschichten des Wintersports bequem per Messenger Nachricht."""
-
-    if next_state:
-        send_buttons(sender_id, reply,
-                     buttons=[
-                        button_postback(button_title,  next_state),
-                     ])
-    else:
         send_text(sender_id, reply)
 
 def push(event, parameters, **kwargs):
