@@ -57,7 +57,7 @@ Je mehr Fragen Ihr mir nach Ergebnissen, Sportlern, Live-Streams oder Sportstät
 Schreibt mir dafür einfach eine Nachricht. Mein Ziel: Bei den Olympischen Winterspielen euer Freund und Helfer zu werden - Immer da, wenn Ihr etwas wissen wollt."""
         send_buttons(sender_id, reply,
                      buttons=[
-                        button_postback('Highlights als Abo',  'step_two'),
+                        button_postback('Highlights als Abo', {'start_message': 'step_two'}),
                      ])
     elif state == 'step_two':
         reply = """
