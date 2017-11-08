@@ -89,7 +89,7 @@ def send_push(user_id, data, state='intro'):
     next_state = None
 
     if state == 'intro':
-        reply = data.intro_text
+        reply = data.text
 
         if data.fragments.count():
             next_state = 0
