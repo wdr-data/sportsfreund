@@ -61,7 +61,7 @@ und die stärksten Geschichten des Wintersports bequem per Messenger Nachricht."
         send_buttons(sender_id, reply,
                      buttons=[
                         button_postback(button_title,
-                                        {'get_started', 'state': next_state}),
+                                        {'get_started': 'start', 'state': next_state}),
                      ])
     else:
         send_text(sender_id, reply)
