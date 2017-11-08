@@ -13,7 +13,7 @@ from .fb import send_text, PAGE_TOKEN
 from .handlers.payloadhandler import PayloadHandler
 from .handlers.texthandler import TextHandler
 from .handlers.apiaihandler import ApiAiHandler
-from .callbacks.default import (get_started, greetings, push, push_step, subscribe, unsubscribe,
+from .callbacks.default import (get_started, start_message, greetings, push, push_step, subscribe, unsubscribe,
                                 apiai_fulfillment, wiki)
 from .callbacks.shared import get_pushes, schema, send_push, get_breaking
 
