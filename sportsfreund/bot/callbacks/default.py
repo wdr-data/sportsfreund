@@ -37,7 +37,7 @@ def greetings(event, **kwargs):
 
 def get_started(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    state = payload.get('get_started')
+    state = payload['get_started']
 
     if state == '["start"]':
         reply = """
