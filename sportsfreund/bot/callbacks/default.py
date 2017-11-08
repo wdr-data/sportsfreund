@@ -34,6 +34,19 @@ def greetings(event, **kwargs):
 
     send_text(sender_id, reply)
 
+def countdown(event, **kwargs):
+    sender_id = event['sender']['id']
+    today = datetime.datetime.today()
+    olympia_start = datetime.datetime(2018, 2, 9, 12)
+    delta = olympia_start - today
+    
+    reply = 'Die Olympischen Winterspiele starten am 9. Februar um 20:00 Uhr KST, d.h. um 12:00 Uhr unserer Zeit. ' \
+    'Bis dahin sind es noch {days} Tage, {hours} Stunden und {minutes} Minuten.'.format(
+            days=delta.days,
+            hours=delta.seconds//3600,
+            minutes=(delta.seconds%3600)//60
+        )
+    send_text(sender_id, reply)
 
 def get_started(event, **kwargs):
     sender_id = event['sender']['id']
