@@ -12,18 +12,18 @@ logger = logging.getLogger(__name__)
 
 def get_pushes_by_date(date):
     logger.debug('date: ' + str(date) + ' type of date: ' + str(type(date)))
-    infos = Push.objects.filter(
+    pushes = Push.objects.filter(
         pub_date__date=date,
         published=True)
 
-    return infos
+    return pushes
 
 
 def get_push():
     now = timezone.localtime()
 
     try:
-        return Push.objects.get(
+        return Push.objects.filter(
             pub_date__lte=now,
             published=True,
             delivered=False

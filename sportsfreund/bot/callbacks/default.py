@@ -96,8 +96,12 @@ def push(event, parameters, **kwargs):
     date = parameters and parameters.get('date')
 
     if not date:
-        data = get_push()
-        schema(data, sender_id)
+        push = get_push()
+        if push:
+            schema(push, sender_id)
+        else:
+            reply = 'Keine Pushes gefunden.'
+            send_text(sender_id, reply)
 
     else:
         if len(date) == 1:
