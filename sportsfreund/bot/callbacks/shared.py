@@ -36,7 +36,7 @@ def get_push():
 def schema(push, user_id):
     if push.reports.count():
         quick_replies = [
-            quick_reply("Los geht's", {'push': push.text, 'report': 0, 'next_state': 'intro'})
+            quick_reply("Los geht's", {'push': push.id, 'report': 0, 'next_state': 'intro'})
         ]
     else:
         quick_replies = None
