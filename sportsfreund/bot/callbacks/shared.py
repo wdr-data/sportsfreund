@@ -84,7 +84,7 @@ def send_push(user_id, push, report_nr, state):
             button_title = fragments[next_state].question
             next_report_nr = report_nr
 
-        elif push.reports.count - 1 > report_nr:
+        elif push.reports.count() - 1 > report_nr:
             next_state = 'intro'
             button_title = 'Nächste Meldung'
             next_report_nr = report_nr + 1
