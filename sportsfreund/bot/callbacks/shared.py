@@ -34,9 +34,14 @@ def get_push():
 
 
 def schema(push, user_id):
-    button = quick_reply("Los geht's", {'push': push.id, 'report': None, 'next_state': 'intro'})
+    if push.reports.count():
+        quick_replies = [
+            quick_reply("Los geht's", {'push': push.text, 'report': 0, 'next_state': 'intro'})
+        ]
+    else:
+        quick_replies = None
 
-    send_text(user_id, push.text, quick_replies=[button])
+    send_text(user_id, push.text, quick_replies=quick_replies)
 
 
 def send_push(user_id, push, report_nr, state):
@@ -49,8 +54,10 @@ def send_push(user_id, push, report_nr, state):
     next_report_nr = None
 
     if report_nr is not None:
-        report = push.reports.all()[report_nr]
+        reports = push.reports.all()
+        report = reports[report_nr]
     else:
+        reports = None
         report = None
 
     if not report:
@@ -86,8 +93,8 @@ def send_push(user_id, push, report_nr, state):
 
         elif push.reports.count() - 1 > report_nr:
             next_state = 'intro'
-            button_title = 'Nächste Meldung'
             next_report_nr = report_nr + 1
+            button_title = reports[next_report_nr].headline
 
         if fragment.attachment_id:
             media = fragment.attachment_id
