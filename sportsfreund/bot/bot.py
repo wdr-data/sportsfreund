@@ -33,6 +33,7 @@ def make_event_handler():
         PayloadHandler(greetings, ['gruss']),
 
         PayloadHandler(get_started, ['start']),
+        PayloadHandler(start_message, ['start_message']),
 
         ApiAiHandler(subscribe, 'anmelden'),
         PayloadHandler(subscribe, ['subscribe']),
