@@ -15,7 +15,7 @@ from .handlers.texthandler import TextHandler
 from .handlers.apiaihandler import ApiAiHandler
 from .callbacks.default import (get_started, start_message, greetings, push, push_step, subscribe, unsubscribe,
                                 apiai_fulfillment, wiki, countdown, korea_standard_time)
-from .callbacks.shared import get_pushes, schema, send_push, get_breaking
+from .callbacks.shared import get_push, schema
 
 logger = logging.getLogger(__name__)
 
@@ -107,13 +107,11 @@ def make_event_handler():
 
     return event_handler
 
-handle_events = make_event_handler()
-
 
 def push_notification():
-    data = get_pushes()
+    push = get_push()
 
-    if not data:
+    if not push:
         return
 
     user_list = FacebookUser.objects.values_list('uid', flat=True)
@@ -124,7 +122,7 @@ def push_notification():
 
         logger.debug("Send Push to: " + user)
         try:
-            schema(data, user)
+            schema(push, user)
         except Exception as e:
             logger.exception("Push failed")
             try:
@@ -134,7 +132,7 @@ def push_notification():
             except:
                 pass
 
-        sleep(2)
+        sleep(.5)
 
     for user in unavailable_user_ids:
         try:
@@ -142,33 +140,7 @@ def push_notification():
         except:
             logging.exception('Removing user %s failed', user)
 
-
-def push_breaking():
-    data = get_breaking()
-
-    if data is None or data.delivered:
-        return
-
-    user_list = FacebookUser.objects.values_list('uid', flat=True)
-
-    for user in user_list:
-        logger.debug("Send Push to: " + user)
-        # media = '327430241009143'
-        # send_attachment_by_id(user, media, 'image')
-        try:
-            send_push(user, data)
-        except:
-            logger.exception("Push failed")
-
-        sleep(1)
-
-    data.delivered = True
-    data.save(update_fields=['delivered'])
-
-
-schedule.every(30).seconds.do(push_breaking)
-schedule.every().day.at("18:00").do(push_notification)
-#schedule.every().day.at("08:00").do(push_notification)
+    push.delivered = True
 
 
 def schedule_loop():
@@ -176,5 +148,9 @@ def schedule_loop():
         schedule.run_pending()
         sleep(1)
 
+
+handle_events = make_event_handler()
+
+schedule.every(30).seconds.do(push_notification)
 schedule_loop_thread = Thread(target=schedule_loop, daemon=True)
 schedule_loop_thread.start()

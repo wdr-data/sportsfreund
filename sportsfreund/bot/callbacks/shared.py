@@ -10,104 +10,81 @@ from ..fb import (send_text, send_attachment_by_id, guess_attachment_type, quick
 logger = logging.getLogger(__name__)
 
 
-def get_pushes(force_latest=False):
-    now = timezone.localtime(timezone.now())
-    date = now.date()
-    time = now.time()
-
-    if time.hour < 18 and not force_latest:
-        infos = Push.objects.filter(
-            pub_date__date=date,
-            pub_date__hour__lt=8,
-            published=True,
-            breaking=False)
-
-    else:
-        infos = Push.objects.filter(
-            pub_date__date=date,
-            pub_date__hour__gte=8,
-            pub_date__hour__lt=20,
-            published=True,
-            breaking=False)
-
-    return infos
-
-
 def get_pushes_by_date(date):
     logger.debug('date: ' + str(date) + ' type of date: ' + str(type(date)))
     infos = Push.objects.filter(
         pub_date__date=date,
-        pub_date__hour__gte=8,
-        pub_date__hour__lt=20,
-        published=True,
-        breaking=False)
+        published=True)
 
     return infos
 
 
-def get_breaking():
-    now = timezone.localtime(timezone.now())
-    date = now.date()
-    time = now.time()
+def get_push():
+    now = timezone.localtime()
 
     try:
         return Push.objects.get(
-            pub_date__date=date,
-            pub_date__hour=time.hour,
-            pub_date__minute=time.minute,
+            pub_date__lte=now,
             published=True,
-            breaking=True)
+            delivered=False
+        ).latest('pub_date')
 
     except Push.DoesNotExist:
         return None
 
 
-def schema(data, user_id):
-    reply = "Hier kommt dein Update"
-    send_text(user_id, reply)
-    reply = ""
-    first_id = None
+def schema(push, user_id):
+    button = quick_reply("Los geht's", {'push': push.id, 'report': None, 'next_state': 'intro'})
 
-    for info in data:
-        if first_id is None:
-            first_id = info.id
-        reply += ' +++ ' + info.headline
-    reply += ' +++ '
-
-    button = quick_reply("Los geht's", {'push': first_id, 'next_state': 'intro'})
-    quick_replies = [button]
-
-    send_text(user_id, reply, quick_replies=quick_replies)
+    send_text(user_id, push.text, quick_replies=[button])
 
 
-def send_push(user_id, data, state='intro'):
+def send_push(user_id, push, report_nr, state):
     reply = ''
     media = ''
     media_note = ''
     url = ''
     button_title = ''
     next_state = None
+    next_report_nr = None
 
-    if state == 'intro':
-        reply = data.text
+    report = report_nr and push.reports.all()[report_nr]
 
-        if data.fragments.count():
+    if not report:
+        reply = push.text
+
+        if push.reports.count():
+            next_state = 'intro'
+            button_title = push.reports.all()[0].headline
+            next_report_nr = 0
+
+    elif state == 'intro':
+        reply = report.text
+        next_report_nr = report_nr
+
+        if report.fragments.count():
             next_state = 0
-            button_title = data.fragments.all()[0].question
+            button_title = report.fragments.all()[0].question
 
-        if data.attachment_id:
-            media = data.attachment_id
-            url = data.media
-            media_note = data.media_note
+        if report.attachment_id:
+            media = report.attachment_id
+            url = report.media
+            media_note = report.media_note
 
-    elif data.fragments.count() > state:
-        fragments = data.fragments.all()
+    elif report.fragments.count() > state:
+        fragments = report.fragments.all()
         fragment = fragments[state]
         reply = fragment.text
 
-        if data.fragments.count() - 1 > state:
+        if report.fragments.count() - 1 > state:
             next_state = state + 1
             button_title = fragments[next_state].question
+            next_report_nr = report_nr
+
+        elif push.reports.count - 1 > report_nr:
+            next_state = 'intro'
+            button_title = 'Nächste Meldung'
+            next_report_nr = report_nr + 1
 
         if fragment.attachment_id:
             media = fragment.attachment_id
@@ -118,7 +95,7 @@ def send_push(user_id, data, state='intro'):
         reply = "Tut mir Leid, dieser Button funktioniert leider nicht."
 
     more_button = quick_reply(
-        button_title, {'push': data.id, 'next_state': next_state}
+        button_title, {'push': push.id, 'report': next_report_nr, 'next_state': next_state}
     )
 
     if media:

@@ -1,11 +1,36 @@
+from datetime import date, time, datetime
+
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from django.contrib import messages
 
-from bot.fb import upload_attachment
+from bot.fb import upload_attachment, UploadFailedError
+
+
+def default_pub_date():
+    now = timezone.now()
+    default = datetime(now.year, now.month, now.day, hour=18, minute=00)
+    return default
 
 
 class Push(models.Model):
+
+    class Meta:
+        verbose_name = 'Push'
+        verbose_name_plural = 'Pushes'
+
+    headline = models.CharField('Titel', max_length=200, null=False)
+    text = models.CharField('Intro-Text', max_length=200, null=False)
+
+    pub_date = models.DateTimeField(
+        'Versenden am',
+        default=default_pub_date)
+
+    published = models.BooleanField('Freigegeben', null=False, default=False)
+
+
+class Report(models.Model):
 
     class Meta:
         verbose_name = 'Meldung'
@@ -20,29 +45,34 @@ class Push(models.Model):
         'Facebook Attachment ID', max_length=64, null=True, blank=True,
         help_text="Wird automatisch ausgefüllt")
 
-    pub_date = models.DateTimeField(
-        'Veröffentlicht am',
-        default=timezone.now,
-        help_text='Für morgens auf 6:00, für abends auf 18:00 timen (Uhr-Symbol)')
-    published = models.BooleanField('Veröffentlicht?', null=False, default=False)
-    breaking = models.BooleanField(
-        'Breaking?', null=False, default=False,
-        help_text='Breaking-News werden außerhalb der regelmäßigen Push-Zyklen zu der angegebenen '
-                  'Zeit gesendet')
+    push = models.ForeignKey('Push', on_delete=models.SET_NULL,
+                             related_name='reports', related_query_name='report', null=True)
+
+    created = models.DateTimeField(
+        'Erstellt',
+        default=timezone.now)
+
+    published = models.BooleanField('Freigegeben', null=False, default=False)
+
     delivered = models.BooleanField(
-        'Versendet?', null=False, default=False,
-        help_text="Wurde der Push bereits vom Bot versendet? Nur relevant für Breaking-News.")
+        'Versendet', null=False, default=False,
+        help_text="Wurde diese Meldung bereits in einem Highlights-Push vom Bot versendet?")
 
     def __str__(self):
-        return '%s - %s' % (self.pub_date.strftime('%d.%m.%Y'), self.headline)
+        return '%s - %s' % (self.created.strftime('%d.%m.%Y'), self.headline)
 
-    def save(self, *args, **kwargs):
+    def _save(self, *args, **kwargs):
         try:
-            orig = Push.objects.get(id=self.id)
-        except Push.DoesNotExist:
+            request = kwargs.pop('request')
+        except KeyError:
+            request = None
+
+        try:
+            orig = Report.objects.get(id=self.id)
+        except Report.DoesNotExist:
             orig = None
 
-        orig_media = str(self.media) if orig else ''
+        orig_media = str(orig.media) if orig else ''
 
         updated = (
             not orig and str(self.media)
@@ -54,23 +84,39 @@ class Push(models.Model):
         if updated:
             if str(self.media):
                 url = settings.SITE_URL + settings.MEDIA_URL + str(self.media)
-                attachment_id = upload_attachment(url)
-                self.attachment_id = attachment_id
+                try:
+                    attachment_id = upload_attachment(url)
+                    self.attachment_id = attachment_id
+                except UploadFailedError:
+                    if request:
+                        messages.warning(
+                            request,
+                            "Upload von Facebook Attachment fehlgeschlagen: %s" % self.media)
+                    else:
+                        raise
 
             else:
                 self.attachment_id = None
 
             self.save()
 
+    def update_attachment(self):
+        if str(self.media):
+            url = settings.SITE_URL + settings.MEDIA_URL + str(self.media)
+            attachment_id = upload_attachment(url)
+            self.attachment_id = attachment_id
+        else:
+            self.attachment_id = None
 
-class PushFragment(models.Model):
+
+class ReportFragment(models.Model):
 
     class Meta:
         verbose_name = 'Meldungs-Fragment'
         verbose_name_plural = 'Meldungs-Fragmente'
 
-    push = models.ForeignKey('Push', on_delete=models.CASCADE, related_name='fragments',
-                             related_query_name='fragment')
+    report = models.ForeignKey('Report', on_delete=models.CASCADE, related_name='fragments',
+                               related_query_name='fragment')
 
     question = models.CharField('Frage', max_length=20, null=False, blank=False)
     text = models.CharField('Text', max_length=600, null=False, blank=False)
@@ -82,15 +128,20 @@ class PushFragment(models.Model):
         help_text="Wird automatisch ausgefüllt")
 
     def __str__(self):
-        return '%s - %s' % (self.push.headline, self.question)
+        return '%s - %s' % (self.report.headline, self.question)
 
-    def save(self, *args, **kwargs):
+    def _save(self, *args, **kwargs):
         try:
-            orig = PushFragment.objects.get(id=self.id)
-        except PushFragment.DoesNotExist:
+            request = kwargs.pop('request')
+        except KeyError:
+            request = None
+
+        try:
+            orig = ReportFragment.objects.get(id=self.id)
+        except ReportFragment.DoesNotExist:
             orig = None
 
-        orig_media = str(self.media) if orig else ''
+        orig_media = str(orig.media) if orig else ''
 
         updated = (
             not orig and str(self.media)
@@ -102,13 +153,29 @@ class PushFragment(models.Model):
         if updated:
             if str(self.media):
                 url = settings.SITE_URL + settings.MEDIA_URL + str(self.media)
-                attachment_id = upload_attachment(url)
-                self.attachment_id = attachment_id
+                try:
+                    attachment_id = upload_attachment(url)
+                    self.attachment_id = attachment_id
+                except UploadFailedError:
+                    if request:
+                        messages.warning(
+                            request,
+                            "Upload von Facebook Attachment fehlgeschlagen: %s" % self.media)
+                    else:
+                        raise
 
             else:
                 self.attachment_id = None
 
             self.save()
+
+    def update_attachment(self):
+        if str(self.media):
+            url = settings.SITE_URL + settings.MEDIA_URL + str(self.media)
+            attachment_id = upload_attachment(url)
+            self.attachment_id = attachment_id
+        else:
+            self.attachment_id = None
 
 
 class FacebookUser(models.Model):
