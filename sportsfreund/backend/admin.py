@@ -187,15 +187,15 @@ class StoryModelForm(forms.ModelForm):
         required=False)
 
     class Meta:
-        model = Report
+        model = Story
         fields = '__all__'
 
 
 class StoryAdmin(admin.ModelAdmin):
-    form = ReportModelForm
+    form = StoryModelForm
     search_fields = ['name', 'slug']
     list_display = ('name', 'slug')
-    inlines = (ReportFragmentAdminInline, )
+    inlines = (StoryFragmentAdminInline, )
 
     def save_model(self, request, obj, form, change):
         if 'media' in form.changed_data:
