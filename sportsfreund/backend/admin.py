@@ -5,7 +5,7 @@ from .models import Push, PushFragment, FacebookUser, Wiki, Info
 
 class PushFragmentModelForm(forms.ModelForm):
     text = forms.CharField(
-        required=True, label="Text", widget=forms.Textarea, max_length=200)
+        required=True, label="Text", widget=forms.Textarea, max_length=640)
 
     attachment_id = forms.CharField(
         label='Facebook Attachment ID', help_text="Wird automatisch ausgefüllt", disabled=True,
@@ -27,7 +27,7 @@ class PushFragmentAdminInline(admin.TabularInline):
 
 class PushModelForm(forms.ModelForm):
     text = forms.CharField(
-        required=True, label="Intro-Text", widget=forms.Textarea, max_length=200)
+        required=True, label="Intro-Text", widget=forms.Textarea, max_length=640)
 
     attachment_id = forms.CharField(
         label='Facebook Attachment ID', help_text="Wird automatisch ausgefüllt", disabled=True,
