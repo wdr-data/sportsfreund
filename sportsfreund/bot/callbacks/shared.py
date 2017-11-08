@@ -93,7 +93,7 @@ def send_push(user_id, data, state='intro'):
 
         if data.fragments.count():
             next_state = 0
-            button_title = data.fragments[0].question
+            button_title = data.fragments.all()[0].question
 
         if data.attachment_id:
             media = data.attachment_id
@@ -101,7 +101,7 @@ def send_push(user_id, data, state='intro'):
             media_note = data.media_note
 
     elif data.fragments.count() - 1 > state:
-        fragment = data.fragments[state]
+        fragment = data.fragments.all()[state]
         reply = fragment.text
 
         if data.fragments.count() > state:
