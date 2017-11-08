@@ -49,7 +49,7 @@ Meine Leidenschaft zur Zeit: Wintersport und Daten. Noch bin ich in der Testphas
                  ])
 
 def start_message(event, parameters, **kwargs):
-    sender_id =
+    sender_id = event['sender']['id']
     state = parameters.get('start_message')
 
     if state == 'step_one':
