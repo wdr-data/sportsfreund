@@ -227,7 +227,7 @@ class StoryFragment(models.Model):
         'Facebook Attachment ID', max_length=64, null=True, blank=True)
 
     def __str__(self):
-        return '%s - %s' % (self.story.headline, self.button)
+        return '%s - %s' % (self.story.name, self.button)
 
     def update_attachment(self):
         if str(self.media):
