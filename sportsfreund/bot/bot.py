@@ -17,6 +17,9 @@ from .callbacks.default import (get_started, start_message, greetings, push, pus
                                 apiai_fulfillment, wiki, countdown, korea_standard_time)
 from .callbacks.shared import get_pushes, schema, send_push, get_breaking
 
+#dirty
+import dirty
+
 logger = logging.getLogger(__name__)
 
 API_AI_TOKEN = os.environ.get('SPORTSFREUND_API_AI_TOKEN', 'na')
@@ -47,6 +50,14 @@ def make_event_handler():
         ApiAiHandler(korea_standard_time, 'korea_standard_time'),
         ApiAiHandler(countdown, 'countdown'),
         ApiAiHandler(wiki, 'wiki'),
+
+        #dirty
+        ApiAiHandler(dirty.results_ski_alpin_api,'ergebnis'),
+        ApiAiHandler(dirty.world_cup_standing_api,'weltcupstand'),
+        ApiAiHandler(dirty.next_event_api,'event kalender'),
+        ApiAiHandler(dirty.next_event_api,'event kalender context'),
+        ApiAiHandler(dirty.athlete_api,'athlete'),
+        PayloadHandler(dirty.athlete,['athlete']),
 
         TextHandler(apiai_fulfillment, '.*'),
     ]
