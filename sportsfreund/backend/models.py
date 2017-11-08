@@ -8,42 +8,15 @@ from bot.fb import upload_attachment
 class Push(models.Model):
 
     class Meta:
-        verbose_name = 'Push-Nachricht'
-        verbose_name_plural = 'Push-Nachrichten'
+        verbose_name = 'Meldung'
+        verbose_name_plural = 'Meldungen'
 
-    headline = models.CharField('Übeschrift', max_length=200, null=False)
-    intro_text = models.CharField('Intro-Text', max_length=200, null=False)
-    intro_media = models.FileField('Medien-Anhang Intro', null=True, blank=True)
-    intro_media_note = models.CharField(
+    headline = models.CharField('Überschrift', max_length=200, null=False)
+    text = models.CharField('Intro-Text', max_length=200, null=False)
+    media = models.FileField('Medien-Anhang Intro', null=True, blank=True)
+    media_note = models.CharField(
         'Anmerkung', max_length=128, null=True, blank=True, help_text='z. B. Bildrechte')
-    intro_attachment_id = models.CharField(
-        'Facebook Attachment ID', max_length=64, null=True, blank=True,
-        help_text="Wird automatisch ausgefüllt")
-
-    first_question = models.CharField('Erste Frage', max_length=20, null=True, blank=True)
-    first_text = models.CharField('Erster Text', max_length=600, null=True, blank=True)
-    first_media = models.FileField('Erster Medien-Anhang', null=True, blank=True)
-    first_media_note = models.CharField(
-        'Anmerkung', max_length=128, null=True, blank=True, help_text='z. B. Bildrechte')
-    first_attachment_id = models.CharField(
-        'Facebook Attachment ID', max_length=64, null=True, blank=True,
-        help_text="Wird automatisch ausgefüllt")
-
-    second_question = models.CharField('Zweite Frage', max_length=20, null=True, blank=True)
-    second_text = models.CharField('Zweiter Text', max_length=600, null=True, blank=True)
-    second_media = models.FileField('Zweiter Medien-Anhang', null=True, blank=True)
-    second_media_note = models.CharField(
-        'Anmerkung', max_length=128, null=True, blank=True, help_text='z. B. Bildrechte')
-    second_attachment_id = models.CharField(
-        'Facebook Attachment ID', max_length=64, null=True, blank=True,
-        help_text="Wird automatisch ausgefüllt")
-
-    third_question = models.CharField('Dritte Frage', max_length=20, null=True, blank=True)
-    third_text = models.CharField('Dritter Text', max_length=600, null=True, blank=True)
-    third_media = models.FileField('Dritter Medien-Anhang', null=True, blank=True)
-    third_media_note = models.CharField(
-        'Anmerkung', max_length=128, null=True, blank=True, help_text='z. B. Bildrechte')
-    third_attachment_id = models.CharField(
+    attachment_id = models.CharField(
         'Facebook Attachment ID', max_length=64, null=True, blank=True,
         help_text="Wird automatisch ausgefüllt")
 
@@ -69,31 +42,72 @@ class Push(models.Model):
         except Push.DoesNotExist:
             orig = None
 
-        fields = ('intro_media', 'first_media', 'second_media', 'third_media')
-        updated_fields = list()
+        orig_media = str(self.media) if orig else ''
 
-        for field_name in fields:
-            field = getattr(self, field_name)
-            orig_field = getattr(orig, field_name) if orig else ''
-
-            if not orig and str(field) or str(field) != str(orig_field):
-                updated_fields.append(field_name)
+        updated = (
+            not orig and str(self.media)
+            or str(self.media) != orig_media
+        )
 
         super().save(*args, **kwargs)
 
-        for field_name in updated_fields:
-            field = getattr(self, field_name)
-            if str(field):
-                url = settings.SITE_URL + settings.MEDIA_URL + str(field)
+        if updated:
+            if str(self.media):
+                url = settings.SITE_URL + settings.MEDIA_URL + str(self.media)
                 attachment_id = upload_attachment(url)
-                attachment_field_name = field_name[:-len('media')] + 'attachment_id'
-                setattr(self, attachment_field_name, attachment_id)
+                self.attachment_id = attachment_id
 
             else:
-                attachment_field_name = field_name[:-len('media')] + 'attachment_id'
-                setattr(self, attachment_field_name, None)
+                self.attachment_id = None
 
-        if updated_fields:
+            self.save()
+
+
+class PushFragment(models.Model):
+
+    class Meta:
+        verbose_name = 'Meldungs-Fragment'
+        verbose_name_plural = 'Meldungs-Fragmente'
+
+    push = models.ForeignKey('Push', on_delete=models.CASCADE, related_name='fragments',
+                             related_query_name='fragment')
+
+    question = models.CharField('Frage', max_length=20, null=False, blank=False)
+    text = models.CharField('Text', max_length=600, null=False, blank=False)
+    media = models.FileField('Medien-Anhang', null=True, blank=True)
+    media_note = models.CharField(
+        'Anmerkung', max_length=128, null=True, blank=True, help_text='z. B. Bildrechte')
+    attachment_id = models.CharField(
+        'Facebook Attachment ID', max_length=64, null=True, blank=True,
+        help_text="Wird automatisch ausgefüllt")
+
+    def __str__(self):
+        return '%s - %s' % (self.push.headline, self.question)
+
+    def save(self, *args, **kwargs):
+        try:
+            orig = PushFragment.objects.get(id=self.id)
+        except PushFragment.DoesNotExist:
+            orig = None
+
+        orig_media = str(self.media) if orig else ''
+
+        updated = (
+            not orig and str(self.media)
+            or str(self.media) != orig_media
+        )
+
+        super().save(*args, **kwargs)
+
+        if updated:
+            if str(self.media):
+                url = settings.SITE_URL + settings.MEDIA_URL + str(self.media)
+                attachment_id = upload_attachment(url)
+                self.attachment_id = attachment_id
+
+            else:
+                self.attachment_id = None
+
             self.save()
 
 

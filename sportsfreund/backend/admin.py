@@ -1,28 +1,35 @@
 from django.contrib import admin
 from django import forms
-from .models import Push, FacebookUser, Wiki, Info
+from .models import Push, PushFragment, FacebookUser, Wiki, Info
+
+
+class PushFragmentModelForm(forms.ModelForm):
+    text = forms.CharField(
+        required=True, label="Text", widget=forms.Textarea, max_length=200)
+
+    attachment_id = forms.CharField(
+        label='Facebook Attachment ID', help_text="Wird automatisch ausgefüllt", disabled=True,
+        required=False)
+
+    class Meta:
+        model = PushFragment
+        fields = '__all__'
+
+
+class PushFragmentAdmin(admin.ModelAdmin):
+    form = PushFragmentModelForm
+
+
+class PushFragmentAdminInline(admin.TabularInline):
+    model = PushFragment
+    form = PushFragmentModelForm
 
 
 class PushModelForm(forms.ModelForm):
-    intro_text = forms.CharField(
+    text = forms.CharField(
         required=True, label="Intro-Text", widget=forms.Textarea, max_length=200)
-    first_text = forms.CharField(
-        required=False, label="Erster Text", widget=forms.Textarea, max_length=600)
-    second_text = forms.CharField(
-        required=False, label="Zweiter Text", widget=forms.Textarea, max_length=600)
-    third_text = forms.CharField(
-        required=False, label="Dritter Text", widget=forms.Textarea, max_length=600)
 
-    intro_attachment_id = forms.CharField(
-        label='Facebook Attachment ID', help_text="Wird automatisch ausgefüllt", disabled=True,
-        required=False)
-    first_attachment_id = forms.CharField(
-        label='Facebook Attachment ID', help_text="Wird automatisch ausgefüllt", disabled=True,
-        required=False)
-    second_attachment_id = forms.CharField(
-        label='Facebook Attachment ID', help_text="Wird automatisch ausgefüllt", disabled=True,
-        required=False)
-    third_attachment_id = forms.CharField(
+    attachment_id = forms.CharField(
         label='Facebook Attachment ID', help_text="Wird automatisch ausgefüllt", disabled=True,
         required=False)
 
@@ -43,6 +50,7 @@ class PushAdmin(admin.ModelAdmin):
     list_filter = ['published', 'breaking']
     search_fields = ['headline']
     list_display = ('headline', 'pub_date', 'published', 'breaking')
+    inlines = (PushFragmentAdminInline, )
 
 
 class WikiModelForm(forms.ModelForm):

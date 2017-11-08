@@ -91,46 +91,30 @@ def send_push(user_id, data, state='intro'):
     if state == 'intro':
         reply = data.intro_text
 
-        if data.first_question:
-            next_state = 'one'
-            button_title = data.first_question
+        if data.fragments.count():
+            next_state = 0
+            button_title = data.fragments[0].question
 
-        if data.intro_attachment_id:
-            media = data.intro_attachment_id
-            url = data.intro_media
-            media_note = data.intro_media_note
+        if data.attachment_id:
+            media = data.attachment_id
+            url = data.media
+            media_note = data.media_note
 
-    elif state == 'one':
-        reply = data.first_text
+    elif data.fragments.count() - 1 > state:
+        fragment = data.fragments[state]
+        reply = fragment.text
 
-        if data.second_question:
-            next_state = 'two'
-            button_title = data.second_question
+        if data.fragments.count() > state:
+            next_state = state + 1
+            button_title = fragment.question
 
-        if data.first_attachment_id:
-            media = data.first_attachment_id
-            url = data.first_media
-            media_note = data.first_media_note
+        if fragment.attachment_id:
+            media = fragment.attachment_id
+            url = fragment.media
+            media_note = fragment.media_note
 
-    elif state == 'two':
-        reply = data.second_text
-
-        if data.third_question:
-            next_state = 'three'
-            button_title = data.third_question
-
-        if data.second_attachment_id:
-            media = data.second_attachment_id
-            url = data.second_media
-            media_note = data.second_media_note
-
-    elif state == 'three':
-        reply = data.third_text
-
-        if data.third_attachment_id:
-            media = data.third_attachment_id
-            url = data.third_media
-            media_note = data.third_media_note
+    else:
+        reply = "Tut mir Leid, dieser Button funktioniert leider nicht."
 
     more_button = quick_reply(
         button_title, {'push': data.id, 'next_state': next_state}
@@ -141,7 +125,7 @@ def send_push(user_id, data, state='intro'):
         if media_note:
             send_text(user_id, media_note)
 
-    if next_state:
+    if next_state is not None:
         quick_replies = [more_button]
         send_text(user_id, reply, quick_replies=quick_replies)
 
