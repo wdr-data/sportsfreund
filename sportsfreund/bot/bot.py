@@ -15,7 +15,7 @@ from .handlers.texthandler import TextHandler
 from .handlers.apiaihandler import ApiAiHandler
 from .callbacks.default import (
     get_started, start_message, greetings, push, push_step, subscribe, unsubscribe,
-    apiai_fulfillment, wiki, countdown, korea_standard_time, story)
+    apiai_fulfillment, wiki, countdown, korea_standard_time, story, story_payload)
 from .callbacks.shared import get_push, schema
 
 logger = logging.getLogger(__name__)
@@ -49,6 +49,7 @@ def make_event_handler():
         ApiAiHandler(countdown, 'countdown'),
         ApiAiHandler(wiki, 'wiki'),
 
+        PayloadHandler(story_payload, ['story', 'fragment']),
         TextHandler(apiai_fulfillment, '.*'),
     ]
 
