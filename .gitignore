@@ -1,7 +1,7 @@
 .idea
 venv
-project_skeleton/bot/output
-project_skeleton/static
+sportsfreund/static
+sportsfreund/sportsfreund/settings.py
 
 db.sqlite3
 
