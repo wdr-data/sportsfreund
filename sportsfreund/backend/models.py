@@ -46,7 +46,8 @@ class Report(models.Model):
         help_text="Wird automatisch ausgefüllt")
 
     push = models.ForeignKey('Push', on_delete=models.SET_NULL,
-                             related_name='reports', related_query_name='report', null=True)
+                             related_name='reports', related_query_name='report',
+                             null=True, blank=True)
 
     created = models.DateTimeField(
         'Erstellt',
