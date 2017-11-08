@@ -236,14 +236,13 @@ def story(event, slug, fragment_nr):
     button_title = ''
 
     story = Story.objects.get(slug=slug)
+    fragments = story.fragments.all()
 
     next_fragment_nr = None
 
     if fragment_nr is not None:
-        fragments = story.fragments.all()
         fragment = fragments[fragment_nr]
     else:
-        fragments = None
         fragment = None
 
     if not fragment:
