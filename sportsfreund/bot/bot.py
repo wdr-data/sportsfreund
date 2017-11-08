@@ -13,8 +13,9 @@ from .fb import send_text, PAGE_TOKEN
 from .handlers.payloadhandler import PayloadHandler
 from .handlers.texthandler import TextHandler
 from .handlers.apiaihandler import ApiAiHandler
-from .callbacks.default import (get_started, start_message, greetings, push, push_step, subscribe, unsubscribe,
-                                apiai_fulfillment, wiki, countdown, korea_standard_time)
+from .callbacks.default import (
+    get_started, start_message, greetings, push, push_step, subscribe, unsubscribe,
+    apiai_fulfillment, wiki, countdown, korea_standard_time, story)
 from .callbacks.shared import get_push, schema
 
 logger = logging.getLogger(__name__)
@@ -58,6 +59,7 @@ def make_event_handler():
 
         for event in messaging_events:
             message = event.get('message')
+            nlp = None
 
             if message:
                 text = message.get('text')
@@ -104,6 +106,13 @@ def make_event_handler():
 
                 except:
                     logging.exception("Testing handler failed")
+
+            try:
+                if nlp and nlp['result']['metadata']['intentName'].startswith('story:'):
+                    slug = nlp['result']['metadata']['intentName'][len('story:'):]
+                    story(event, slug, fragment_nr=None)
+            except:
+                logging.exception("Story failed")
 
     return event_handler
 

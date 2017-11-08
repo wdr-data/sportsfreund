@@ -5,9 +5,9 @@ import datetime
 from fuzzywuzzy import fuzz, process
 from django.utils import timezone
 
-from backend.models import FacebookUser, Wiki, Push, Info
+from backend.models import FacebookUser, Wiki, Push, Info, Story, StoryFragment
 from ..fb import (send_buttons, button_postback, send_text, send_attachment_by_id,
-                  guess_attachment_type)
+                  guess_attachment_type, quick_reply)
 from .shared import get_push, schema, send_push, get_pushes_by_date
 
 logger = logging.getLogger(__name__)
@@ -220,3 +220,66 @@ def apiai_fulfillment(event, **kwargs):
     fulfillment = event['message']['nlp']['result']['fulfillment']
     if fulfillment['speech']:
         send_text(sender_id, fulfillment['speech'])
+
+
+def story_payload(event, payload, **kwargs):
+    story(event, payload['story'], payload['fragment'])
+
+
+def story(event, slug, fragment_nr):
+    user_id = event['sender']['id']
+
+    reply = ''
+    media = ''
+    media_note = ''
+    url = ''
+    button_title = ''
+
+    story = Story.objects.get(slug=slug)
+
+    next_fragment_nr = None
+
+    if fragment_nr is not None:
+        fragments = story.fragments.all()
+        fragment = fragments[fragment_nr]
+    else:
+        fragments = None
+        fragment = None
+
+    if not fragment:
+        reply = story.text
+
+        if story.fragments.count():
+            next_fragment_nr = 0
+            button_title = fragments[next_fragment_nr].button
+
+    elif story.fragments.count() > fragment_nr:
+        reply = fragment.text
+
+        if story.fragments.count() - 1 > fragment_nr:
+            next_fragment_nr = fragment_nr + 1
+            button_title = fragments[next_fragment_nr].button
+
+        if fragment.attachment_id:
+            media = fragment.attachment_id
+            url = fragment.media
+            media_note = fragment.media_note
+
+    else:
+        reply = "Tut mir Leid, dieser Button funktioniert leider nicht."
+
+    more_button = quick_reply(
+        button_title, {'story': story.slug, 'fragment': next_fragment_nr}
+    )
+
+    if media:
+        send_attachment_by_id(user_id, str(media), guess_attachment_type(str(url)))
+        if media_note:
+            send_text(user_id, media_note)
+
+    if next_fragment_nr is not None:
+        quick_replies = [more_button]
+        send_text(user_id, reply, quick_replies=quick_replies)
+
+    else:
+        send_text(user_id, reply)

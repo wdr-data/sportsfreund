@@ -2,8 +2,9 @@ from django.contrib import admin
 from django import forms
 from django.contrib import messages
 
-from .models import Push, Report, ReportFragment, FacebookUser, Wiki, Info
+from .models import Push, Report, ReportFragment, FacebookUser, Wiki, Info, Story, StoryFragment
 from bot.fb import UploadFailedError
+
 
 class ReportFragmentModelForm(forms.ModelForm):
     text = forms.CharField(
@@ -20,10 +21,6 @@ class ReportFragmentModelForm(forms.ModelForm):
 
 class ReportFragmentAdmin(admin.ModelAdmin):
     form = ReportFragmentModelForm
-
-    def save_formset(self, request, form, formset, change):
-        messages.info(request, str(type(formset.instance)))
-        super().save_formset(request, form, formset, change)
 
 
 class ReportFragmentAdminInline(admin.TabularInline):
@@ -42,7 +39,7 @@ class ReportModelForm(forms.ModelForm):
     delivered = forms.BooleanField(
         label='Versendet?',
         help_text="Wurde der Push bereits vom Bot versendet? Nur relevant für Breaking-News.",
-        #disabled=True,
+        disabled=True,
         required=False)
 
     class Meta:
@@ -81,9 +78,35 @@ class ReportAdmin(admin.ModelAdmin):
         super().save_formset(request, form, formset, change)
 
 
+class PushModelForm(forms.ModelForm):
+    text = forms.CharField(
+        required=True, label="Intro-Text", widget=forms.Textarea, max_length=640)
+
+    attachment_id = forms.CharField(
+        label='Facebook Attachment ID', help_text="Wird automatisch ausgefüllt", disabled=True,
+        required=False)
+
+    delivered = forms.BooleanField(
+        label='Versendet', help_text="Wurde dieser Push bereits versendet?", disabled=True,
+        required=False)
+
+    class Meta:
+        model = Report
+        fields = '__all__'
+
+
+class PushAdmin(admin.ModelAdmin):
+    form = PushModelForm
+    date_hierarchy = 'pub_date'
+    list_filter = ['published']
+    search_fields = ['headline']
+    list_display = ('headline', 'pub_date', 'published', 'delivered')
+
+
 class WikiModelForm(forms.ModelForm):
     output = forms.CharField(
-        required=True, label="Antwort", widget=forms.Textarea, max_length=640)
+        required=True, label="Antwort", widget=forms.Textarea, max_length=640,
+        help_text="Die Antwort, die der Bot auf die Eingabe geben soll")
 
     class Meta:
         model = Wiki
@@ -93,6 +116,16 @@ class WikiModelForm(forms.ModelForm):
 class WikiAdmin(admin.ModelAdmin):
     form = WikiModelForm
     search_fields = ['input']
+
+    def save_model(self, request, obj, form, change):
+        if 'media' in form.changed_data:
+            try:
+                obj.update_attachment()
+            except UploadFailedError:
+                messages.warning(request,
+                                 "Upload von Facebook Attachment fehlgeschlagen: %s" % obj.media)
+
+        super().save_model(request, obj, form, change)
 
 
 class InfoModelForm(forms.ModelForm):
@@ -108,9 +141,89 @@ class InfoAdmin(admin.ModelAdmin):
     form = InfoModelForm
     search_fields = ['title']
 
+    def save_model(self, request, obj, form, change):
+        if 'media' in form.changed_data:
+            try:
+                obj.update_attachment()
+            except UploadFailedError:
+                messages.warning(request,
+                                 "Upload von Facebook Attachment fehlgeschlagen: %s" % obj.media)
+
+        super().save_model(request, obj, form, change)
+
+
+class StoryFragmentModelForm(forms.ModelForm):
+    text = forms.CharField(
+        required=True, label="Text", widget=forms.Textarea, max_length=640)
+
+    attachment_id = forms.CharField(
+        label='Facebook Attachment ID', help_text="Wird automatisch ausgefüllt", disabled=True,
+        required=False)
+
+    class Meta:
+        model = StoryFragment
+        fields = '__all__'
+
+
+class StoryFragmentAdmin(admin.ModelAdmin):
+    form = ReportFragmentModelForm
+
+
+class StoryFragmentAdminInline(admin.TabularInline):
+    model = StoryFragment
+    form = StoryFragmentModelForm
+
+
+class StoryModelForm(forms.ModelForm):
+    text = forms.CharField(
+        required=True, label="Text", widget=forms.Textarea, max_length=640)
+
+    slug = forms.CharField(
+        label='Slug', help_text="Wird automatisch ausgefüllt", disabled=True,
+        required=False)
+
+    attachment_id = forms.CharField(
+        label='Facebook Attachment ID', help_text="Wird automatisch ausgefüllt", disabled=True,
+        required=False)
+
+    class Meta:
+        model = Report
+        fields = '__all__'
+
+
+class StoryAdmin(admin.ModelAdmin):
+    form = ReportModelForm
+    date_hierarchy = 'created'
+    list_filter = ['published']
+    search_fields = ['headline']
+    list_display = ('name', 'slug')
+    inlines = (ReportFragmentAdminInline, )
+
+    def save_model(self, request, obj, form, change):
+        if 'media' in form.changed_data:
+            try:
+                obj.update_attachment()
+            except UploadFailedError:
+                messages.warning(request,
+                                 "Upload von Facebook Attachment fehlgeschlagen: %s" % obj.media)
+
+        super().save_model(request, obj, form, change)
+
+    def save_formset(self, request, form, formset, change):
+        for form_ in formset.forms:
+            if 'media' in form_.changed_data:
+                try:
+                    form_.instance.update_attachment()
+                except UploadFailedError:
+                    messages.warning(
+                        request,
+                        "Upload von Facebook Attachment fehlgeschlagen: %s" % form_.instance.media)
+
+        super().save_formset(request, form, formset, change)
+
 
 # Register your models here.
-admin.site.register(Push)
+admin.site.register(Push, PushAdmin)
 admin.site.register(Report, ReportAdmin)
 admin.site.register(FacebookUser)
 admin.site.register(Wiki, WikiAdmin)
