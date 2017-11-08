@@ -100,12 +100,12 @@ def send_push(user_id, data, state='intro'):
             url = data.media
             media_note = data.media_note
 
-    elif data.fragments.count() - 1 > state:
+    elif data.fragments.count() > state:
         fragments = data.fragments.all()
         fragment = fragments[state]
         reply = fragment.text
 
-        if data.fragments.count() > state:
+        if data.fragments.count() - 1 > state:
             next_state = state + 1
             button_title = fragments[next_state].question
 
