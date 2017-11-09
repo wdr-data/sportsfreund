@@ -172,6 +172,7 @@ class StoryFragmentAdmin(admin.ModelAdmin):
 class StoryFragmentAdminInline(admin.TabularInline):
     model = StoryFragment
     form = StoryFragmentModelForm
+    fk_name = 'story'
 
 
 class StoryModelForm(forms.ModelForm):
