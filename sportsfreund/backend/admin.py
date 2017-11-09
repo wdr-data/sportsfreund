@@ -39,8 +39,8 @@ class ReportModelForm(forms.ModelForm):
         required=False)
 
     delivered = forms.BooleanField(
-        label='Versendet?',
-        help_text="Wurde der Push bereits vom Bot versendet? Nur relevant für Breaking-News.",
+        label='Versendet',
+        help_text="Wurde diese Meldung bereits in einem Highlights-Push vom Bot versendet?",
         disabled=True,
         required=False)
 
@@ -80,10 +80,6 @@ class ReportAdmin(admin.ModelAdmin):
 class PushModelForm(forms.ModelForm):
     text = forms.CharField(
         required=True, label="Intro-Text", widget=forms.Textarea, max_length=640)
-
-    attachment_id = forms.CharField(
-        label='Facebook Attachment ID', help_text="Wird automatisch ausgefüllt", disabled=True,
-        required=False)
 
     delivered = forms.BooleanField(
         label='Versendet', help_text="Wurde dieser Push bereits versendet?", disabled=True,
