@@ -635,10 +635,11 @@ events = [
 # athletes
 athletes = [{'first_name': 'Felix',
                         'last_name': 'Neureuther',
+                        'uuid': 'Felix Neureuther',
                         'birthday':  '26.03.1984',
                         'birthplace': 'München/Pasing',
                         'city': 'Garmisch-Partenkirchen',
-                       'country': 'germany',
+                        'country': 'germany',
                         'hight': '1,84',
                         'weight': None,
                         'victories': ['1. Platz Weltcup Yukawa Naeba, Slalom','3. Platz Weltmeisterschaft St. Moritz Slalom'],
@@ -704,22 +705,22 @@ def athlete_api(event,parameters,**kwargs):
     elif not first_name and last_name:
         send_text(sender_id,
                   'Hier infos zu' + last_name)
-    if first_name and not last_name:
+    elif first_name and not last_name:
         send_text(sender_id,
                   'Hier infos zu ' + first_name + 'Ich brauche noch deinen Nachnamen')
     elif first_name and last_name:
         athlete(event, {'athlete': {'first_name': first_name, 'last_name': last_name}})
-
-    send_text(sender_id,
-              'Info zum athleten und buttons seiner nächsten wettkämpfe')
 
 def athlete(event,payload,**kwargs):
     sender_id = event['sender']['id']
     first_name = payload['athlete']['first_name']
     last_name = payload['athlete']['last_name']
 
-    send_text(sender_id,
-              'Hier gibt es infos zu' + first_name + ' ' + last_name)
+    for athlete in athletes:
+        if athlete['uuid'] == '.'.join(first_name, last_name):
+            reply = 'Das ist ' + first_name + ' ' + last_name + '.'
+    birthday = athletes.get[birthday]
+    send_text(sender_id, reply)
 
 
 def next_event_api(event,parameters,**kwargs):
