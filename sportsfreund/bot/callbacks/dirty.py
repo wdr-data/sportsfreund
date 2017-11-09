@@ -624,13 +624,13 @@ wc_standing =[{'country': 'deutschland',
 
 
 # next events
-events = [
-{'date' : '29.10.', 'city': 'Sölden', 'country' : 'AUT',  'Abfahrt': False, 'Slalom': False, 'Riesenslalom': True, 'Super-G': False},
-{'date' : '12.11.', 'city': 'Levi', 'country' : 'FIN',  'Abfahrt': False, 'Slalom': True, 'Riesenslalom': False, 'Super-G': False}
-,{'date' : '25.-26.11.','city': 'Lake Louise', 'country' : 'CAN',  'Abfahrt': True, 'Slalom': False, 'Riesenslalom': False, 'Super-G': True},
-{'date' : '1.-3.12.','city': 'Beaver Creek', 'country' : 'USA',  'Abfahrt': True, 'Slalom': False, 'Riesenslalom': True, 'Super-G': True},
-{'date' : '9.-10.12.','city': "Val d'Isere", 'country' : 'FRA',  'Abfahrt': False, 'Slalom': True, 'Riesenslalom': True, 'Super-G': False},
-{'date' : '15.-16.12.','city': 'Gröden', 'country': 'ITA',  'Abfahrt': True, 'Slalom': False, 'Riesenslalom': False, 'Super-G': True}
+event_list = [
+{'date' : '29.10.', 'city': 'Sölden', 'country' : 'AUT', 'discipline': {'Abfahrt': False, 'Slalom': False, 'Riesenslalom': True, 'Super-G': False}},
+{'date' : '12.11.', 'city': 'Levi', 'country' : 'FIN',  'discipline': {'Abfahrt': False, 'Slalom': True, 'Riesenslalom': False, 'Super-G': False}},
+{'date' : '25.-26.11.','city': 'Lake Louise', 'country' : 'CAN',  'discipline': {'Abfahrt': True, 'Slalom': False, 'Riesenslalom': False, 'Super-G': True}},
+{'date' : '1.-3.12.','city': 'Beaver Creek', 'country' : 'USA',  'discipline': {'Abfahrt': True, 'Slalom': False, 'Riesenslalom': True, 'Super-G': True}},
+{'date' : '9.-10.12.','city': "Val d'Isere", 'country' : 'FRA',  'discipline': {'Abfahrt': False, 'Slalom': True, 'Riesenslalom': True, 'Super-G': False}},
+{'date' : '15.-16.12.','city': 'Gröden', 'country': 'ITA',  'discipline': {'Abfahrt': True, 'Slalom': False, 'Riesenslalom': False, 'Super-G': True}}
 ]
 
 # athletes
@@ -742,7 +742,6 @@ def athlete(event,payload,**kwargs):
 
     athlete_info = by_uuid['.'.join([first_name, last_name])]
     if athlete_info:
-        logger.info('Daten: ' + str(athlete_info))
         reply = '{first_name} {last_name}\n' \
             'Geboren am {birthday} in {birthplace}.\n' \
             'Disziplinen: {disciplines} \nErfolge: {victories}\nTritt 2018 in Pyeongchang an für {country}'.format(
@@ -780,11 +779,24 @@ def next_event_api(event,parameters,**kwargs):
         send_text(sender_id,
                   'Nächste event in der Diszipline '+discipline + 'findet am ... in city statt')
     elif discipline:
-        send_text(sender_id,
-                  'Nächstes Event im ' + discipline)
+        next_event(event, {'search_parameters': {'city': city, 'discipline': discipline, 'sport': sport}})
 
+def next_event(event, payload, **kwargs):
+    sender_id = event['sender']['id']
+    discipline = payload['search_parameters']['discipline']
 
+    logger.info('Anfrage nach Infos zu ' + discipline)
 
+    by_discipline = dict()
+
+    for event in event_list:
+        for kind in event:
+            if kind[discipline] == True:
+                by_discipline[discipline] = kind
+
+    event_info = by_discipline[discipline]
+    if event_info:
+        logger.info('event: ' + event_info)
 
 def world_cup_standing_api(event,parameters,**kwargs):
     sender_id = event['sender']['id']
