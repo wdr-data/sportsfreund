@@ -16,6 +16,10 @@ def default_pub_date():
 
 
 class Push(models.Model):
+    """
+    Pushes fassen Meldungen zusammen. Diese Meldungen werden zum jeweils festgelegten Zeitpunkt
+    an alle Abonnenten versandt.
+    """
 
     class Meta:
         verbose_name = 'Push'
@@ -37,6 +41,12 @@ class Push(models.Model):
 
 
 class Report(models.Model):
+    """
+    Meldungen sind themenbezogene, in sich abgeschlossene Nachrichten.</p><p>
+    Sie können aus mehreren Fragmenten bestehen. Um von einem Fragment zum nächsten zu gelangen,
+    muss der Nutzer mit dem Bot interagieren, indem er einen Button mit einer weiterführenden Frage
+    o.ä. anklickt.
+    """
 
     class Meta:
         verbose_name = 'Meldung'
@@ -109,6 +119,11 @@ class ReportFragment(models.Model):
 
 
 class FacebookUser(models.Model):
+    """
+    Liste aller Abonnenten der Push-Benachrichtigungen.</p><p>
+    Alle IDs sind seitenspezifisch und lassen
+    sich nur für die Interaktion mit dem Sportsfreund nutzen.
+    """
 
     class Meta:
         verbose_name = 'Facebook User'
@@ -123,6 +138,12 @@ class FacebookUser(models.Model):
 
 
 class Wiki(models.Model):
+    """
+    Das Wiki ist ein Nachschlagewerk für kurze Erklärungen, das von Dialogflow gestützt wird.</p>
+    <p>Wenn der Nutzer nach einem Begriff fragt, der in Dialogflow als wiki-Entity eingetragen ist,
+    so wird der Wiki-Eintrag mit jenem <i>input</i> als Antwort gesendet.
+    """
+
     class Meta:
         verbose_name = 'Wiki-Eintrag'
         verbose_name_plural = 'Wiki-Einträge'
@@ -147,6 +168,7 @@ class Wiki(models.Model):
 
 
 class Info(models.Model):
+    """"""
     class Meta:
         verbose_name = 'Info'
         verbose_name_plural = 'Infos'
@@ -172,6 +194,16 @@ class Info(models.Model):
 
 
 class Story(models.Model):
+    """
+    Stories sind, ähnlich wie Wiki-Einträge, von Dialogflow gestützt. Sie bieten jedoch die
+    Möglichkeit, ähnlich wie bei den Meldungen, über Fragmente mit Buttons einen Dialog mit dem
+    Nutzer zu führen. Es kann außerdem in jedem Fragment ein Button zu einer anderen Story angelegt
+    werden.</p><p>
+    Zur Bezeichnung einer Story wird ein Slug generiert, welcher bestimmt, wie der Intent in
+    Dialogflow heißen muss.</p><p>
+    Beispiel: Eine Story namens <i>Hans im Glück</i> mit dem Slug <i>hans-im-gluck</i> wird
+    von dem Intent <i>story:hans-im-gluck</i> aufgerufen.
+    """
 
     class Meta:
         verbose_name = 'Story'
