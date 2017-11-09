@@ -738,8 +738,9 @@ def athlete(event,payload,**kwargs):
     logger.info('Anfrage nach Infos zu ' + first_name + ' ' + last_name)
 
     for athlete in athletes_list:
-        athlete_info[athlete['uuid']] = athlete
+        by_uuid[athlete['uuid']] = athlete
 
+    athlete_info = by_uuid['.'.join([first_name, last_name])]
     if athlete_info:
         logger.info('Daten: ' + str(athlete_info))
         reply = '{first_name} {last_name}\n' \
