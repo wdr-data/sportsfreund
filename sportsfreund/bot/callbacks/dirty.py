@@ -752,14 +752,16 @@ def athlete(event,payload,**kwargs):
                 country=athlete_info['country'],
             )
 
+        if athlete_info['uuid'] == 'Felix.Neureuther':
+            buttons = [
+                button_postback('Fun Facts',
+                                {'fun_fact': athlete_info['uuid']}),
+            ]
+
     else:
         reply = 'Zu diesem Athleten habe ich leider noch keine Informationen.'
 
-    if athlete_info['uuid'] == 'Felix.Neureuther':
-        buttons = [
-            button_postback('Fun Facts',
-                            {'fun_fact': athlete_info['uuid']}),
-        ]
+    if buttons:
         send_buttons(sender_id, reply, buttons=buttons)
     else:
         send_text(sender_id, reply)
