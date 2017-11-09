@@ -148,7 +148,7 @@ def subscribe(event, **kwargs):
             ]
 
         except Push.DoesNotExist:
-            buttons = []
+            buttons = None
 
         FacebookUser.objects.create(uid=user_id)
         logger.debug('subscribed user with ID ' + str(FacebookUser.objects.latest('add_date')))
