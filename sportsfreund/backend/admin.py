@@ -1,6 +1,5 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django import forms
-from django.contrib import messages
 
 from .models import Push, Report, ReportFragment, FacebookUser, Wiki, Info, Story, StoryFragment
 from bot.fb import UploadFailedError
