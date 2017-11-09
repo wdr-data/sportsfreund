@@ -733,24 +733,29 @@ def athlete(event,payload,**kwargs):
     sender_id = event['sender']['id']
     first_name = payload['athlete']['first_name']
     last_name = payload['athlete']['last_name']
+    athlete_info = dict()
+
+    logger.info('Anfrage nach Infos zu ' + first_name + ' ' + last_name)
 
     for athlete in athletes_list:
-        if athlete['uuid'] == '.'.join([first_name, last_name]):
-            logger.info('Anfrage nach Infos zu ' + first_name + ' ' + last_name)
-            reply = '{first_name} {last_name}\n' \
-                'Geboren am {birthday} in {birthplace}.\n' \
-                'Disziplinen: {disciplines} \nErfolge: {victories}\nTritt 2018 in Pyeongchang an für {country}'.format(
-                    first_name=athlete['first_name'],
-                    last_name=athlete['last_name'],
-                    birthday=athlete['birthday'],
-                    birthplace=athlete['birthplace'],
-                    disciplines=', '.join(athlete['disciplines']),
-                    victories=', '.join(athlete['victories']),
-                    country=athlete['country'],
-                )
+        athlete_info[athlete['uuid']] = athlete
 
-        else:
-            reply = 'Zu diesem Athleten habe ich leider noch keine Informationen.'
+    if athlete_info:
+        logger.info('Daten: ' + athlete_info)
+        reply = '{first_name} {last_name}\n' \
+            'Geboren am {birthday} in {birthplace}.\n' \
+            'Disziplinen: {disciplines} \nErfolge: {victories}\nTritt 2018 in Pyeongchang an für {country}'.format(
+                first_name=athlete_info['first_name'],
+                last_name=athlete_info['last_name'],
+                birthday=athlete_info['birthday'],
+                birthplace=athlete_info['birthplace'],
+                disciplines=', '.join(athlete_info['disciplines']),
+                victories=', '.join(athlete_info['victories']),
+                country=athlete_info['country'],
+            )
+
+    else:
+        reply = 'Zu diesem Athleten habe ich leider noch keine Informationen.'
 
     send_text(sender_id, reply)
 
