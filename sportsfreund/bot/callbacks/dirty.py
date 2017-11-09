@@ -1,10 +1,11 @@
 # this dirty file is designed to impress the crowed on friday in the cantene
+import logging
 
 #import necessary modules
 from ..fb import (send_buttons, button_postback, send_text, send_attachment_by_id,
                   guess_attachment_type)
 
-
+logger = logging.getLogger(__name__)
 
 
 # data of first and only competition
@@ -678,7 +679,22 @@ athletes_list = [{'first_name': 'Felix',
                         'fun_fact2': None,
                         'picture': None,
                         'sport': 'Ski Alpin',
-                        'disciplines': ['Riesenslalom', 'Abfahrt', 'Super G', 'Kombination']}
+                        'disciplines': ['Riesenslalom', 'Abfahrt', 'Super G', 'Kombination']},
+                        {'first_name': 'Viktoria',
+                        'last_name': 'Rebensburg',
+                        'uuid': 'Viktoria.Rebensburg',
+                         'country' : 'germany',
+                        'birthday':  '4. Oktober 1989',
+                        'birthplace': None,
+                        'city': 'Tegernsee',
+                        'hight': '1,70',
+                        'weight':'67kg',
+                        'victories': ['Olympiasiegerin Riesenslalom 2010','Vizeweltmeisterin Riesenslalom 2015'],
+                        'fun_fact1': '1998 Schulweltmeister',
+                        'fun_fact2': None,
+                        'picture': 'here',
+                        'sport': 'Ski Alpin',
+                        'disciplines': ['Riesenslalom', 'Abfahrt', 'Super G']},
                          ]
 
 
@@ -706,7 +722,7 @@ def athlete_api(event,parameters,**kwargs):
                   'Komisch, ich habe keinen Namen erhalten')
     elif not first_name and last_name:
         send_text(sender_id,
-                  'Hier infos zu' + last_name)
+                  'Hier infos zu ' + last_name)
     elif first_name and not last_name:
         send_text(sender_id,
                   'Hier infos zu ' + first_name + 'Ich brauche noch deinen Nachnamen')
@@ -720,16 +736,19 @@ def athlete(event,payload,**kwargs):
 
     for athlete in athletes_list:
         if athlete['uuid'] == '.'.join([first_name, last_name]):
+            logger.info('Anfrage nach Infos zu ' + first_name + ' ' + last_name)
             reply = '{first_name} {last_name}\n' \
                 'Geboren am {birthday} in {birthplace}.\n' \
-                'Disziplinen: {disciplines} \nErfolge: {victories}'.format(
+                'Disziplinen: {disciplines} \nErfolge: {victories}\nTritt 2018 in Pyeongchang an für {country}'.format(
                     first_name=athlete['first_name'],
                     last_name=athlete['last_name'],
                     birthday=athlete['birthday'],
                     birthplace=athlete['birthplace'],
                     disciplines=', '.join(athlete['disciplines']),
-                    victories=', '.join(athlete['victories'])
+                    victories=', '.join(athlete['victories']),
+                    country=athlete['country'],
                 )
+
         else:
             reply = 'Zu diesem Athleten habe ich leider noch keine Informationen.'
 
