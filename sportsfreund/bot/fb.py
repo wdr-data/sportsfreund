@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+from time import sleep
 
 import requests
 
@@ -363,7 +364,11 @@ def send(payload):
         raise Exception(error)
 
 
-def upload_attachment(url, type=None):
+class UploadFailedError(ValueError):
+    pass
+
+
+def upload_attachment(url, type=None, retries=3):
     """Uploads an attachment and returns the attachment ID, or None if the upload fails"""
     payload = {
         "message": {
@@ -378,16 +383,21 @@ def upload_attachment(url, type=None):
     }
     logger.debug("JSON Payload: " + json.dumps(payload))
     headers = {'Content-Type': 'application/json'}
-    r = requests.post(
-        "https://graph.facebook.com/v2.6/me/message_attachments?access_token=" + PAGE_TOKEN,
-        data=json.dumps(payload),
-        headers=headers)
 
-    try:
-        return json.loads(r.content.decode())['attachment_id']
+    for i in range(retries):
+        try:
+            r = requests.post(
+                "https://graph.facebook.com/v2.6/me/message_attachments?access_token=" + PAGE_TOKEN,
+                data=json.dumps(payload),
+                headers=headers)
+            return json.loads(r.content.decode())['attachment_id']
 
-    except:
-        return None
+        except:
+            logging.exception("Uploading failed, retry %s/%s", i + 1, retries)
+            sleep(1)
+
+    else:
+        raise UploadFailedError('Uploading file %s with type %s failed.', url, type)
 
 
 def guess_attachment_type(filename):

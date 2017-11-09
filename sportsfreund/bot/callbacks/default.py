@@ -5,10 +5,10 @@ import datetime
 from fuzzywuzzy import fuzz, process
 from django.utils import timezone
 
-from backend.models import FacebookUser, Wiki, Push, Info
+from backend.models import FacebookUser, Wiki, Push, Info, Story, StoryFragment
 from ..fb import (send_buttons, button_postback, send_text, send_attachment_by_id,
-                  guess_attachment_type)
-from .shared import get_pushes, schema, send_push, get_pushes_by_date
+                  guess_attachment_type, quick_reply)
+from .shared import get_push, schema, send_push, get_pushes_by_date
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +70,7 @@ Meine Leidenschaft zur Zeit: Wintersport und Daten. Noch bin ich in der Testphas
                     button_postback('Fragt mich schlau', {'start_message': next_state}),
                  ])
 
+
 def start_message(event, payload, **kwargs):
     sender_id = event['sender']['id']
     state = payload.get('start_message')
@@ -89,34 +90,42 @@ Abonniert meine Highlights und Ihr bekommt - zurzeit noch unregelmäßig - Ergeb
 und die stärksten Geschichten des Wintersports bequem per Messenger Nachricht."""
         send_text(sender_id, reply)
 
+
 def push(event, parameters, **kwargs):
     sender_id = event['sender']['id']
     date = parameters and parameters.get('date')
 
     if not date:
-        data = get_pushes(force_latest=True)
-        schema(data, sender_id)
+        push = get_push()
+        if push:
+            schema(push, sender_id)
+        else:
+            reply = 'Keine Pushes gefunden.'
+            send_text(sender_id, reply)
 
     else:
         if len(date) == 1:
             find_date = datetime.datetime.strptime(date[0], '%Y-%m-%d').date()
-            data = get_pushes_by_date(find_date)
+            pushes = get_pushes_by_date(find_date)
 
-        if len(data) == 0:
+        if len(pushes) == 0:
             reply = 'Für dieses Datum liegen mir keine Nachrichten vor. ' \
                     'Wähle ein Datum, welches zwischen dem XX.XX.2018 und heute liegt.'
             send_text(sender_id, reply)
+
         else:
-            schema(data, sender_id)
+            schema(pushes[-1], sender_id)
 
 
 def push_step(event, payload, **kwargs):
     sender_id = event['sender']['id']
     push_id = payload['push']
+    report_nr = payload['report']
     next_state = payload['next_state']
 
-    push_ = Push.objects.get(id=push_id)
-    send_push(sender_id, push_, state=next_state)
+    push = Push.objects.get(id=push_id)
+
+    send_push(sender_id, push, report_nr, next_state)
 
 
 def subscribe(event, **kwargs):
@@ -128,15 +137,18 @@ def subscribe(event, **kwargs):
 
     else:
         now = timezone.localtime(timezone.now())
-        date = now.date()
-        time = now.time()
 
-        if time.hour < 18:
+        try:
             last_push = Push.objects.filter(
-                published=True).exclude(pub_date__date__gte=date).latest('pub_date')
-        else:
-            last_push = Push.objects.filter(
-                published=True).exclude(pub_date__date__gt=date).latest('pub_date')
+                published=True).exclude(pub_date__date__gt=now).latest('pub_date')
+
+            buttons = [
+                button_postback('Aktuelle Nachricht',
+                                {'push': last_push.id, 'report': None, 'next_state': 'intro'}),
+            ]
+
+        except Push.DoesNotExist:
+            buttons = []
 
         FacebookUser.objects.create(uid=user_id)
         logger.debug('subscribed user with ID ' + str(FacebookUser.objects.latest('add_date')))
@@ -146,10 +158,7 @@ Möchtest du jetzt das aktuellste Update aufrufen, klicke auf \'Aktuelle Nachric
 Wenn du irgendwann genug Informationen hast, kannst du dich über das Menü natürlich jederzeit
 wieder abmeden."""
         send_buttons(user_id, reply,
-                     buttons=[
-                        button_postback('Aktuelle Nachricht',
-                                        {'push': last_push.id, 'next_state': 'intro'}),
-                     ])
+                     buttons=buttons)
 
 
 def unsubscribe(event, **kwargs):
@@ -211,3 +220,79 @@ def apiai_fulfillment(event, **kwargs):
     fulfillment = event['message']['nlp']['result']['fulfillment']
     if fulfillment['speech']:
         send_text(sender_id, fulfillment['speech'])
+
+
+def story_payload(event, payload, **kwargs):
+    story(event, payload['story'], payload['fragment'])
+
+
+def story(event, slug, fragment_nr):
+    user_id = event['sender']['id']
+
+    reply = ''
+    media = ''
+    media_note = ''
+    url = ''
+    button_title = ''
+    link_story = None
+
+    story = Story.objects.get(slug=slug)
+    fragments = story.fragments.all()
+
+    next_fragment_nr = None
+
+    if fragment_nr is not None:
+        fragment = fragments[fragment_nr]
+    else:
+        fragment = None
+
+    if not fragment:
+        reply = story.text
+
+        if story.fragments.count():
+            next_fragment_nr = 0
+            button_title = fragments[next_fragment_nr].button
+
+    elif story.fragments.count() > fragment_nr:
+        reply = fragment.text
+
+        if story.fragments.count() - 1 > fragment_nr:
+            next_fragment_nr = fragment_nr + 1
+            button_title = fragments[next_fragment_nr].button
+
+        if fragment.attachment_id:
+            media = fragment.attachment_id
+            url = fragment.media
+            media_note = fragment.media_note
+
+        link_story = fragment.link_story
+
+    else:
+        reply = "Tut mir Leid, dieser Button funktioniert leider nicht."
+
+    if next_fragment_nr is not None:
+        more_button = quick_reply(
+            button_title, {'story': story.slug, 'fragment': next_fragment_nr}
+        )
+
+        quick_replies = [more_button]
+    else:
+        quick_replies = []
+
+    if link_story:
+        quick_replies.append(
+            quick_reply(
+                link_story.name, {'story': link_story.slug, 'fragment': None}
+            )
+        )
+
+    if media:
+        send_attachment_by_id(user_id, str(media), guess_attachment_type(str(url)))
+        if media_note:
+            send_text(user_id, media_note)
+
+    if quick_replies:
+        send_text(user_id, reply, quick_replies=quick_replies)
+
+    else:
+        send_text(user_id, reply)
