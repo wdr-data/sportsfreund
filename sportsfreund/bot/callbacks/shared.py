@@ -19,15 +19,26 @@ def get_pushes_by_date(date):
     return pushes
 
 
-def get_push():
+def get_push(force_latest=False):
     now = timezone.localtime()
+    date = now.date()
+    time = now.time()
 
     try:
-        return Push.objects.filter(
-            pub_date__lte=now,
-            published=True,
-            delivered=False
-        ).latest('pub_date')
+        if force_latest:
+            return Push.objects.filter(
+                pub_date__lte=now,
+                published=True,
+            ).latest('pub_date')
+        else:
+            return Push.objects.filter(
+                pub_date__lte=now,
+                published=True,
+                delivered=False,
+                pub_date__date=date,
+                pub_date__time__hour=time.hour,
+                pub_date__time__minute=time.minute,
+            ).latest('pub_date')
 
     except Push.DoesNotExist:
         return None

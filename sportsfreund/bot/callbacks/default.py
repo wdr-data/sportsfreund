@@ -108,7 +108,7 @@ def push(event, parameters, **kwargs):
     date = parameters and parameters.get('date')
 
     if not date:
-        push = get_push()
+        push = get_push(force_latest=True)
         if push:
             schema(push, sender_id)
         else:
