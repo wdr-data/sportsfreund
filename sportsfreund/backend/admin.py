@@ -5,6 +5,9 @@ from django.contrib import messages
 from .models import Push, Report, ReportFragment, FacebookUser, Wiki, Info, Story, StoryFragment
 from bot.fb import UploadFailedError
 
+UPLOAD_FAILED_MSG = 'Die Datei "%s" konnte nicht zu Facebook hochgeladen werden. ' \
+                    'Bitte versuche es erneut.'
+
 
 class ReportFragmentModelForm(forms.ModelForm):
     text = forms.CharField(
@@ -60,8 +63,7 @@ class ReportAdmin(admin.ModelAdmin):
             try:
                 obj.update_attachment()
             except UploadFailedError:
-                messages.warning(request,
-                                 "Upload von Facebook Attachment fehlgeschlagen: %s" % obj.media)
+                messages.error(request, UPLOAD_FAILED_MSG % obj.media)
 
         super().save_model(request, obj, form, change)
 
@@ -71,9 +73,7 @@ class ReportAdmin(admin.ModelAdmin):
                 try:
                     form_.instance.update_attachment()
                 except UploadFailedError:
-                    messages.warning(
-                        request,
-                        "Upload von Facebook Attachment fehlgeschlagen: %s" % form_.instance.media)
+                    messages.error(request, UPLOAD_FAILED_MSG % form_.instance.media)
 
         super().save_formset(request, form, formset, change)
 
@@ -122,8 +122,7 @@ class WikiAdmin(admin.ModelAdmin):
             try:
                 obj.update_attachment()
             except UploadFailedError:
-                messages.warning(request,
-                                 "Upload von Facebook Attachment fehlgeschlagen: %s" % obj.media)
+                messages.error(request, UPLOAD_FAILED_MSG % obj.media)
 
         super().save_model(request, obj, form, change)
 
@@ -146,8 +145,7 @@ class InfoAdmin(admin.ModelAdmin):
             try:
                 obj.update_attachment()
             except UploadFailedError:
-                messages.warning(request,
-                                 "Upload von Facebook Attachment fehlgeschlagen: %s" % obj.media)
+                messages.error(request, UPLOAD_FAILED_MSG % obj.media)
 
         super().save_model(request, obj, form, change)
 
@@ -203,8 +201,7 @@ class StoryAdmin(admin.ModelAdmin):
             try:
                 obj.update_attachment()
             except UploadFailedError:
-                messages.warning(request,
-                                 "Upload von Facebook Attachment fehlgeschlagen: %s" % obj.media)
+                messages.error(request, UPLOAD_FAILED_MSG % obj.media)
 
         super().save_model(request, obj, form, change)
 
@@ -214,9 +211,7 @@ class StoryAdmin(admin.ModelAdmin):
                 try:
                     form_.instance.update_attachment()
                 except UploadFailedError:
-                    messages.warning(
-                        request,
-                        "Upload von Facebook Attachment fehlgeschlagen: %s" % form_.instance.media)
+                    messages.error(request, UPLOAD_FAILED_MSG % form_.instance.media)
 
         super().save_formset(request, form, formset, change)
 
