@@ -369,7 +369,14 @@ class UploadFailedError(ValueError):
 
 
 def upload_attachment(url, type=None, retries=3):
-    """Uploads an attachment and returns the attachment ID, or None if the upload fails"""
+    """
+    Uploads an attachment and returns the attachment ID
+
+    :param url The URL of the file to upload
+    :param type The type of the file. Can be 'image', 'video' or 'audio'.
+        If not provided, it will be guessed from the file extension.
+    :raises UploadFailedError if the upload failed after the specified number of retries
+    """
     payload = {
         "message": {
             "attachment": {

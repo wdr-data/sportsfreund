@@ -201,7 +201,7 @@ class Story(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = self._get_unique_slug()
-        super().save()
+        super().save(*args, **kwargs)
 
     def update_attachment(self):
         if str(self.media):
