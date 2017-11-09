@@ -733,7 +733,7 @@ def athlete(event,payload,**kwargs):
     sender_id = event['sender']['id']
     first_name = payload['athlete']['first_name']
     last_name = payload['athlete']['last_name']
-    athlete_info = dict()
+    by_uuid = dict()
 
     logger.info('Anfrage nach Infos zu ' + first_name + ' ' + last_name)
 
