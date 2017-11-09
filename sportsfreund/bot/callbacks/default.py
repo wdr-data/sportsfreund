@@ -256,6 +256,11 @@ def story(event, slug, fragment_nr):
             next_fragment_nr = 0
             button_title = fragments[next_fragment_nr].button
 
+        if story.attachment_id:
+            media = fragment.attachment_id
+            url = fragment.media
+            media_note = fragment.media_note
+
     elif story.fragments.count() > fragment_nr:
         reply = fragment.text
 
