@@ -32,7 +32,10 @@ class Push(models.Model):
         'Versenden am',
         default=default_pub_date)
 
-    published = models.BooleanField('Freigegeben', null=False, default=False)
+    published = models.BooleanField(
+        'Freigegeben', null=False, default=False,
+        help_text='Solange dieser Haken nicht gesetzt ist, wird dieser Push nicht versendet, '
+                  'auch wenn der konfigurierte Zeitpunkt erreicht wird.')
 
     delivered = models.BooleanField('Versendet', null=False, default=False)
 
@@ -71,11 +74,14 @@ class Report(models.Model):
         'Erstellt',
         default=timezone.now)
 
-    published = models.BooleanField('Freigegeben', null=False, default=False)
+    published = models.BooleanField(
+        'Freigegeben', null=False, default=False,
+        help_text='Solange dieser Haken nicht gesetzt ist, wird diese Meldung nicht versendet, '
+                  'weder in terminierten Highlight-Pushes noch an Abonnenten von bestimmten '
+                  'Sportarten, Sportlern, Disziplinen etc.')
 
     delivered = models.BooleanField(
-        'Versendet', null=False, default=False,
-        help_text="Wurde diese Meldung bereits in einem Highlights-Push vom Bot versendet?")
+        'Versendet', null=False, default=False)
 
     def __str__(self):
         return '%s - %s' % (self.created.strftime('%d.%m.%Y'), self.headline)
