@@ -90,6 +90,18 @@ Abonniert meine Highlights und Ihr bekommt - zurzeit noch unregelmäßig - Ergeb
 und die stärksten Geschichten des Wintersports bequem per Messenger Nachricht."""
         send_text(sender_id, reply)
 
+def share_bot(event, **kwargs):
+    sender_id = event['sender']['id']
+    reply = "Teile den Sportsfreund mit deinen Freunden!"
+
+    title = "Der Sportsfreund ist ein Facebook Messenger Dienst der Sportschau"
+    subtitle = "Befrage den Messenger über die Olympischen Winterspiele 2018."
+    #image_url = ""
+    shared_content = [generic_element(title, subtitle, buttons = [button_web_url("Schreibe dem Sportsfreund", "https://www.m.me/sportsfreund.sportschau")])]
+    message = generic_element("Teile den Sportsfreund mit deinen Freunden!", buttons = [button_share(shared_content)])
+
+    send_generic(sender_id,
+                elements = [message])
 
 def push(event, parameters, **kwargs):
     sender_id = event['sender']['id']

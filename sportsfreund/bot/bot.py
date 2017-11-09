@@ -14,7 +14,7 @@ from .handlers.payloadhandler import PayloadHandler
 from .handlers.texthandler import TextHandler
 from .handlers.apiaihandler import ApiAiHandler
 from .callbacks.default import (
-    get_started, start_message, greetings, push, push_step, subscribe, unsubscribe,
+    get_started, start_message, greetings, push, push_step, subscribe, unsubscribe, share_bot,
     apiai_fulfillment, wiki, countdown, korea_standard_time, story, story_payload)
 from .callbacks.shared import get_push, schema
 
@@ -44,6 +44,8 @@ def make_event_handler():
 
         ApiAiHandler(unsubscribe, 'abmelden'),
         PayloadHandler(unsubscribe, ['unsubscribe']),
+
+        PayloadHandler(share_bot, ['share']),
 
         ApiAiHandler(push, 'push'),
         PayloadHandler(push_step, ['push', 'next_state']),
