@@ -792,6 +792,7 @@ def next_event(event, payload, **kwargs):
     for event in event_list:
         for kind in event['discipline']:
             if kind == True:
+                logger.info('Infos ' + kind)
                 by_discipline[discipline] = kind
 
     event_info = by_discipline[discipline]
