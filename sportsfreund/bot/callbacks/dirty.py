@@ -633,7 +633,7 @@ events = [
 ]
 
 # athletes
-athletes = [{'first_name': 'Felix',
+athletes_list = [{'first_name': 'Felix',
                         'last_name': 'Neureuther',
                         'uuid': 'Felix.Neureuther',
                         'birthday':  '26.03.1984',
@@ -716,7 +716,7 @@ def athlete(event,payload,**kwargs):
     first_name = payload['athlete']['first_name']
     last_name = payload['athlete']['last_name']
 
-    for athlete in athletes:
+    for athlete in athletes_list:
         if athlete['uuid'] == '.'.join([first_name, last_name]):
             reply = 'Das ist ' + first_name + ' ' + last_name + '.'
 
