@@ -733,6 +733,7 @@ def athlete(event,payload,**kwargs):
     first_name = payload['athlete']['first_name']
     last_name = payload['athlete']['last_name']
 
+    buttons = []
     by_uuid = dict()
     for athlete in athletes_list:
         by_uuid[athlete['uuid']] = athlete
