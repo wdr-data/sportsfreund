@@ -234,6 +234,7 @@ def story(event, slug, fragment_nr):
     media_note = ''
     url = ''
     button_title = ''
+    link_story = None
 
     story = Story.objects.get(slug=slug)
     fragments = story.fragments.all()
@@ -264,6 +265,8 @@ def story(event, slug, fragment_nr):
             url = fragment.media
             media_note = fragment.media_note
 
+        link_story = fragment.link_story
+
     else:
         reply = "Tut mir Leid, dieser Button funktioniert leider nicht."
 
@@ -271,13 +274,22 @@ def story(event, slug, fragment_nr):
         button_title, {'story': story.slug, 'fragment': next_fragment_nr}
     )
 
+    quick_replies = [more_button]
+
+    if link_story:
+        quick_replies.append(
+            quick_reply(
+                link_story.name, {'story': link_story.slug, 'fragment': None}
+            )
+        )
+
     if media:
         send_attachment_by_id(user_id, str(media), guess_attachment_type(str(url)))
         if media_note:
             send_text(user_id, media_note)
 
     if next_fragment_nr is not None:
-        quick_replies = [more_button]
+        quick_replies = quick_replies
         send_text(user_id, reply, quick_replies=quick_replies)
 
     else:

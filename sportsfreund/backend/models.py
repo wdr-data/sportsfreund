@@ -43,6 +43,8 @@ class Report(models.Model):
         verbose_name_plural = 'Meldungen'
 
     headline = models.CharField('Überschrift', max_length=200, null=False)
+    sport = models.CharField('Sportart', max_length=200, null=True, blank=True)
+    discipline = models.CharField('Disziplin', max_length=200, null=True, blank=True)
     text = models.CharField('Intro-Text', max_length=640, null=False)
     media = models.FileField('Medien-Anhang Intro', null=True, blank=True)
     media_note = models.CharField(
@@ -223,6 +225,10 @@ class StoryFragment(models.Model):
     text = models.CharField('Text', max_length=640, null=False, blank=False)
     media = models.FileField('Medien-Anhang', null=True, blank=True)
     media_note = models.CharField('Anmerkung', max_length=128, null=True, blank=True)
+    link_story = models.ForeignKey('Button zu anderer Story', on_delete=models.SET_NULL,
+                                   related_name='+', related_query_name='+', null=True, blank=True)
+    # link_url = models.CharField('Button zu URL', max_length=1024, null=True, blank=True)
+
     attachment_id = models.CharField(
         'Facebook Attachment ID', max_length=64, null=True, blank=True)
 
