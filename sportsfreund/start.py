@@ -14,6 +14,8 @@ from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 from paste.translogger import TransLogger
 
+import bot.schedule_pushes
+
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
@@ -46,6 +48,8 @@ class SportsfreundApplication(object):
             'log.screen': True
         })
         self.mount_static(settings.STATIC_URL, settings.STATIC_ROOT)
+
+        bot.schedule_pushes.start_scheduler()
 
         cherrypy.log("Loading and serving Django application on %s" % settings.URL_PREFIX)
         cherrypy.tree.graft(TransLogger(WSGIHandler()), settings.URL_PREFIX)
