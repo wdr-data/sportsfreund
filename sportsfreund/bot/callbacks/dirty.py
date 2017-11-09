@@ -787,17 +787,18 @@ def next_event(event, payload, **kwargs):
 
     logger.info('Anfrage nach Infos zu ' + discipline)
 
-    by_discipline = dict()
+    # by_discipline = dict()
+    #
+    # for event in event_list:
+    #     for kind in event['discipline']:
+    #         if discipline == True:
+    #             logger.info('Infos ' + kind)
+    #             by_discipline[discipline] = event
+    #
+    # event_info = by_discipline[discipline]
 
-    for event in event_list:
-        for kind in event['discipline']:
-            if discipline == True:
-                logger.info('Infos ' + kind)
-                by_discipline[discipline] = event
-
-    event_info = by_discipline[discipline]
-    if event_info:
-        logger.info('event: ' + event_info)
+    send_text(sender_id,
+              'Hier bekommst du demnächst Infos zum ' + discipline)
 
 def world_cup_standing_api(event,parameters,**kwargs):
     sender_id = event['sender']['id']
