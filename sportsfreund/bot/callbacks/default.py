@@ -246,7 +246,6 @@ def story(event, slug, fragment_nr):
 
     reply = ''
     media = ''
-    media_note = ''
     url = ''
     button_title = ''
     link_story = None
@@ -271,7 +270,6 @@ def story(event, slug, fragment_nr):
         if story.attachment_id:
             media = story.attachment_id
             url = story.media
-            media_note = story.media_note
 
     elif story.fragments.count() > fragment_nr:
         reply = fragment.text
@@ -283,7 +281,6 @@ def story(event, slug, fragment_nr):
         if fragment.attachment_id:
             media = fragment.attachment_id
             url = fragment.media
-            media_note = fragment.media_note
 
         link_story = fragment.link_story
 
@@ -308,8 +305,6 @@ def story(event, slug, fragment_nr):
 
     if media:
         send_attachment_by_id(user_id, str(media), guess_attachment_type(str(url)))
-        if media_note:
-            send_text(user_id, media_note)
 
     if quick_replies:
         send_text(user_id, reply, quick_replies=quick_replies)

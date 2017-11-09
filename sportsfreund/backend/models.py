@@ -60,8 +60,6 @@ class Report(models.Model):
     discipline = models.CharField('Disziplin', max_length=200, null=True, blank=True)
     text = models.CharField('Intro-Text', max_length=640, null=False)
     media = models.FileField('Medien-Anhang Intro', null=True, blank=True)
-    media_note = models.CharField(
-        'Anmerkung', max_length=128, null=True, blank=True, help_text='z. B. Bildrechte')
     attachment_id = models.CharField(
         'Facebook Attachment ID', max_length=64, null=True, blank=True,
         help_text="Wird automatisch ausgefüllt")
@@ -107,8 +105,6 @@ class ReportFragment(models.Model):
     question = models.CharField('Frage', max_length=20, null=False, blank=False)
     text = models.CharField('Text', max_length=640, null=False, blank=False)
     media = models.FileField('Medien-Anhang', null=True, blank=True)
-    media_note = models.CharField(
-        'Anmerkung', max_length=128, null=True, blank=True, help_text='z. B. Bildrechte')
     attachment_id = models.CharField(
         'Facebook Attachment ID', max_length=64, null=True, blank=True)
 
@@ -219,8 +215,6 @@ class Story(models.Model):
     slug = models.CharField('Slug', max_length=200, null=True, blank=True)
     text = models.CharField('Text', max_length=640, null=False)
     media = models.FileField('Medien-Anhang Intro', null=True, blank=True)
-    media_note = models.CharField(
-        'Anmerkung', max_length=128, null=True, blank=True, help_text='z. B. Bildrechte')
     attachment_id = models.CharField(
         'Facebook Attachment ID', max_length=64, null=True, blank=True)
 
@@ -262,7 +256,6 @@ class StoryFragment(models.Model):
     button = models.CharField('Button-Text', max_length=20, null=False, blank=False)
     text = models.CharField('Text', max_length=640, null=False, blank=False)
     media = models.FileField('Medien-Anhang', null=True, blank=True)
-    media_note = models.CharField('Anmerkung', max_length=128, null=True, blank=True)
     link_story = models.ForeignKey('Story', on_delete=models.SET_NULL,
                                    related_name='+', related_query_name='+', null=True, blank=True)
     # link_url = models.CharField('Button zu URL', max_length=1024, null=True, blank=True)
