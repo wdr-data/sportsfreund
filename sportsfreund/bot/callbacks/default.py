@@ -157,8 +157,11 @@ Danke für deine Anmeldung! Du erhältst nun täglich um 18 Uhr dein Update.
 Möchtest du jetzt das aktuellste Update aufrufen, klicke auf \'Aktuelle Nachricht\'.
 Wenn du irgendwann genug Informationen hast, kannst du dich über das Menü natürlich jederzeit
 wieder abmeden."""
-        send_buttons(user_id, reply,
-                     buttons=buttons)
+
+        if buttons:
+            send_buttons(user_id, reply, buttons=buttons)
+        else:
+            send_text(user_id, reply)
 
 
 def unsubscribe(event, **kwargs):
