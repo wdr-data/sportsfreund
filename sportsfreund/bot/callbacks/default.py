@@ -270,11 +270,14 @@ def story(event, slug, fragment_nr):
     else:
         reply = "Tut mir Leid, dieser Button funktioniert leider nicht."
 
-    more_button = quick_reply(
-        button_title, {'story': story.slug, 'fragment': next_fragment_nr}
-    )
+    if next_fragment_nr is not None:
+        more_button = quick_reply(
+            button_title, {'story': story.slug, 'fragment': next_fragment_nr}
+        )
 
-    quick_replies = [more_button]
+        quick_replies = [more_button]
+    else:
+        quick_replies = []
 
     if link_story:
         quick_replies.append(
@@ -288,8 +291,7 @@ def story(event, slug, fragment_nr):
         if media_note:
             send_text(user_id, media_note)
 
-    if next_fragment_nr is not None:
-        quick_replies = quick_replies
+    if quick_replies:
         send_text(user_id, reply, quick_replies=quick_replies)
 
     else:
