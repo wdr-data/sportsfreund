@@ -58,7 +58,6 @@ def schema(push, user_id):
 def send_push(user_id, push, report_nr, state):
     reply = ''
     media = ''
-    media_note = ''
     url = ''
     button_title = ''
     next_state = None
@@ -90,7 +89,6 @@ def send_push(user_id, push, report_nr, state):
         if report.attachment_id:
             media = report.attachment_id
             url = report.media
-            media_note = report.media_note
 
     elif report.fragments.count() > state:
         fragments = report.fragments.all()
@@ -110,7 +108,6 @@ def send_push(user_id, push, report_nr, state):
         if fragment.attachment_id:
             media = fragment.attachment_id
             url = fragment.media
-            media_note = fragment.media_note
 
     else:
         reply = "Tut mir Leid, dieser Button funktioniert leider nicht."
@@ -121,8 +118,6 @@ def send_push(user_id, push, report_nr, state):
 
     if media:
         send_attachment_by_id(user_id, str(media), guess_attachment_type(str(url)))
-        if media_note:
-            send_text(user_id, media_note)
 
     if next_state is not None:
         quick_replies = [more_button]
