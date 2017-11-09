@@ -680,7 +680,7 @@ athletes = [{'first_name': 'Felix',
 
 
 
-def result_ski_alpin_api(event,parameters,**kwargs):
+def results_ski_alpin_api(event,parameters,**kwargs):
     sender_id = event['sender']['id']
     city = parameters.get('city')
     discipline = parameters.get('discipline')
