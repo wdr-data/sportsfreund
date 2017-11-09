@@ -720,7 +720,18 @@ def athlete(event,payload,**kwargs):
 
     for athlete in athletes_list:
         if athlete['uuid'] == '.'.join([first_name, last_name]):
-            reply = 'Das ist ' + first_name + ' ' + last_name + '.'
+            reply = '{first_name} {last_name}\n' \
+                'Geboren am {birthday} in {birthplace}.\n' \
+                'Disziplinen: {disciplines} \nErfolge: {victories}'.format(
+                    first_name=athlete['first_name'],
+                    last_name=athlete['last_name'],
+                    birthday=athlete['birthday'],
+                    birthplace=athlete['birthplace'],
+                    disciplines=', '.join(athlete['disciplines']),
+                    victories=', '.join(athlete['victories'])
+                )
+        else:
+            reply = 'Zu diesem Athleten habe ich leider noch keine Informationen.'
 
     send_text(sender_id, reply)
 
