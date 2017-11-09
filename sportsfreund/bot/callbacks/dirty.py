@@ -635,7 +635,7 @@ events = [
 # athletes
 athletes = [{'first_name': 'Felix',
                         'last_name': 'Neureuther',
-                        'uuid': 'Felix Neureuther',
+                        'uuid': 'Felix.Neureuther',
                         'birthday':  '26.03.1984',
                         'birthplace': 'München/Pasing',
                         'city': 'Garmisch-Partenkirchen',
@@ -717,9 +717,9 @@ def athlete(event,payload,**kwargs):
     last_name = payload['athlete']['last_name']
 
     for athlete in athletes:
-        if athlete['uuid'] == '.'.join(first_name, last_name):
+        if athlete['uuid'] == '.'.join([first_name, last_name]):
             reply = 'Das ist ' + first_name + ' ' + last_name + '.'
-    birthday = athletes.get[birthday]
+
     send_text(sender_id, reply)
 
 
