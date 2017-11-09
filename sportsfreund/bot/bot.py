@@ -65,6 +65,44 @@ def make_event_handler():
         TextHandler(apiai_fulfillment, '.*'),
     ]
 
+    def query_api_ai(event):
+        """
+        Runs the message text through api.ai if the message is a regular text message and returns
+        the response dict. Returns None if the message is not a regular text message (buttons etc).
+        """
+        message = event['message']
+        text = message.get('text')
+
+        if (text is not None
+            and event.get('postback') is None
+            and message.get('quick_reply') is None):
+
+            request = ai.text_request()
+            request.lang = 'de'
+            request.query = text
+            request.session_id = event['sender']['id']
+            response = request.getresponse()
+            nlp = json.loads(response.read().decode())
+            logging.debug(nlp)
+            return nlp
+        else:
+            return None
+
+    def api_ai_story_hook(event, nlp):
+        """Checks if the api.ai intent is a story hook and runs it.
+
+        :returns True if the intent was a story hook and it was proccessed successfully, else False
+        """
+        try:
+            if nlp and nlp['result']['metadata']['intentName'].startswith('story:'):
+                slug = nlp['result']['metadata']['intentName'][len('story:'):]
+                story(event, slug, fragment_nr=None)
+                return True
+        except:
+            logging.exception("Story failed")
+
+        return False
+
     def event_handler(data):
         """handle all incoming messages"""
         messaging_events = data['entry'][0]['messaging']
@@ -112,46 +150,6 @@ def make_event_handler():
                     logging.exception("Testing handler failed")
 
     return event_handler
-
-
-def query_api_ai(event):
-    """
-    Runs the message text through api.ai if the message is a regular text message and returns
-    the response dict. Returns None if the message is not a regular text message (buttons etc).
-    """
-    message = event['message']
-    text = message.get('text')
-
-    if (text is not None
-        and event.get('postback') is None
-        and message.get('quick_reply') is None):
-
-        request = ai.text_request()
-        request.lang = 'de'
-        request.query = text
-        request.session_id = event['sender']['id']
-        response = request.getresponse()
-        nlp = json.loads(response.read().decode())
-        logging.debug(nlp)
-        return nlp
-    else:
-        return None
-
-
-def api_ai_story_hook(event, nlp):
-    """Checks if the api.ai intent is a story hook and runs it.
-
-    :returns True if the intent was a story hook and it was proccessed successfully, else False
-    """
-    try:
-        if nlp and nlp['result']['metadata']['intentName'].startswith('story:'):
-            slug = nlp['result']['metadata']['intentName'][len('story:'):]
-            story(event, slug, fragment_nr=None)
-            return True
-    except:
-        logging.exception("Story failed")
-
-    return False
 
 
 def push_notification():
