@@ -697,7 +697,9 @@ athletes_list = [{'first_name': 'Felix',
                         'disciplines': ['Riesenslalom', 'Abfahrt', 'Super G']},
                          ]
 
-
+by_uuid = dict()
+for athlete in athletes_list:
+    by_uuid[athlete['uuid']] = athlete
 
 def results_ski_alpin_api(event,parameters,**kwargs):
     sender_id = event['sender']['id']
@@ -733,12 +735,8 @@ def athlete(event,payload,**kwargs):
     sender_id = event['sender']['id']
     first_name = payload['athlete']['first_name']
     last_name = payload['athlete']['last_name']
-    by_uuid = dict()
 
     logger.info('Anfrage nach Infos zu ' + first_name + ' ' + last_name)
-
-    for athlete in athletes_list:
-        by_uuid[athlete['uuid']] = athlete
 
     athlete_info = by_uuid['.'.join([first_name, last_name])]
     if athlete_info:
@@ -757,8 +755,20 @@ def athlete(event,payload,**kwargs):
     else:
         reply = 'Zu diesem Athleten habe ich leider noch keine Informationen.'
 
-    send_text(sender_id, reply)
+    if athlete_info['uuid'] == 'Felix.Neureuther':
+        buttons = [
+            button_postback('Fun Facts',
+                            {'fun_fact': athlete_info['uuid']}),
+        ]
+        send_buttons(sender_id, reply, buttons)
+    else:
+        send_text(sender_id, reply)
 
+def fun_fact(event, payload, **kwargs):
+    athlete_id = payload['fun_fact']
+    athlete = by_uuid[athlete_id]
+    send_text(sender_id,
+              'Hier kommen zukünftig witzige Infos über ' + athlete['first_name'] + ' ' + athlete['last_name'])
 
 def next_event_api(event,parameters,**kwargs):
     sender_id = event['sender']['id']

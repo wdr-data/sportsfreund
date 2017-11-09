@@ -62,6 +62,7 @@ def make_event_handler():
         ApiAiHandler(dirty.next_event_api,'event kalender context'),
         ApiAiHandler(dirty.athlete_api,'athlete'),
         PayloadHandler(dirty.athlete,['athlete']),
+        PayloadHandler(dirty.fun_fact,['fun_fact']),
 
         PayloadHandler(story_payload, ['story', 'fragment']),
 
