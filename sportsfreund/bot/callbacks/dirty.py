@@ -760,7 +760,7 @@ def athlete(event,payload,**kwargs):
             button_postback('Fun Facts',
                             {'fun_fact': athlete_info['uuid']}),
         ]
-        send_buttons(sender_id, reply, buttons)
+        send_buttons(sender_id, reply, buttons=buttons)
     else:
         send_text(sender_id, reply)
 
