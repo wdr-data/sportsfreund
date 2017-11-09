@@ -741,7 +741,7 @@ def athlete(event,payload,**kwargs):
         athlete_info[athlete['uuid']] = athlete
 
     if athlete_info:
-        logger.info('Daten: ' + athlete_info)
+        logger.info('Daten: ' + str(athlete_info))
         reply = '{first_name} {last_name}\n' \
             'Geboren am {birthday} in {birthplace}.\n' \
             'Disziplinen: {disciplines} \nErfolge: {victories}\nTritt 2018 in Pyeongchang an für {country}'.format(
