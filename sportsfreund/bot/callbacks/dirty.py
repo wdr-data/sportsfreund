@@ -790,8 +790,8 @@ def next_event(event, payload, **kwargs):
     by_discipline = dict()
 
     for event in event_list:
-        for kind in event:
-            if kind[discipline] == True:
+        for kind in event[discipline]:
+            if kind == True:
                 by_discipline[discipline] = kind
 
     event_info = by_discipline[discipline]
