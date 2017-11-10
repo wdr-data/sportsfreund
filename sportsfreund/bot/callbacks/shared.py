@@ -132,6 +132,7 @@ def send_push(user_id, push, report_nr, state):
         else:
             button_title = random.choice(NEXT_REPORT_BTN)
             next_state = 'intro'
+            next_report_nr = report_nr + 1
             show_skip = False
 
         if report.attachment_id:
