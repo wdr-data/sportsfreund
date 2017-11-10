@@ -10,6 +10,12 @@ from ..fb import (send_text, send_attachment_by_id, guess_attachment_type, quick
 
 logger = logging.getLogger(__name__)
 
+FIRST_REPORT_BTN = [
+    'Dann erzähl mal',
+    "Los geht's",
+    'Lass hören',
+]
+
 NEXT_REPORT_BTN = [
     'Und sonst so?',
     'Hast du noch was?',
@@ -79,7 +85,9 @@ def get_latest_report(sport=None, discipline=None):
 def schema(push, user_id):
     if push.reports.count():
         quick_replies = [
-            quick_reply("Los geht's", {'push': push.id, 'report': 0, 'next_state': 'intro'})
+            quick_reply(
+                random.choice(FIRST_REPORT_BTN),
+                {'push': push.id, 'report': 0, 'next_state': 'intro'})
         ]
     else:
         quick_replies = None
@@ -107,7 +115,8 @@ def send_push(user_id, push, report_nr, state):
 
         if push.reports.count():
             next_state = 'intro'
-            button_title = push.reports.all()[0].headline
+            # button_title = push.reports.all()[0].headline
+            button_title = random.choice(FIRST_REPORT_BTN)
             next_report_nr = 0
 
     # Report Intro
@@ -141,7 +150,8 @@ def send_push(user_id, push, report_nr, state):
         elif push.reports.count() - 1 > report_nr:
             next_state = 'intro'
             next_report_nr = report_nr + 1
-            button_title = reports[next_report_nr].headline
+            # button_title = reports[next_report_nr].headline
+            button_title = random.choice(NEXT_REPORT_BTN)
             show_skip = False
 
         else:
@@ -155,7 +165,7 @@ def send_push(user_id, push, report_nr, state):
         reply = "Tut mir Leid, dieser Button funktioniert leider nicht."
 
     more_button = quick_reply(
-        random.choice(NEXT_REPORT_BTN),
+        button_title,
         {'push': push.id, 'report': next_report_nr, 'next_state': next_state}
     )
 
