@@ -129,6 +129,9 @@ def send_push(user_id, push, report_nr, state):
         if report.fragments.count():
             next_state = 0
             button_title = report.fragments.all()[0].question
+        else:
+            button_title = random.choice(NEXT_REPORT_BTN)
+            show_skip = False
 
         if report.attachment_id:
             media = report.attachment_id
