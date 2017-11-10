@@ -146,13 +146,13 @@ def send_push(user_id, push, report_nr, state):
         reply = fragment.text
         show_skip = True
 
-        # Not last Report Fragment
+        # Not last fragment
         if report.fragments.count() - 1 > state:
             next_state = state + 1
             button_title = fragments[next_state].question
             next_report_nr = report_nr
 
-        # Not last Report
+        # Last fragment, but not last Report
         elif push.reports.count() - 1 > report_nr:
             next_state = 'intro'
             next_report_nr = report_nr + 1
@@ -160,7 +160,8 @@ def send_push(user_id, push, report_nr, state):
             button_title = random.choice(NEXT_REPORT_BTN)
             show_skip = False
 
-        else:
+        # Last Report
+        if push.reports.count() - 1 == report_nr:
             show_skip = False
 
         if fragment.attachment_id:
