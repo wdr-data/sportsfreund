@@ -52,7 +52,7 @@ def make_event_handler():
         ApiAiHandler(push, 'push'),
         PayloadHandler(push_step, ['push', 'report_nr', 'next_state']),
 
-        ApiAiHandler(report, 'report'),
+        ApiAiHandler(report, 'meldung'),
         PayloadHandler(report_step, ['report', 'next_state']),
 
         ApiAiHandler(korea_standard_time, 'korea_standard_time'),
