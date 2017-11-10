@@ -1,5 +1,6 @@
 
 import logging
+import random
 
 from django.utils import timezone
 
@@ -8,6 +9,18 @@ from ..fb import (send_text, send_attachment_by_id, guess_attachment_type, quick
                   send_buttons, button_postback)
 
 logger = logging.getLogger(__name__)
+
+NEXT_REPORT_BTN = [
+    'Und sonst so?',
+    'Hast du noch was?',
+    'War noch was?',
+]
+
+SKIP_REPORT_BTN = [
+    'Wen interessierts?',
+    'Ist mir egal',
+    'Zeig mir was anderes',
+]
 
 
 def get_pushes_by_date(date):
@@ -75,12 +88,11 @@ def schema(push, user_id):
 
 
 def send_push(user_id, push, report_nr, state):
-    reply = ''
     media = ''
     url = ''
-    button_title = ''
     next_state = None
     next_report_nr = None
+    show_skip = False
 
     if report_nr is not None:
         reports = push.reports.all()
@@ -89,6 +101,7 @@ def send_push(user_id, push, report_nr, state):
         reports = None
         report = None
 
+    # Push Intro
     if not report:
         reply = push.text
 
@@ -97,9 +110,11 @@ def send_push(user_id, push, report_nr, state):
             button_title = push.reports.all()[0].headline
             next_report_nr = 0
 
+    # Report Intro
     elif state == 'intro':
         reply = report.text
         next_report_nr = report_nr
+        show_skip = True
 
         if report.fragments.count():
             next_state = 0
@@ -109,20 +124,28 @@ def send_push(user_id, push, report_nr, state):
             media = report.attachment_id
             url = report.media
 
+    # Report Fragment
     elif report.fragments.count() > state:
         fragments = report.fragments.all()
         fragment = fragments[state]
         reply = fragment.text
+        show_skip = True
 
+        # Not last Report Fragment
         if report.fragments.count() - 1 > state:
             next_state = state + 1
             button_title = fragments[next_state].question
             next_report_nr = report_nr
 
+        # Not last Report
         elif push.reports.count() - 1 > report_nr:
             next_state = 'intro'
             next_report_nr = report_nr + 1
             button_title = reports[next_report_nr].headline
+            show_skip = False
+
+        else:
+            show_skip = False
 
         if fragment.attachment_id:
             media = fragment.attachment_id
@@ -132,19 +155,29 @@ def send_push(user_id, push, report_nr, state):
         reply = "Tut mir Leid, dieser Button funktioniert leider nicht."
 
     more_button = quick_reply(
-        button_title, {'push': push.id, 'report': next_report_nr, 'next_state': next_state}
+        random.choice(NEXT_REPORT_BTN),
+        {'push': push.id, 'report': next_report_nr, 'next_state': next_state}
+    )
+
+    skip_button = quick_reply(
+        random.choice(SKIP_REPORT_BTN),
+        {'push': push.id, 'report': report_nr + 1, 'next_state': 'intro'}
     )
 
     if media:
         send_attachment_by_id(user_id, str(media), guess_attachment_type(str(url)))
 
+    quick_replies = []
+
     if next_state is not None:
-        quick_replies = [more_button]
-        send_text(user_id, reply, quick_replies=quick_replies)
+        quick_replies.append(more_button)
 
-    else:
-        send_text(user_id, reply)
+    if show_skip:
+        quick_replies.append(skip_button)
 
+    send_text(user_id, reply, quick_replies=quick_replies)
+
+    if next_state is None:
         try:
             FacebookUser.objects.get(uid=user_id)
         except FacebookUser.DoesNotExist:
