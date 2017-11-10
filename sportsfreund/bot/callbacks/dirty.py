@@ -784,7 +784,7 @@ def follow(event, payload, **kwargs):
     for athlete in athletes_list:
         by_uuid[athlete['uuid']] = athlete
 
-    athlete_info = by_uuid['.'.join([first_name, last_name])]
+    athlete_info = by_uuid[athlete_id]
     reply = 'Du folgst nun ' + athlete_info['first_name'] + ' ' + athlete_info['last_name'] + '.' \
             'Ich werde dich informieren, sobald es Neuigkeiten zu vermelden gibt.' \
             'Gewinnt oder verliert der Athlet das nächste Rennen? - Du wirst es von mir erfahren!'
