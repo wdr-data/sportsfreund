@@ -37,7 +37,8 @@ def send_text(recipient_id, text, quick_replies=None):
 
     message = {'text': prefix + text}
 
-    if quick_replies is not None:
+    # Facebook does not allow empty lists of quick replies
+    if not quick_replies:
         message['quick_replies'] = quick_replies
 
     payload = {
