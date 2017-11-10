@@ -758,6 +758,8 @@ def athlete(event,payload,**kwargs):
             buttons = [
                 button_postback('Fun Facts',
                                 {'fun_fact': athlete_info['uuid']}),
+                button_postback('Sportler folgen',
+                                {'follow': athlete_info['uuid']}),
             ]
 
     else:
@@ -769,9 +771,23 @@ def athlete(event,payload,**kwargs):
         send_text(sender_id, reply)
 
 def fun_fact(event, payload, **kwargs):
+    sender_id = event['sender']['id']
     athlete_id = payload['fun_fact']
     send_text(sender_id,
               'Hier kommen zukünftig witzige Infos.')
+
+def follow(event, payload, **kwargs):
+    sender_id = event['sender']['id']
+    athlete_id = payload['follow']
+
+    by_uuid = dict()
+    for athlete in athletes_list:
+        by_uuid[athlete['uuid']] = athlete
+
+    athlete_info = by_uuid['.'.join([first_name, last_name])]
+    send_text(sender_id,
+              'Du folgst nun ' + athlete_info['first_name'] + ' ' athlete_info['last_name'] + '. Ich werde dich fortan informieren, sobald es Neuigkeiten zu vermelden gibt. ' \
+              'Gewinnt oder verliert der Athlet das nächste Rennen? - Du wirst es von mir erfahren!')
 
 def next_event_api(event,parameters,**kwargs):
     sender_id = event['sender']['id']

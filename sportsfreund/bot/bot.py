@@ -63,6 +63,7 @@ def make_event_handler():
         ApiAiHandler(dirty.athlete_api,'athlete'),
         PayloadHandler(dirty.athlete,['athlete']),
         PayloadHandler(dirty.fun_fact,['fun_fact']),
+        PayloadHandler(dirty.follow,['follow']),
 
         PayloadHandler(story_payload, ['story', 'fragment']),
 
