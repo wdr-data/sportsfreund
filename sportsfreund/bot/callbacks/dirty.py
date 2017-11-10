@@ -4,6 +4,7 @@ import logging
 #import necessary modules
 from ..fb import (send_buttons, button_postback, send_text, send_attachment_by_id,
                   guess_attachment_type)
+from .default import story
 
 logger = logging.getLogger(__name__)
 
@@ -772,9 +773,11 @@ def athlete(event,payload,**kwargs):
 
 def fun_fact(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    athlete_id = payload['fun_fact']
-    send_text(sender_id,
-              'Hier kommen zukünftig witzige Infos.')
+    send_text(sender_id, 'Ein paar Fun Facts zum Sportler...')
+
+    slug = 'fakt-neureuther-verletzungen-1'
+    fragment_nr=None
+    story(event, slug, fragment_nr)
 
 def follow(event, payload, **kwargs):
     sender_id = event['sender']['id']
@@ -785,8 +788,8 @@ def follow(event, payload, **kwargs):
         by_uuid[athlete['uuid']] = athlete
 
     athlete_info = by_uuid[athlete_id]
-    reply = 'Du folgst nun ' + athlete_info['first_name'] + ' ' + athlete_info['last_name'] + '.' \
-            'Ich werde dich informieren, sobald es Neuigkeiten zu vermelden gibt.' \
+    reply = 'Du folgst nun ' + athlete_info['first_name'] + ' ' + athlete_info['last_name'] + '. ' \
+            'Ich werde dich informieren, sobald es Neuigkeiten zu vermelden gibt. ' \
             'Gewinnt oder verliert der Athlet das nächste Rennen? - Du wirst es von mir erfahren!'
 
     send_text(sender_id, reply)
