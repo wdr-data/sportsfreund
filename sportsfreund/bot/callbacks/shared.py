@@ -119,6 +119,8 @@ def send_push(user_id, push, report_nr, state):
             # button_title = push.reports.all()[0].headline
             button_title = random.choice(FIRST_REPORT_BTN)
             next_report_nr = 0
+        else:
+            show_skip = False
 
     # Report Intro
     elif state == 'intro':
