@@ -5,10 +5,10 @@ import datetime
 from fuzzywuzzy import fuzz, process
 from django.utils import timezone
 
-from backend.models import FacebookUser, Wiki, Push, Info, Story, StoryFragment
+from backend.models import FacebookUser, Wiki, Push, Report, Info, Story, StoryFragment
 from ..fb import (send_buttons, button_postback, send_text, send_attachment_by_id,
                   guess_attachment_type, quick_reply, generic_element, send_generic, button_web_url, button_share)
-from .shared import get_push, schema, send_push, get_pushes_by_date
+from .shared import get_push, schema, send_push, get_pushes_by_date, get_latest_report, send_report
 
 logger = logging.getLogger(__name__)
 
@@ -103,6 +103,7 @@ def share_bot(event, **kwargs):
     send_generic(sender_id,
                 elements = [message])
 
+
 def push(event, parameters, **kwargs):
     sender_id = event['sender']['id']
     date = parameters and parameters.get('date')
@@ -138,6 +139,30 @@ def push_step(event, payload, **kwargs):
     push = Push.objects.get(id=push_id)
 
     send_push(sender_id, push, report_nr, next_state)
+
+
+def report(event, parameters, **kwargs):
+    sender_id = event['sender']['id']
+    sport = parameters and parameters.get('sport')
+    discipline = parameters and parameters.get('discipline')
+
+    report = get_latest_report(sport=sport, discipline=discipline)
+
+    if report:
+        send_report(sender_id, report, 'intro')
+    else:
+        reply = 'Keine Meldung gefunden.'
+        send_text(sender_id, reply)
+
+
+def report_step(event, payload, **kwargs):
+    sender_id = event['sender']['id']
+    report_id = payload['report']
+    next_state = payload['next_state']
+
+    report = Report.objects.get(id=report_id)
+
+    send_report(sender_id, report, next_state)
 
 
 def subscribe(event, **kwargs):

@@ -3,7 +3,7 @@ import logging
 
 from django.utils import timezone
 
-from backend.models import Push, FacebookUser
+from backend.models import Push, Report, FacebookUser
 from ..fb import (send_text, send_attachment_by_id, guess_attachment_type, quick_reply,
                   send_buttons, button_postback)
 
@@ -41,6 +41,25 @@ def get_push(force_latest=False):
             ).latest('pub_date')
 
     except Push.DoesNotExist:
+        return None
+
+
+def get_latest_report(sport=None, discipline=None):
+
+    try:
+        reports = Report.objects.filter(
+            published=True,
+        )
+
+        if sport is not None:
+            reports = reports.filter(sport=sport)
+
+        if discipline is not None:
+            reports = discipline.filter(discipline=discipline)
+
+        return reports.latest('created')
+
+    except Report.DoesNotExist:
         return None
 
 
@@ -133,9 +152,51 @@ def send_push(user_id, push, report_nr, state):
                                   'Möchtest du das jetzt nachholen?',
                          buttons=[button_postback('Ja, bitte!', ['subscribe'])])
 
-        # send_text(user_id, 'Das wars für heute!')
-        '''
-        if not data.breaking:
-            media = '327361671016000'
-            send_attachment_by_id(user_id, media, 'image')
-        '''
+
+def send_report(user_id, report, state):
+    reply = ''
+    media = ''
+    url = ''
+    button_title = ''
+    next_state = None
+
+    if state == 'intro':
+        reply = report.text
+
+        if report.fragments.count():
+            next_state = 0
+            button_title = report.fragments.all()[0].question
+
+        if report.attachment_id:
+            media = report.attachment_id
+            url = report.media
+
+    elif report.fragments.count() > state:
+        fragments = report.fragments.all()
+        fragment = fragments[state]
+        reply = fragment.text
+
+        if report.fragments.count() - 1 > state:
+            next_state = state + 1
+            button_title = fragments[next_state].question
+
+        if fragment.attachment_id:
+            media = fragment.attachment_id
+            url = fragment.media
+
+    else:
+        reply = "Tut mir Leid, dieser Button funktioniert leider nicht."
+
+    more_button = quick_reply(
+        button_title, {'report': report.id, 'next_state': next_state}
+    )
+
+    if media:
+        send_attachment_by_id(user_id, str(media), guess_attachment_type(str(url)))
+
+    if next_state is not None:
+        quick_replies = [more_button]
+        send_text(user_id, reply, quick_replies=quick_replies)
+
+    else:
+        send_text(user_id, reply)
