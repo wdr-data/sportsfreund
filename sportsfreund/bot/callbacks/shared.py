@@ -51,10 +51,10 @@ def get_latest_report(sport=None, discipline=None):
             published=True,
         )
 
-        if sport is not None:
+        if sport:  # TODO: dialogflow intent passes empty sport
             reports = reports.filter(sport=sport)
 
-        if discipline is not None:
+        if discipline:
             reports = reports.filter(discipline=discipline)
 
         return reports.latest('created')
