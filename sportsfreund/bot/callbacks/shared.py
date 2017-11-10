@@ -131,6 +131,7 @@ def send_push(user_id, push, report_nr, state):
             button_title = report.fragments.all()[0].question
         else:
             button_title = random.choice(NEXT_REPORT_BTN)
+            next_state = 'intro'
             show_skip = False
 
         if report.attachment_id:
