@@ -50,7 +50,7 @@ def make_event_handler():
         ApiAiHandler(share_bot, 'share_bot'),
 
         ApiAiHandler(push, 'push'),
-        PayloadHandler(push_step, ['push', 'report_nr', 'next_state']),
+        PayloadHandler(push_step, ['push', 'report', 'next_state']),
 
         ApiAiHandler(report, 'meldung'),
         PayloadHandler(report_step, ['report', 'next_state']),
