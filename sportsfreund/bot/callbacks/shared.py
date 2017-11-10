@@ -101,6 +101,7 @@ def send_push(user_id, push, report_nr, state):
     next_state = None
     next_report_nr = None
     show_skip = False
+    button_title = ''
 
     if report_nr is not None:
         reports = push.reports.all()
