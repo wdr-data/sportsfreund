@@ -55,7 +55,7 @@ def get_latest_report(sport=None, discipline=None):
             reports = reports.filter(sport=sport)
 
         if discipline is not None:
-            reports = discipline.filter(discipline=discipline)
+            reports = reports.filter(discipline=discipline)
 
         return reports.latest('created')
 
