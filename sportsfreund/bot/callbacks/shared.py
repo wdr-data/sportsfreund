@@ -160,16 +160,16 @@ def send_push(user_id, push, report_nr, state):
             button_title = random.choice(NEXT_REPORT_BTN)
             show_skip = False
 
-        # Last Report
-        if push.reports.count() - 1 == report_nr:
-            show_skip = False
-
         if fragment.attachment_id:
             media = fragment.attachment_id
             url = fragment.media
 
     else:
         reply = "Tut mir Leid, dieser Button funktioniert leider nicht."
+
+    # Last Report
+    if push.reports.count() - 1 == report_nr:
+        show_skip = False
 
     more_button = quick_reply(
         button_title,
