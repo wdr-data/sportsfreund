@@ -180,7 +180,7 @@ def send_push(user_id, push, report_nr, state):
 
     skip_button = quick_reply(
         random.choice(SKIP_REPORT_BTN),
-        {'push': push.id, 'report': report_nr + 1, 'next_state': 'intro'}
+        {'push': push.id, 'report': report_nr or 0 + 1, 'next_state': 'intro'}
     )
 
     if media:
