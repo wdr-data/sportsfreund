@@ -64,6 +64,7 @@ def make_event_handler():
         PayloadHandler(dirty.athlete,['athlete']),
         PayloadHandler(dirty.fun_fact,['fun_fact']),
         PayloadHandler(dirty.follow,['follow']),
+        PayloadHandler(dirty.force_start,['force_start']),
 
         PayloadHandler(story_payload, ['story', 'fragment']),
 
