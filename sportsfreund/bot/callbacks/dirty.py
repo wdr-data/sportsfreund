@@ -4,7 +4,7 @@ import logging
 #import necessary modules
 from ..fb import (send_buttons, button_postback, send_text, send_attachment_by_id,
                   guess_attachment_type)
-from .default import story, greetings
+from .default import story, get_started
 
 logger = logging.getLogger(__name__)
 
@@ -711,7 +711,7 @@ def results_ski_alpin_api(event,parameters,**kwargs):
               'Hier stehen die ersten drei')
 
 def force_start(event, **kwargs):
-    greetings(event)
+    get_started(event)
 
 def athlete_api(event,parameters,**kwargs):
     sender_id = event['sender']['id']
