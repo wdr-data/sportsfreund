@@ -785,9 +785,11 @@ def follow(event, payload, **kwargs):
         by_uuid[athlete['uuid']] = athlete
 
     athlete_info = by_uuid['.'.join([first_name, last_name])]
-    send_text(sender_id,
-              'Du folgst nun ' + athlete_info['first_name'] + ' ' athlete_info['last_name'] + '. Ich werde dich fortan informieren, sobald es Neuigkeiten zu vermelden gibt. ' \
-              'Gewinnt oder verliert der Athlet das nächste Rennen? - Du wirst es von mir erfahren!')
+    reply = 'Du folgst nun ' + athlete_info['first_name'] + ' ' + athlete_info['last_name'] + '.' \
+            'Ich werde dich informieren, sobald es Neuigkeiten zu vermelden gibt.' \
+            'Gewinnt oder verliert der Athlet das nächste Rennen? - Du wirst es von mir erfahren!'
+
+    send_text(sender_id, reply)
 
 def next_event_api(event,parameters,**kwargs):
     sender_id = event['sender']['id']
