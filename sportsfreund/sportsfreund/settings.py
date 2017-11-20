@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'wahltraud.urls'
+ROOT_URLCONF = 'sportsfreund.urls'
 
 TEMPLATES = [
     {
@@ -67,7 +67,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'wahltraud.wsgi.application'
+WSGI_APPLICATION = 'sportsfreund.wsgi.application'
 
 
 # Database
