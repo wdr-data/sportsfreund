@@ -27,8 +27,8 @@ tempora = "*"
 "urllib3" = "*"
 dj-database-url = "*"
 "psycopg2" = "*"
+gunicorn = "*"
 
 
 [dev-packages]
 
-gunicorn = "*"
