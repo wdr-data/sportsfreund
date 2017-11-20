@@ -22,6 +22,3 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^fb/', include('bot.urls')),
 ]
-
-if "gunicorn" in os.environ.get("SERVER_SOFTWARE", ""):
-    urlpatterns += staticfiles_urlpatterns()

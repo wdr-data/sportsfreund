@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -128,6 +129,8 @@ URL_PREFIX = '/'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL[1:])
 STATIC_URL = os.path.join(URL_PREFIX, STATIC_URL[1:])
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/static/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL[1:])
