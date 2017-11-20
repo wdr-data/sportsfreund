@@ -26,6 +26,7 @@ pytz = "*"
 tempora = "*"
 "urllib3" = "*"
 dj-database-url = "*"
+"psycopg2" = "*"
 
 
 [dev-packages]
