@@ -22,6 +22,8 @@ if SECRET_KEY is None:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+if os.environ.get("DEBUG") == "True":
+    DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
