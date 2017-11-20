@@ -25,7 +25,9 @@ python-levenshtein = "*"
 pytz = "*"
 tempora = "*"
 "urllib3" = "*"
+dj-database-url = "*"
 
 
 [dev-packages]
 
+gunicorn = "*"

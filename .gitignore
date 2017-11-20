@@ -1,9 +1,11 @@
 .idea
 venv
 sportsfreund/static
-sportsfreund/sportsfreund/settings.py
 sportsfreund/site.log
 
 db.sqlite3
 
 *.pyc
+
+# Heroku Env
+.env
