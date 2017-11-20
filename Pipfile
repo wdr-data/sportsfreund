@@ -1,0 +1,31 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+apiai = "*"
+cherrypy = "*"
+django = "*"
+fuzzywuzzy = "*"
+paste = "*"
+requests = "*"
+schedule = "*"
+certifi = "*"
+chardet = "*"
+cheroot = "*"
+idna = "*"
+"jaraco.classes" = "*"
+numpy = "*"
+portend = "*"
+python-levenshtein = "*"
+pytz = "*"
+tempora = "*"
+"urllib3" = "*"
+
+
+[dev-packages]
+
