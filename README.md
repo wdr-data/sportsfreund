@@ -61,7 +61,7 @@ Für die Facebook-App, folgen Sie bitte der folgenden Anleitung: https://develop
 
 Bei dem Schritt, an dem Sie den Webhook aktivieren, müssen Sie außerdem folgendes beachten:
 
-- Sportsfreund sucht das Page Token in der Umgebungsvariable `sportsfreund_PAGE_TOKEN` und das Hub Verify Token in `sportsfreund_HUB_VERIFY_TOKEN`.
+- Sportsfreund sucht das Page Token in der Umgebungsvariable `FB_PAGE_TOKEN` und das Hub Verify Token in `FB_HUB_VERIFY_TOKEN`.
 - Der Webhook muss folgendes Muster haben: `SITE_URL/fb/YOURPAGETOKENHERE/` (**mit** trailing slash). 
 - Abonnieren Sie die Events `messages`, `messaging_postbacks` und `messaging_referrals`
  

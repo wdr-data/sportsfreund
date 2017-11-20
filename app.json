@@ -8,6 +8,12 @@
     "SECRET_KEY": {
             "description": "This gets generated",
             "generator": "secret"
+    },
+    "FB_PAGE_TOKEN": {
+            "description": "Page token for the Facebook Messenger integration"
+    },
+    "FB_HUB_VERIFY_TOKEN": {
+            "description": "Hub verify token for the Facebook Messenger integration"
     }
   }
 }
