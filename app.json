@@ -17,6 +17,9 @@
     },
     "DIALOGFLOW_TOKEN": {
       "description": "Token for the Dialogflow API"
+    },
+    "FEED_URL": {
+      "description": "URL for JSON data feed"
     }
   }
 }
