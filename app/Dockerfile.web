@@ -12,6 +12,9 @@ RUN pip install pipenv && \
     pipenv --rm
 
 COPY app /app
+COPY lib /pythonpkg/lib
+
+ENV PYTHONPATH=${PYTHONPATH}:/pythonpkg
 
 RUN SECRET_KEY=1 python manage.py collectstatic --noinput --clear
 

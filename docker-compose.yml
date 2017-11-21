@@ -9,12 +9,15 @@ services:
     environment:
       DEBUG: "True"
       DATABASE_URL: "postgres://postgres:hackme@db:5432/postgres"
+      MONGODB_URI: "mongodb://mongo:27017/"
     ports:
       - "8080:8080"
     volumes:
       - ./app:/app
+      - ./lib:/pythonpkg/lib
     depends_on:
       - db
+      - mongo
   web-migrate:
     build:
       context: .
@@ -35,6 +38,13 @@ services:
       - db_data:/var/lib/postgresql
     environment:
       POSTGRES_PASSWORD: hackme
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
 
 volumes:
   db_data: {}
+  mongo_data: {}

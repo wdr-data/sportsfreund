@@ -29,6 +29,7 @@ dj-database-url = "*"
 "psycopg2" = "*"
 gunicorn = "*"
 whitenoise = "*"
+pymongo = "*"
 
 
 [dev-packages]
