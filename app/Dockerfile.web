@@ -13,6 +13,7 @@ RUN pip install pipenv && \
 
 COPY app /app
 COPY lib /pythonpkg/lib
+COPY feeds /pythonpkg/feeds
 
 ENV PYTHONPATH=${PYTHONPATH}:/pythonpkg
 
