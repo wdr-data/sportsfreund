@@ -47,6 +47,7 @@ services:
   localtunnel:
     image: efrecon/localtunnel
     env_file: .env
+    restart: always
     depends_on:
       - web
     command: --local-host web --port 8080 --subdomain ${TUNNEL_NAME}
