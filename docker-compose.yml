@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: app
+      dockerfile: Dockerfile.web
+    env_file: .env
+    environment:
+      DEBUG: "True"
+      DATABASE_URL: "postgres://postgres:hackme@db:5432/postgres"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./app:/app
+    depends_on:
+      - db
+  db:
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql
+    environment:
+      POSTGRES_PASSWORD: hackme
+  web-migrate:
+    build:
+      context: app
+      dockerfile: Dockerfile.web
+    command: "'sleep 1; python manage.py migrate'"
+    env_file: .env
+    environment:
+      DATABASE_URL: "postgres://postgres:hackme@db:5432/postgres"
+    volumes:
+      - ./app:/app
+    depends_on:
+      - db
+
+volumes:
+  db_data: {}

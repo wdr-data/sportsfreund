@@ -1,0 +1,25 @@
+FROM python:3.6-alpine
+
+RUN apk --no-cache add musl-dev linux-headers g++ tini postgresql-dev
+
+COPY Pipfile* /app/
+
+WORKDIR /app
+
+RUN pip install pipenv && \
+    pipenv lock --requirements > /tmp/requirements-lock.txt && \
+    pip install -r /tmp/requirements-lock.txt && \
+    pipenv --rm
+
+COPY . /app
+
+RUN SECRET_KEY=1 python manage.py collectstatic --noinput --clear
+
+RUN adduser -D webuser
+USER webuser
+
+EXPOSE 8080
+ENV PORT=8080
+
+ENTRYPOINT ["sh", "-c"]
+CMD ["gunicorn -w 1 -b :$PORT main.wsgi"]
