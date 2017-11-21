@@ -24,14 +24,14 @@ from .callbacks import dirty
 
 logger = logging.getLogger(__name__)
 
-API_AI_TOKEN = os.environ.get('SPORTSFREUND_API_AI_TOKEN', 'na')
+DIALOGFLOW_TOKEN = os.environ.get('DIALOGFLOW_TOKEN', 'na')
 
 ADMINS = [
 ]
 
 
 def make_event_handler():
-    ai = ApiAI(API_AI_TOKEN)
+    ai = ApiAI(DIALOGFLOW_TOKEN)
 
     handlers = [
         ApiAiHandler(greetings, 'gruss'),
@@ -148,7 +148,7 @@ def make_event_handler():
                                 if int(sender_id) in ADMINS:
                                     txt = str(e)
                                     txt = txt.replace(PAGE_TOKEN, '[redacted]')
-                                    txt = txt.replace(API_AI_TOKEN, '[redacted]')
+                                    txt = txt.replace(DIALOGFLOW_TOKEN, '[redacted]')
                                     send_text(sender_id, txt)
                             except:
                                 pass
