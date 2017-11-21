@@ -1,7 +1,7 @@
 .idea
 venv
-sportsfreund/static
-sportsfreund/site.log
+app/static
+app/site.log
 
 db.sqlite3
 

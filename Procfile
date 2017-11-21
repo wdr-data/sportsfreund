@@ -1,2 +1,2 @@
-web: cd sportsfreund && gunicorn sportsfreund.wsgi --log-file -
-release: cd sportsfreund && python manage.py migrate
+web: gunicorn --chdir app main.wsgi --log-file -
+release: python app/manage.py migrate
