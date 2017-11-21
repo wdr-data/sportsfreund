@@ -17,6 +17,7 @@ from .callbacks.default import (
     get_started, start_message, greetings, push, push_step, subscribe, unsubscribe, share_bot,
     apiai_fulfillment, wiki, countdown, korea_standard_time, story, story_payload, report,
     report_step)
+from .callbacks import result
 from .callbacks.shared import get_push, schema
 
 #dirty
@@ -58,6 +59,10 @@ def make_event_handler():
         ApiAiHandler(korea_standard_time, 'korea_standard_time'),
         ApiAiHandler(countdown, 'countdown'),
         ApiAiHandler(wiki, 'wiki'),
+
+        #info.match.result
+        ApiAiHandler(result.api_winner ,'info.match.result.winner'),
+        ApiAiHandler(result.api_podium, 'info.match.result.podium'),
 
         # dirty
         ApiAiHandler(dirty.results_ski_alpin_api,'ergebnis'),
