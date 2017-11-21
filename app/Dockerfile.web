@@ -11,7 +11,7 @@ RUN pip install pipenv && \
     pip install -r /tmp/requirements-lock.txt && \
     pipenv --rm
 
-COPY . /app
+COPY app /app
 
 RUN SECRET_KEY=1 python manage.py collectstatic --noinput --clear
 
