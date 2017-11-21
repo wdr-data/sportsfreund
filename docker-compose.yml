@@ -44,6 +44,12 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+  localtunnel:
+    image: efrecon/localtunnel
+    env_file: .env
+    depends_on:
+      - web
+    command: --local-host web --port 8080 --subdomain ${TUNNEL_NAME}
 
 volumes:
   db_data: {}
