@@ -79,14 +79,7 @@ Darüber hinaus werden keine Daten gezogen oder weiterverwendet.
 Zu den Datenschutzbestimmungen des "Westdeutschen Rundfunks": http://www1.wdr.de/hilfe/datenschutz102.html
 
 ## Daten-Quellen / Credits
-- WDR-Kandidatencheck http://kandidatencheck.wdr.de/kandidatencheck/
-- abgeordnetenwatch.de https://www.abgeordnetenwatch.de/
-- Wahlkompass Digitales http://wahlkompass-digitales.de/
-- Bundeswahlleiter https://www.bundeswahlleiter.de/
-- infratest dimap https://www.infratest-dimap.de/
-- Homepages der Parteien
 - Sportsfreund arbeitet in Kooperation mit Novi, dem Nachrichten-Bot von Funk: https://www.funk.net/
-- Sportsfreund hat sich beim WDR-Projekt "Wörter der Wahl" bedient: https://github.com/wdr-data/woerter-der-wahl
 - Sportsfreund nutzt api.ai (Google Assistant) um die Absichten der Nutzer (intents) zu klassifizieren. Übergeben wird die PSID (Page Specific ID) und der Nachrichtentext.
 
 ## Rechtliches und Lizenzen
@@ -106,5 +99,5 @@ Das Urheberrecht der verwendeten Wahlprogramme liegt bei den Parteien. Für die 
 Copyright Westdeutscher Rundfunk Köln
 
 
-## Gewähleistungsausschluss
+#### Gewähleistungsausschluss
 Es besteht keinerlei Gewährleistung für das Programm, soweit dies gesetzlich zulässig ist. Sofern nicht anderweitig schriftlich bestätigt, stellen die Urheberrechtsinhaber und/oder Dritte das Programm so zur Verfügung, „wie es ist“, ohne irgendeine Gewährleistung. Das volle Risiko bezüglich Qualität und Leistungsfähigkeit des Programms liegt bei Ihnen.
