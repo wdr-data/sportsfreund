@@ -23,14 +23,21 @@ def api_request(feed, params):
         feed,
         *[k + str(v) for k, v in sorted(params.items())])
 
-    logging.info('API REQUEST: %s', feed_portion or '')
+    logger.info('API REQUEST: %s', feed_portion or '')
 
     url = urljoin(FEED_URL_BASE, feed_portion)
 
     r = requests.get(url)
 
     if r.status_code == 200 and r.content:
-        return json.loads(r.content.decode())
+        result = json.loads(r.content.decode())
+
+        # empty dict
+        if not result:
+            raise ValueError('Feed %s is empty')
+
+        return result
+
     elif r.status_code == 200:
         raise ValueError('Feed %s is empty')
     else:
@@ -54,3 +61,57 @@ def match(**kwargs):
     :return:
     """
     return api_request('match', kwargs)
+
+
+def team(**kwargs):
+    """
+
+    :param te: Team ID
+    :return:
+    """
+    return api_request('team', kwargs)
+
+
+def season(**kwargs):
+    """
+
+    :param se: Season ID
+    :return:
+    """
+    return api_request('season', kwargs)
+
+
+def competition(**kwargs):
+    """
+
+    :param co: Team ID
+    :return:
+    """
+    return api_request('competition', kwargs)
+
+
+def sport(**kwargs):
+    """
+
+    :param sp: Sport ID
+    :return:
+    """
+    return api_request('sport', kwargs)
+
+
+def topic(**kwargs):
+    """
+
+    :param to: Topic ID
+    :return:
+    """
+    return api_request('topic', kwargs)
+
+
+def venue(**kwargs):
+    """
+
+    :param ve: Venue ID
+    :return:
+    """
+    return api_request('venue', kwargs)
