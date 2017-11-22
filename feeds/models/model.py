@@ -39,20 +39,19 @@ class Model(dict):
         """
         id = str(id)
 
-        if clear_cache:
-            cls.logger.debug('Force-clear cache for %s with id %s', cls.__name__, id)
-            cls.collection.delete_one({'id': id})
+        cached = cls.collection.find_one({'id': id})
 
-        else:
-            cached = cls.collection.find_one({'id': id})
+        if cached:
+            cls.logger.debug('Cache hit for %s with id %s', cls.__name__, id)
 
-            if cached:
-                cls.logger.debug('Cache hit for %s with id %s', cls.__name__, id)
-                if cached['_cached_at'] + cls.cache_time < time():
-                    cls.logger.debug('Cache expired for %s with id %s', cls.__name__, id)
-                    cls.collection.delete_one({'_id': cached['_id']})
-                else:
-                    return cls(**cached)
+            if clear_cache:
+                cls.logger.debug('Force-clear cache for %s with id %s', cls.__name__, id)
+
+            elif cached['_cached_at'] + cls.cache_time < time():
+                cls.logger.debug('Cache expired for %s with id %s', cls.__name__, id)
+
+            else:
+                return cls(**cached)
 
         obj = cls.api_function(**{cls.api_id_name: id})
 
@@ -61,8 +60,14 @@ class Model(dict):
 
         obj['_cached_at'] = int(time())
 
-        new_id = cls.collection.insert_one(obj)
-        obj['_id'] = new_id
+        if cached:
+            cls.collection.replace_one({'_id': cached['_id']}, obj)
+            obj['_id'] = cached['_id']
+
+        else:
+            new_id = cls.collection.insert_one(obj)
+            obj['_id'] = new_id
+
         return cls(**obj)
 
     def __getattr__(self, name):
