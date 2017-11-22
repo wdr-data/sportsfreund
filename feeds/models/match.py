@@ -3,20 +3,16 @@ from lib.mongodb import client as mongo
 from .model import Model
 
 db = mongo.main
-matches = db.match
 
 
 class Match(Model):
+    collection = db.matches
+    api_function = api.match
+    api_id_name = 'ma'
 
     @classmethod
-    def by_id(cls, id):
-        cached = matches.find_one({'id': id})
-        if cached:
-            return cls(**cached)
+    def transform(cls, match):
+        """Make the inner 'match' object the new outer object and move 'match_result_at' in it"""
 
-        else:
-            match = api.match(ma=id)
-            new_id = matches.insert_one(match)
-            match['_id'] = new_id
-            return cls(**match)
-
+        match['match']['match_result_at'] = match['match_result_at']
+        return match['match']
