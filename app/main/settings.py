@@ -135,3 +135,10 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/static/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL[1:])
 MEDIA_URL = os.path.join(URL_PREFIX, MEDIA_URL[1:])
+
+# Error reporting on Sentry.io
+if os.environ.get('SENTRY_URL') is not None:
+    INSTALLED_APPS.append('raven.contrib.django.raven_compat')
+    RAVEN_CONFIG = {
+        'dsn': os.environ.get('SENTRY_URL'),
+    }
