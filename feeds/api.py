@@ -54,6 +54,15 @@ def topic_by_topic(**kwargs):
     return api_request('topic-by-topic', kwargs)
 
 
+def matches_by_topic_for_season(**kwargs):
+    """
+
+    :param to: Topic ID
+    :return:
+    """
+    return api_request('matches-by-topic-for-season', kwargs)
+
+
 def match(**kwargs):
     """
 
