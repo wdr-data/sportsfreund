@@ -1,95 +1,113 @@
-# Sportsfreund - Facebook Messenger Bot 
+# Sportsfreund - Facebook Messenger Bot
 
 ## Über Sportsfreund
 TODO
 
-## Team 
+## Team
 TODO
 
 [**Impressum**](http://www1.wdr.de/impressum/index.html)
 
 ## Nutzung
-Benötigt werden ein Facebook Developer Account und ein api.ai Account.
 
-Zunächst muss das GitHub-Repo gecloned werden:
+### Vorraussetzungen
+
+- [Facebook Developer](https://developer.facebook.com/) App mit Messenger Integration: [Anleitung](https://developers.facebook.com/docs/messenger-platform/getting-started/app-setup)
+- [Dialogflow](https://dialogflow.com/) App (früher api.ai)
+
+Zunächst sollte der Source-Code lokal vorhanden sein. Dieses Git Kommando legt einen neuen Ordner mit dem Source an.
 
 ```
 git clone https://github.com/wdr-data/sportsfreund.git
 ```
 
-Die Nutzung eines `virtualenv` ist empfohlen. Nachdem dieses angelegt und aktiviert ist, müssen die requirements installiert werden:
-
-```
-pip install -r requirements.txt
-```
 
 ### Konfiguration
-Neue Nachrichten werden von Facebook auf einen Webhook gesendet. Wir benutzen CherryPy als Webserver, der eine Django-Instanz per WSGI hostet, um diesen bereitzustellen. 
 
-Die Webserver-Konfiguration befindet sich in `sportsfreund/start.py`. Standardmäßig läuft dieser auf `128.0.0.1:8004`. Für den Testbetrieb kann `ngrok` verwendet werden, um den Webhook zu empfangen, in der Produktion wird ein reverse proxy wie `nginx` oder `haproxy` empfohlen.
+Diese Applikation wird über ein Shell Environment konfiguriert.
+Zum Produktionsbetrieb ist dafür der Mechanismus der jeweiligen Platform zu nutzen.
 
-Als nächstes sollte Django konfiguriert werden. Dafür editieren Sie in `sportsfreund/sportsfreund/settings.py` die folgenden Attribute:
-- `SITE_URL` (ohne trailing slash)
-- `SECRET_KEY`
-- `ALLOWED_HOSTS`
-- Eventuell `DATABASES`, falls nicht SQLite verwendet werden soll.
+Für die lokale Entwicklung kann die Konfiguration über die Datei `.env` im Source-Ordner erfolgen:
 
-Es müssen außerdem die Wortlisten für die "Wörter-der-Wahl"-Funktionalität generiert werden. Hierzu wechseln Sie in das Verzeichnis `sportsfreund/bot/` und führen folgende Befehle aus:
-
-```
-mkdir output
-python wp-vb.py
-```
-
-Nun legt man einen Admin-User an, migriert die Datenbank und sammelt die statischen Dateien. Dafür wechselt man zurück in das Projektverzeichnis `sportsfreund` (in dem sich `manage.py` befindet), und führt die folgenden Befehle aus:
-
-```
-./manage.py createsuperuser
-./manage.py migrate
-./manage.py collectstatic
+```bash
+DEBUG=False           # Debug-Attribut der Services (z.B. Django) (optional)
+LOG_LEVEL=info        # Loglevel des Application Servers Gunicorn (optional)
+SECRET_KEY=12345      # Secret Key für Django
+TUNNEL_NAME=          # ${TUNNEL_NAME}.localtunnel.me für den FB-Webhook
+FB_PAGE_TOKEN=        # Access-Token für die Facebook API
+FB_HUB_VERIFY_TOKEN=  # Verify Token für den Facebook Webhook
+DIALOGFLOW_TOKEN=     # API Token für Dialogflow
+FEED_URL=             # URL der Datenquellen (proprietär)
+SENTRY_URL=           # DSN für die Sentry Error Logging Plattform (optional)
 ```
 
-Nun sollte das Django-Backend bereits funktionieren. Testen Sie dies mit
+### Lokal ausführen
+
+Zum lokalen Ausführen wird ein Docker-Daemon ([Installation](https://www.docker.com/get-docker)) und `docker-compose` benötigt.
+
+Die Umgebung kann mit folgendem Befehl gestartet werden:
+
+```bash
+./start.sh
 ```
-python start.py
-```
-Besuchen Sie `SITE_URL/admin` (also zum Beispiel http://128.0.0.1:8004/admin für lokalen Zugriff mit Standard-Werten) und loggen Sie sich mit den Admin-Daten ein, die Sie festgelegt haben. 
 
-Falls dies funktioniert, können nun die Facebook- und api.ai Apps erstellt werden.
+Nachdem die Einrichtung abgeschlossen ist, sollte die Funktionalität der Anwendung überprüft werden,
+indem https://${TUNNEL_NAME}.localtunnel.me/admin/ aufgerufen werden. Dort sollte der Login zum Django-Backend erscheinen.
 
-Für die Facebook-App, folgen Sie bitte der folgenden Anleitung: https://developers.facebook.com/docs/messenger-platform/guides/quick-start/
 
-Bei dem Schritt, an dem Sie den Webhook aktivieren, müssen Sie außerdem folgendes beachten:
+#### Einrichtung des Facebook-Webhooks
 
-- Sportsfreund sucht das Page Token in der Umgebungsvariable `FB_PAGE_TOKEN` und das Hub Verify Token in `FB_HUB_VERIFY_TOKEN`.
-- Der Webhook muss folgendes Muster haben: `SITE_URL/fb/YOURPAGETOKENHERE/` (**mit** trailing slash). 
-- Abonnieren Sie die Events `messages`, `messaging_postbacks` und `messaging_referrals`
- 
+Wenn das funktioniert, kann die Einrichtung der Facebook-Integration abgeschlossen werden.
+Dazu ist in der Facebook Developer App ein Webhook mit dieser URL einzurichten:
+
+https://${TUNNEL_NAME}.localtunnel.me/fb/${FB_PAGE_TOKEN}/
+
+Anschließend sollten die Events `messages`, `messaging_postbacks` und `messaging_referrals` für die gewünschte Seite abboniert werden.
+
 Das Page Token wird in der URL verwendet, damit niemand außer Facebook Webhooks an Sportsfreund senden kann.
-
-Erstellen Sie außerdem eine api.ai App und importieren Sie den von uns trainierten Agent aus dem GitHub-Repository. Sportsfreund erwartet das api.ai Client Token in der Umgebungsvariable `sportsfreund_API_AI_TOKEN`.
 
 Sportsfreund sollte nun antworten.
 
-## Datenschutz 
+### In Production
+
+Für den Produktionsbetrieb werden zudem folgende Komponenten benötigt:
+- PostgreSQL (Uri in `DATABASE_URL` hinterlegen)
+- MongoDB (Uri in `MONGODB_URI` hinterlegen)
+- Redis (Uri in `REDIS_URL` hinterlegen)
+
+Diese Applikation basiert auf Docker-Containern.
+Zum Produktions-Betrieb kann man sich an der Datei [`docker-compose.yml`](/docker-compose.yml) orientieren,
+diese muss allerdings an Produktionsbedingungen angepasst werden.
+
+#### Heroku
+
+Die Applikation kann auch auf Heroku ausgeführt werden.
+Dazu muss lediglich dieses Repository deployed und die Environment Variablen gesetzt werden.
+
+### Abhängigkeiten für die IDE
+
+Dieses Python-Projekt nutzt Pipenv zur Verwaltung der Abhängigkeiten und des `virtualenv`.
+
+Zum Ausführen der Anwendung müssen die Abhängigkeiten nicht installiert sein. Es bietet sich
+allerdings an, ein lokales virtualenv zu erstellen, damit die IDE die Abhängigkeiten erkennen kann.
+
+```bash
+pipenv install
+```
+
+
+## Datenschutz
 Es gelten die Facebook-Datenschutz-Regeln. Falls Nutzer sich für Push-Nachrichten anmelden, speichert Sportsfreund eine PSID (page specific id). Diese ID identifiziert den User nur im Chat mit Sportsfreund und hat sonst keine Bedeutung für Facebook.
-Um entscheiden zu können, welche Antwort Sportsfreund  dem Nutzer sendet, schickt Sportsfreund den Text der Nachricht und die psid zu api.ai (Google Assistant). 
-Alleine kann Sportsfreund nichts lernen. Deshalb schauen sich Menschen die Fragen an, die Sportsfreund gestellt werden und machen Sportsfreund schlauer. 
+Um entscheiden zu können, welche Antwort Sportsfreund  dem Nutzer sendet, schickt Sportsfreund den Text der Nachricht und die psid zu api.ai (Google Assistant).
+Alleine kann Sportsfreund nichts lernen. Deshalb schauen sich Menschen die Fragen an, die Sportsfreund gestellt werden und machen Sportsfreund schlauer.
 Darüber hinaus werden keine Daten gezogen oder weiterverwendet.
 Zu den Datenschutzbestimmungen des "Westdeutschen Rundfunks": http://www1.wdr.de/hilfe/datenschutz102.html
 
-## Daten-Quellen / Credits 
-- WDR-Kandidatencheck http://kandidatencheck.wdr.de/kandidatencheck/
-- abgeordnetenwatch.de https://www.abgeordnetenwatch.de/
-- Wahlkompass Digitales http://wahlkompass-digitales.de/
-- Bundeswahlleiter https://www.bundeswahlleiter.de/
-- infratest dimap https://www.infratest-dimap.de/
-- Homepages der Parteien
+## Daten-Quellen / Credits
 - Sportsfreund arbeitet in Kooperation mit Novi, dem Nachrichten-Bot von Funk: https://www.funk.net/
-- Sportsfreund hat sich beim WDR-Projekt "Wörter der Wahl" bedient: https://github.com/wdr-data/woerter-der-wahl
 - Sportsfreund nutzt api.ai (Google Assistant) um die Absichten der Nutzer (intents) zu klassifizieren. Übergeben wird die PSID (Page Specific ID) und der Nachrichtentext.
 
-## Rechtliches und Lizenzen 
+## Rechtliches und Lizenzen
 
 #### Lizenz
 
@@ -99,13 +117,12 @@ Python (Source-Code oder aufbereitet) ist bei Beibehaltung des Lizenztextes unte
 
 Für Grafiken wird kein Nutzungsrecht eingeräumt.
 
-Das Urheberrecht der verwendeten Wahlprogramme liegt bei den Parteien. Für die Wahlprogramme wird kein Nutzungsrecht eingeräumt. 
+Das Urheberrecht der verwendeten Wahlprogramme liegt bei den Parteien. Für die Wahlprogramme wird kein Nutzungsrecht eingeräumt.
 
 #### Urheberrecht
 
 Copyright Westdeutscher Rundfunk Köln
 
 
-## Gewähleistungsausschluss 
+#### Gewähleistungsausschluss
 Es besteht keinerlei Gewährleistung für das Programm, soweit dies gesetzlich zulässig ist. Sofern nicht anderweitig schriftlich bestätigt, stellen die Urheberrechtsinhaber und/oder Dritte das Programm so zur Verfügung, „wie es ist“, ohne irgendeine Gewährleistung. Das volle Risiko bezüglich Qualität und Leistungsfähigkeit des Programms liegt bei Ihnen.
-
