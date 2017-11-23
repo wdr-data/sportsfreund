@@ -73,7 +73,7 @@ def make_event_handler():
 
         # info.match.calender
         ApiAiHandler(calender.api_next, 'info.match.calender.next'),
-
+        PayloadHandler(calender.pl_next, ['calender.next']),
         # dirty
         ApiAiHandler(dirty.force_start, 'dirty.force_start'),
 
