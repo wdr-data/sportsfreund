@@ -105,9 +105,6 @@ class MatchMeta(Model):
     @classmethod
     def search_last(cls, sport=None, discipline=None):
 
-        if sport is None and discipline is None:
-            raise ValueError('sport and discipline can not both be None')
-
         if sport is not None:
             id = cls.TOPIC_IDS[sport]
             cls.load_feed(id)
