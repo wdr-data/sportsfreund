@@ -34,12 +34,12 @@ def api_request(feed, params):
 
         # empty dict
         if not result:
-            raise ValueError('Feed %s is empty')
+            raise ValueError('Feed %s is empty' % feed_portion)
 
         return result
 
     elif r.status_code == 200:
-        raise ValueError('Feed %s is empty')
+        raise ValueError('Feed %s is empty' % feed_portion)
     else:
         raise ValueError('Feed %s failed to load with status code %s'
                          % (feed_portion, r.status_code))
