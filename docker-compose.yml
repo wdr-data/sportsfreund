@@ -9,7 +9,7 @@ services:
     environment:
       DEBUG: "True"
       DATABASE_URL: "postgres://postgres:hackme@db:5432/postgres"
-      MONGODB_URI: "mongodb://mongo:27017/"
+      MONGODB_URI: "mongodb://mongo:27017/main"
     ports:
       - "8080:8080"
     volumes:

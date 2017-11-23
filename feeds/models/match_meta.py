@@ -2,11 +2,9 @@ from time import time
 from datetime import datetime
 
 from .. import api
-from lib.mongodb import client as mongo
+from lib.mongodb import db
 from .model import Model
 from .disciplines_alias import DISCIPLINE_ALIASES
-
-db = mongo.main
 
 
 class MatchMeta(Model):

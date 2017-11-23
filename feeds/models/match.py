@@ -1,8 +1,6 @@
 from .. import api
-from lib.mongodb import client as mongo
+from lib.mongodb import db
 from .model import Model
-
-db = mongo.main
 
 
 class Match(Model):
