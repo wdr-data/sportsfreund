@@ -15,7 +15,8 @@ class Match(Model):
         """Make the inner 'match' object the new outer object and move 'match_result_at' in it"""
 
         match['match']['match_result_at'] = match['match_result_at']
+        match = match['match']
         match['datetime'] = datetime.strptime(
             '%s %s' % (match['match_date'], match['match_time']),
             '%Y-%m-%d %H:%M')
-        return match['match']
+        return match
