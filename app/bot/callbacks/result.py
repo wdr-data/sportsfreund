@@ -25,7 +25,7 @@ def api_winner(event, parameters, **kwargs):
     if discipline is None:
         discipline = asked_match.round.name
 
-    if asked_match.finnished == 'yes':
+    if asked_match.finished == 'yes':
         results = asked_match.match_result
 
         winner_teams = [Team.by_id(winner.team_id) for winner in results[:3]]
@@ -64,23 +64,21 @@ def api_podium(event, parameters, **kwargs):
         results = asked_match.match_result
         winner_teams = [Team.by_id(winner.team_id) for winner in results[:3]]
 
-        send_text(sender_id,
-                  'Ergebnis beim {discipline} in {city}, {country} am {date}:\n'
-                  '1. {winner_1}\n2. {winner_2}\n3. {winner_3}'.format(
-                      discipline=discipline,
-                      city=asked_match.venue.town.name,
-                      country=asked_match.venue.country.name,
-                      date=asked_match.date.strftime('%d.%m.%Y'),
-                      winner_1=' '.join([winner_teams[0].name,
-                                        flag(winner_teams[0].country.iso),
-                                        winner_teams[0].country.code]),
-                      winner_2=' '.join([winner_teams[1].name,
-                                        flag(winner_teams[1].country.iso),
-                                        winner_teams[1].country.code]),
-                      winner_3=' '.join([winner_teams[2].name,
-                                        flag(winner_teams[2].country.iso),
-                                        winner_teams[2].country.code]),
-                  ))
+        reply = 'Ergebnis beim {discipline} in {town}, {country} am {date}:\n'.format(
+            discipline=discipline,
+            town=match_meta.town,
+            country=match_meta.country,
+            date=match_meta.datetime.date.strftime('%d.%m.%Y'))
+
+        reply += '\n'.join(
+            '{i}. {winner}'.format(
+                i=i + 1,
+                winner=' '.join([winner_team.name,
+                                 flag(winner_team.country.iso),
+                                 winner_team.country.code]))
+            for i, winner_team in enumerate(winner_teams))
+
+        send_text(sender_id, reply)
     else:
         send_text(sender_id,
                   'Das Event wurde noch nicht beendet. Frage später erneut.')
