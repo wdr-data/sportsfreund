@@ -1,6 +1,6 @@
 
 import threading
-import json
+import re
 
 from .handler import Handler
 
@@ -19,14 +19,18 @@ class ApiAiHandler(Handler):
             processed by this handler.
         intent (:obj:`str`): Intent name to handle
         min_score (:obj:`float`): Minimum score required
+        follow_up (:obj:`bool`): If set to `True`, accept all intents that match the pattern
+            "{intent}( - .*)?"
 
     """
 
-    def __init__(self, callback, intent, min_score=0.0):
+    def __init__(self, callback, intent, min_score=0.0, follow_up=False):
         super().__init__(callback)
 
         self.intent = intent
         self.min_score = min_score
+        self.follow_up = follow_up
+        self.follow_up_pattern = re.compile(re.escape(self.intent) + r'( - .*)?$')
 
         # We use this to carry data from check_event to handle_event in multi-threaded environments
         self.local = threading.local()
@@ -59,7 +63,11 @@ class ApiAiHandler(Handler):
             self.local.fulfillment = result['fulfillment']
             self.local.score = score
 
-            return intent == self.intent and score >= self.min_score
+            if not self.follow_up:
+                return intent == self.intent and score >= self.min_score
+            else:
+                return (re.match(self.follow_up_pattern, intent)
+                        and score >= self.min_score)
 
         else:
             return False
