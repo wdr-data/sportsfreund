@@ -13,9 +13,9 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./app:/app
-      - ./lib:/pythonpkg/lib
-      - ./feeds:/pythonpkg/feeds
+      - ./app:/app:ro
+      - ./lib:/pythonpkg/lib:ro
+      - ./feeds:/pythonpkg/feeds:ro
     depends_on:
       - db
       - mongo
@@ -28,9 +28,9 @@ services:
     environment:
       DATABASE_URL: "postgres://postgres:hackme@db:5432/postgres"
     volumes:
-      - ./app:/app
-      - ./lib:/pythonpkg/lib
-      - ./feeds:/pythonpkg/feeds
+      - ./app:/app:ro
+      - ./lib:/pythonpkg/lib:ro
+      - ./feeds:/pythonpkg/feeds:ro
     depends_on:
       - db
   db:
