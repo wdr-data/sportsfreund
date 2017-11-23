@@ -101,7 +101,7 @@ class MatchMeta(Model):
         return True
 
     @classmethod
-    def search_last(cls, sport=None, discipline=None):
+    def _search(cls, base_filter, sport, discipline):
 
         if sport is not None:
             id = cls.TOPIC_IDS[sport]
@@ -109,11 +109,7 @@ class MatchMeta(Model):
         else:
             cls.logger.warning('TODO check feeds with only discipline')
 
-        now = datetime.now()
-
-        filter = {
-            'datetime': {'$lte': now},
-        }
+        filter = base_filter.copy()
 
         if sport is not None:
             filter['sport'] = sport
@@ -121,9 +117,69 @@ class MatchMeta(Model):
         if discipline is not None:
             filter['discipline_short'] = discipline
 
-        cursor = cls.collection.find(filter).sort([("datetime", -1)]).limit(1)
+        return cls.collection.find(filter)
+
+    @classmethod
+    def search_last(cls, sport=None, discipline=None):
+        """
+        Searches the last match and returns details about it
+
+        :param sport: Filter by the name of the sport (eg. "Ski Alpin")
+        :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
+        :return: A `MatchMeta` object of the corresponding match, or `None` if no match was found
+        """
+
+        now = datetime.now()
+
+        filter = {
+            'datetime': {'$lte': now},
+        }
+
+        cursor = cls._search(filter, sport, discipline).sort([("datetime", -1)]).limit(1)
 
         if cursor and cursor.count():
             result = cursor.next()
             cursor.close()
             return cls(**result)
+
+    @classmethod
+    def search_next(cls, sport=None, discipline=None):
+        """
+        Searches the next match and returns details about it
+
+        :param sport: Filter by the name of the sport (eg. "Ski Alpin")
+        :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
+        :return: A `MatchMeta` object of the corresponding match, or `None` if no match was found
+        """
+
+        now = datetime.now()
+
+        filter = {
+            'datetime': {'$gte': now},
+        }
+
+        cursor = cls._search(filter, sport, discipline).sort([("datetime", 1)]).limit(1)
+
+        if cursor and cursor.count():
+            result = cursor.next()
+            cursor.close()
+            return cls(**result)
+
+    @classmethod
+    def search_date(cls, date, sport=None, discipline=None):
+        """
+        Searches for matches on a specific day and returns details about them
+
+        :param date: A `datetime.date` object specifying the date on which to search
+        :param sport: Filter by the name of the sport (eg. "Ski Alpin")
+        :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
+        :return: A list of `MatchMeta` objects
+        """
+
+        filter = {
+            'match_date': date.strftime('%Y-%m-%d'),
+        }
+
+        cursor = cls._search(filter, sport, discipline).sort([("datetime", 1)])
+
+        return [cls(**result) for result in cursor]
