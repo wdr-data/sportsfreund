@@ -19,6 +19,11 @@ def api_winner(event, parameters, **kwargs):
     sport = parameters.get('sport')
     discipline = parameters.get('discipline')
 
+    if not discipline and not sport:
+        send_text(sender_id,
+                  'Gewonnen? Biathlon oder Ski Alpin?')
+        return
+
     match_meta = MatchMeta.search_last(discipline=discipline or None, sport=sport or None)
     asked_match = Match.by_id(match_meta.id)
 

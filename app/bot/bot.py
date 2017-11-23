@@ -68,8 +68,8 @@ def make_event_handler():
         ApiAiHandler(general.api_discipline,'info.general.discipline'),
 
         # info.match.result
-        ApiAiHandler(result.api_winner ,'info.match.result.winner'),
-        ApiAiHandler(result.api_podium, 'info.match.result.podium'),
+        ApiAiHandler(result.api_winner ,'info.match.result.winner', follow_up=True),
+        ApiAiHandler(result.api_podium, 'info.match.result.podium', follow_up=True),
 
         # info.match.calender
         ApiAiHandler(calender.api_next, 'info.match.calender.next'),
