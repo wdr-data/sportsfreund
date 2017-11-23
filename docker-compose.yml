@@ -15,6 +15,7 @@ services:
       S3_BUCKET: "filestorage"
       S3_ENDPOINT: "http://storage:9000"
       S3_DOMAIN: "http://localhost:9000/filestorage"
+      GUNICORN_ARGS: "--reload"
     ports:
       - "8080:8080"
     volumes:

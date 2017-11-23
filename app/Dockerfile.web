@@ -26,7 +26,7 @@ USER webuser
 EXPOSE 8080
 ENV PORT=8080
 ENV LOG_LEVEL=info
-ENV GUNICORN_TIMEOUT=30
+ENV GUNICORN_ARGS ""
 
 ENTRYPOINT ["sh", "-c"]
-CMD ["gunicorn -b :$PORT -k 'eventlet' main.wsgi --capture-output --log-file - --log-level $LOG_LEVEL --timeout $GUNICORN_TIMEOUT"]
+CMD ["gunicorn -b :$PORT -k 'eventlet' main.wsgi --capture-output --log-file - --log-level $LOG_LEVEL $GUNICORN_ARGS"]
