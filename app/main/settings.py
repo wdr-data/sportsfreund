@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 import dj_database_url
+from urllib.parse import urlparse
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -130,11 +132,25 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL[1:])
 STATIC_URL = os.path.join(URL_PREFIX, STATIC_URL[1:])
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_ACCESS_KEY_ID = os.environ.get('S3_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = os.environ.get('S3_ACCESS_SECRET')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET')
+AWS_AUTO_CREATE_BUCKET = False
+try:
+    AWS_S3_ENDPOINT_URL = os.environ['S3_ENDPOINT']
+except KeyError:
+    pass
+try:
+    aws_url = urlparse(os.environ['S3_DOMAIN'])
+    AWS_S3_SECURE_URLS = False
+    AWS_S3_URL_PROTOCOL = aws_url.scheme + ':'
+    AWS_S3_CUSTOM_DOMAIN = aws_url.netloc + aws_url.path
+except KeyError:
+    pass
+S3_USE_SIGV4 = True
 
-MEDIA_URL = '/static/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL[1:])
-MEDIA_URL = os.path.join(URL_PREFIX, MEDIA_URL[1:])
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Error reporting on Sentry.io
 if os.environ.get('SENTRY_URL') is not None:

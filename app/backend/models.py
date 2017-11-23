@@ -86,8 +86,7 @@ class Report(models.Model):
 
     def update_attachment(self):
         if str(self.media):
-            url = settings.SITE_URL + settings.MEDIA_URL + str(self.media)
-            attachment_id = upload_attachment(url)
+            attachment_id = upload_attachment(self.media.url)
             self.attachment_id = attachment_id
         else:
             self.attachment_id = None
@@ -113,8 +112,7 @@ class ReportFragment(models.Model):
 
     def update_attachment(self):
         if str(self.media):
-            url = settings.SITE_URL + settings.MEDIA_URL + str(self.media)
-            attachment_id = upload_attachment(url)
+            attachment_id = upload_attachment(self.media.url)
             self.attachment_id = attachment_id
         else:
             self.attachment_id = None
@@ -159,8 +157,7 @@ class Wiki(models.Model):
 
     def update_attachment(self):
         if str(self.media):
-            url = settings.SITE_URL + settings.MEDIA_URL + str(self.media)
-            attachment_id = upload_attachment(url)
+            attachment_id = upload_attachment(self.media.url)
             self.attachment_id = attachment_id
         else:
             self.attachment_id = None
@@ -185,8 +182,7 @@ class Info(models.Model):
 
     def update_attachment(self):
         if str(self.media):
-            url = settings.SITE_URL + settings.MEDIA_URL + str(self.media)
-            attachment_id = upload_attachment(url)
+            attachment_id = upload_attachment(self.media.url)
             self.attachment_id = attachment_id
         else:
             self.attachment_id = None
@@ -237,8 +233,7 @@ class Story(models.Model):
 
     def update_attachment(self):
         if str(self.media):
-            url = settings.SITE_URL + settings.MEDIA_URL + str(self.media)
-            attachment_id = upload_attachment(url)
+            attachment_id = upload_attachment(self.media.url)
             self.attachment_id = attachment_id
         else:
             self.attachment_id = None
@@ -268,8 +263,7 @@ class StoryFragment(models.Model):
 
     def update_attachment(self):
         if str(self.media):
-            url = settings.SITE_URL + settings.MEDIA_URL + str(self.media)
-            attachment_id = upload_attachment(url)
+            attachment_id = upload_attachment(self.media.url)
             self.attachment_id = attachment_id
         else:
             self.attachment_id = None

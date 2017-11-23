@@ -74,6 +74,14 @@ Für den Produktionsbetrieb werden zudem folgende Komponenten benötigt:
 - PostgreSQL (Uri in `DATABASE_URL` hinterlegen)
 - MongoDB (Uri in `MONGODB_URI` hinterlegen)
 - Redis (Uri in `REDIS_URL` hinterlegen)
+- S3 Bucket mit dieser Konfiguration:
+  ```
+  S3_ACCESS_KEY    # S3 Access Key
+  S3_ACCESS_SECRET # S3 Access Secret
+  S3_BUCKET        # S3 Bucket Name
+  S3_ENDPOINT      # S3 Endpunkt (optional - für alternative Storages)
+  S3_DOMAIN        # S3 Public Domain für URLs (optional - für alternative Storages)
+  ```
 
 Diese Applikation basiert auf Docker-Containern.
 Zum Produktions-Betrieb kann man sich an der Datei [`docker-compose.yml`](/docker-compose.yml) orientieren,

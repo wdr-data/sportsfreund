@@ -32,6 +32,8 @@ whitenoise = "*"
 pymongo = "*"
 eventlet = "*"
 raven = "*"
+django-storages = "*"
+"boto3" = "*"
 
 
 [dev-packages]
