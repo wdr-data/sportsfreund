@@ -17,7 +17,7 @@ from .callbacks.default import (
     get_started, start_message, greetings, push, push_step, subscribe, unsubscribe, share_bot,
     apiai_fulfillment, wiki, countdown, korea_standard_time, story, story_payload, report,
     report_step)
-from .callbacks import result
+from .callbacks import result, calender
 from .callbacks.shared import get_push, schema
 
 #dirty
@@ -50,32 +50,29 @@ def make_event_handler():
         PayloadHandler(share_bot, ['share_bot']),
         ApiAiHandler(share_bot, 'share_bot'),
 
-        ApiAiHandler(push, 'push'),
+        ApiAiHandler(push, 'push.highlight'),
         PayloadHandler(push_step, ['push', 'report', 'next_state']),
 
-        ApiAiHandler(report, 'meldung'),
+        ApiAiHandler(report, 'push.report'),
         PayloadHandler(report_step, ['report', 'next_state']),
 
         ApiAiHandler(korea_standard_time, 'korea_standard_time'),
         ApiAiHandler(countdown, 'countdown'),
         ApiAiHandler(wiki, 'wiki'),
 
-        #info.match.result
+        #story
+        PayloadHandler(story_payload, ['story', 'fragment']),
+
+        # info.match.result
         ApiAiHandler(result.api_winner ,'info.match.result.winner'),
         ApiAiHandler(result.api_podium, 'info.match.result.podium'),
 
-        # dirty
-        ApiAiHandler(dirty.results_ski_alpin_api,'ergebnis'),
-        ApiAiHandler(dirty.world_cup_standing_api,'weltcupstand'),
-        ApiAiHandler(dirty.next_event_api,'event kalender'),
-        ApiAiHandler(dirty.next_event_api,'event kalender context'),
-        ApiAiHandler(dirty.athlete_api,'athlete'),
-        PayloadHandler(dirty.athlete,['athlete']),
-        PayloadHandler(dirty.fun_fact,['fun_fact']),
-        PayloadHandler(dirty.follow,['follow']),
-        ApiAiHandler(dirty.force_start, 'force_start'),
+        # info.match.calender
+        ApiAiHandler(calender.api_next, 'info.match.calender.next'),
 
-        PayloadHandler(story_payload, ['story', 'fragment']),
+        # dirty
+        ApiAiHandler(dirty.force_start, 'dirty.force_start'),
+
 
         TextHandler(apiai_fulfillment, '.*'),
     ]
