@@ -22,6 +22,15 @@ class MatchMeta(Model):
         'Biathlon': BIATHLON,
     }
 
+    def __init__(self, **kwargs):
+        """
+        Match metadata model. Do not create instances using this constructor, only use the
+        provided factory methods.
+
+        @DynamicAttrs
+        """
+        super().__init__(**kwargs)
+
     @classmethod
     def transform(cls, match):
         """Make the inner 'match' object the new outer object and move 'match_result_at' in it"""

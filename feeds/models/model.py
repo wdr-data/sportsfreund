@@ -16,6 +16,9 @@ class ModelList(list):
 
 
 class Model(dict):
+    """
+    @DynamicAttrs
+    """
 
     collection = None
     api_function = None
