@@ -29,6 +29,8 @@ services:
       DATABASE_URL: "postgres://postgres:hackme@db:5432/postgres"
     volumes:
       - ./app:/app
+      - ./lib:/pythonpkg/lib
+      - ./feeds:/pythonpkg/feeds
     depends_on:
       - db
   db:
