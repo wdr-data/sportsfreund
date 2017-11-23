@@ -29,4 +29,4 @@ ENV LOG_LEVEL=info
 ENV GUNICORN_TIMEOUT=30
 
 ENTRYPOINT ["sh", "-c"]
-CMD ["gunicorn -b :$PORT -k 'eventlet' main.wsgi --log-file - --log-level $LOG_LEVEL --timeout $GUNICORN_TIMEOUT"]
+CMD ["gunicorn -b :$PORT -k 'eventlet' main.wsgi --capture-output --log-file - --log-level $LOG_LEVEL --timeout $GUNICORN_TIMEOUT"]

@@ -142,3 +142,20 @@ if os.environ.get('SENTRY_URL') is not None:
     RAVEN_CONFIG = {
         'dsn': os.environ.get('SENTRY_URL'),
     }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    }
+}
