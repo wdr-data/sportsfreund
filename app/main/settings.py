@@ -132,7 +132,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL[1:])
 STATIC_URL = os.path.join(URL_PREFIX, STATIC_URL[1:])
 
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+DEFAULT_FILE_STORAGE = 'main.custom_storages.S3BotoRandomNameStorage'
 AWS_ACCESS_KEY_ID = os.environ.get('S3_ACCESS_KEY')
 AWS_SECRET_ACCESS_KEY = os.environ.get('S3_ACCESS_SECRET')
 AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET')
