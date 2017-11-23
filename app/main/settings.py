@@ -137,6 +137,7 @@ AWS_ACCESS_KEY_ID = os.environ.get('S3_ACCESS_KEY')
 AWS_SECRET_ACCESS_KEY = os.environ.get('S3_ACCESS_SECRET')
 AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET')
 AWS_AUTO_CREATE_BUCKET = False
+AWS_QUERYSTRING_AUTH = False
 try:
     AWS_S3_ENDPOINT_URL = os.environ['S3_ENDPOINT']
 except KeyError:
