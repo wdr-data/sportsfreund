@@ -31,6 +31,14 @@ class MatchMeta(Model):
         """
         super().__init__(**kwargs)
 
+    @property
+    def town(self):
+        return self.venue.town.name
+
+    @property
+    def country(self):
+        return self.venue.country.name
+
     @classmethod
     def by_id(cls, id, clear_cache=False):
         raise NotImplementedError
