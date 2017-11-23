@@ -12,6 +12,6 @@ def api_next(event, parameters, **kwargs):
     sport = parameters.get('sport')
     discipline = parameters.get('discipline')
 
-    send_text(sender_id, 'Hier gibt es bald den das nächste Event')
+    send_text(sender_id, 'Hier gibt es bald das nächste Event')
 
 

@@ -17,7 +17,7 @@ from .callbacks.default import (
     get_started, start_message, greetings, push, push_step, subscribe, unsubscribe, share_bot,
     apiai_fulfillment, wiki, countdown, korea_standard_time, story, story_payload, report,
     report_step)
-from .callbacks import result, calender
+from .callbacks import result, calender, general
 from .callbacks.shared import get_push, schema
 
 #dirty
@@ -62,6 +62,10 @@ def make_event_handler():
 
         #story
         PayloadHandler(story_payload, ['story', 'fragment']),
+
+        # info.general
+        ApiAiHandler(general.api_sport,'info.general.sport'),
+        ApiAiHandler(general.api_discipline,'info.general.discipline'),
 
         # info.match.result
         ApiAiHandler(result.api_winner ,'info.match.result.winner'),
