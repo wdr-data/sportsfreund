@@ -10,7 +10,7 @@ def api_sport(event,parameters,**kwargs):
 
 def api_discipline(event,parameters,**kwargs):
     sender_id = event['sender']['id']
-    discipline = parameters.get('sport')
+    discipline = parameters.get('discipline')
 
     send_text(sender_id,
               'Infos zum '+ discipline)

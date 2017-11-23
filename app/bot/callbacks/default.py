@@ -61,13 +61,18 @@ def korea_standard_time(event, **kwargs):
 def get_started(event, **kwargs):
     sender_id = event['sender']['id']
     reply = """
-Tach, ich bin Sportsfreund, ein Facebook Messenger Dienst der Sportschau.
-Meine Leidenschaft zur Zeit: Wintersport und Daten. Noch bin ich in der Testphase und kenne mich deshalb nur mit Wintersport aus."""
+Hallo, ich bin der Wintersport Dienst der Sportschau. Im Moment kenne ich nur Ski-Alpin und Biathlon
+ Ergebnisse, da ich noch entwickelt werde. Was möchtest Du:"""
     next_state = 'step_one'
 
     send_buttons(sender_id, reply,
                  buttons=[
-                    button_postback('Fragt mich schlau', {'start_message': next_state}),
+                    button_postback('Nachrichten bekommen',
+                                    ['subscribe']
+                                    ),
+                    button_postback('Mich etwas fragen',
+                                    {'start_message': next_state}
+                                    ),
                  ])
 
 
@@ -77,11 +82,13 @@ def start_message(event, payload, **kwargs):
 
     if state == 'step_one':
         reply = """
-Je mehr Fragen Ihr mir nach Ergebnissen, Sportlern, Live-Streams oder Sportstätten stellt, desto schneller lerne ich dazu.
-Schreibt mir dafür einfach eine Nachricht. Mein Ziel: Bei den Olympischen Winterspielen euer Freund und Helfer zu werden - Immer da, wenn Ihr etwas wissen wollt."""
+Wenn Du mich etwas fragen möchtest, schreib mir eine Nachricht. Du kannst zum Beispiel schreiben: 'Wer hat beim Ski-Alpin gewonnen?' oder 'Ski-Alpin Ergebnis'
+"""
         send_buttons(sender_id, reply,
                      buttons=[
-                        button_postback('Highlights als Abo', {'start_message': 'step_two'}),
+                        #button_postback('Ergebnis letztes Rennen', {'start_message': 'step_two'}),
+                        button_postback('Ergebnis letztes Rennen', {'start_message': 'step_two'}),
+
                      ])
     elif state == 'step_two':
         reply = """
@@ -190,10 +197,7 @@ def subscribe(event, **kwargs):
         FacebookUser.objects.create(uid=user_id)
         logger.debug('subscribed user with ID ' + str(FacebookUser.objects.latest('add_date')))
         reply = """
-Danke für deine Anmeldung! Du erhältst nun täglich um 18 Uhr dein Update.
-Möchtest du jetzt das aktuellste Update aufrufen, klicke auf \'Aktuelle Nachricht\'.
-Wenn du irgendwann genug Informationen hast, kannst du dich über das Menü natürlich jederzeit
-wieder abmeden."""
+Das hat geklappt. Du bist jetzt für die Ski-Alpin und Biathlon News angemeldet. Du kannst dich über das Menü wieder abmelden."""
 
         if buttons:
             send_buttons(user_id, reply, buttons=buttons)
