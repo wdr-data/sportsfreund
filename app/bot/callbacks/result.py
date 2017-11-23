@@ -19,28 +19,31 @@ def api_winner(event, parameters, **kwargs):
     sport = parameters.get('sport')
     discipline = parameters.get('discipline')
 
-    match_id = MatchMeta.search_last(discipline=discipline or None, sport=sport or None)
-    asked_match = Match.by_id(match_id)
+    match_meta = MatchMeta.search_last(discipline=discipline or None, sport=sport or None)
+    asked_match = Match.by_id(match_meta.id)
 
-    if discipline is None:
-        discipline = asked_match.round.name
+    if not discipline:
+        discipline = match_meta.discipline
+
+    if not sport:
+        sport = match_meta.sport
 
     if asked_match.finished == 'yes':
         results = asked_match.match_result
 
-        winner_teams = [Team.by_id(winner.team_id) for winner in results[:3]]
+        winner_team = Team.by_id(results[0].team_id)
 
         send_text(sender_id,
                   '{winner} hat das {sport} Rennen in der Disziplin {discipline} '
-                  'in {city}, {country} am {date} gewonnen.'.format(
-                      winner=' '.join([winner_teams[0].name,
-                                       flag(winner_teams[0].country.iso),
-                                       winner_teams[0].country.code]),
+                  'in {town}, {country} am {date} gewonnen.'.format(
+                      winner=' '.join([winner_team.name,
+                                       flag(winner_team.country.iso),
+                                       winner_team.country.code]),
                       sport=sport,
                       discipline=discipline,
-                      city=asked_match.venue.town.name,
-                      country=asked_match.venue.country.name,
-                      date=asked_match.date.strftime('%d.%m.%Y'),
+                      town=match_meta.town,
+                      country=match_meta.country,
+                      date=match_meta.datetime.date().strftime('%d.%m.%Y'),
 
                   ))
     else:
@@ -57,8 +60,11 @@ def api_podium(event, parameters, **kwargs):
     logger.debug('Match ID looking for: ' + str(match_meta.id))
     asked_match = Match.by_id(match_meta.id)
 
-    if discipline is None:
-        discipline = asked_match.round.name
+    if not discipline:
+        discipline = match_meta.discipline
+
+    if not sport:
+        sport = match_meta.sport
 
     if asked_match.finished == 'yes':
         results = asked_match.match_result
@@ -68,7 +74,7 @@ def api_podium(event, parameters, **kwargs):
             discipline=discipline,
             town=match_meta.town,
             country=match_meta.country,
-            date=match_meta.datetime.date.strftime('%d.%m.%Y'))
+            date=match_meta.datetime.date().strftime('%d.%m.%Y'))
 
         reply += '\n'.join(
             '{i}. {winner}'.format(
