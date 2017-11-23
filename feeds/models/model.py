@@ -1,9 +1,10 @@
 from time import time
 import logging
 
+
 class ModelList(list):
-    def __getitem__(self, index):
-        item = super().__getitem__(index)
+    def __getitem__(self, key):
+        item = super().__getitem__(key)
 
         if type(item) is dict:
             return Model(item)
@@ -13,6 +14,20 @@ class ModelList(list):
 
         else:
             return item
+
+    def __iter__(self):
+        for item in super().__iter__():
+            if type(item) is dict:
+                yield Model(item)
+
+            elif type(item) is list:
+                yield ModelList(item)
+
+            else:
+                yield item
+
+    def __getslice__(self, i, j):
+        return self.__getitem__(slice(i, j))
 
 
 class Model(dict):
