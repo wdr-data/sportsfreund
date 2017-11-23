@@ -32,13 +32,6 @@ class MatchMeta(Model):
         super().__init__(**kwargs)
 
     @classmethod
-    def transform(cls, match):
-        """Make the inner 'match' object the new outer object and move 'match_result_at' in it"""
-
-        match['match']['match_result_at'] = match['match_result_at']
-        return match['match']
-
-    @classmethod
     def by_id(cls, id, clear_cache=False):
         raise NotImplementedError
 
@@ -203,6 +196,39 @@ class MatchMeta(Model):
         filter = {
             'match_date': date.isoformat(),
         }
+
+        cursor = cls._search(filter, sport, discipline, town, country).sort([("datetime", 1)])
+
+        return [cls(**result) for result in cursor]
+
+    @classmethod
+    def search_range(cls, *, from_date=None, until_date=None, sport=None, discipline=None,
+                     town=None, country=None):
+        """
+        Searches for matches on a specific day and returns details about them
+
+        :param from_date: A `datetime.date` object specifying the earliest date to search
+        :param until_date: A `datetime.date` object specifying the latest date to search
+        :param sport: Filter by the name of the sport (eg. "Ski Alpin")
+        :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
+        :param town: Filter by the name of the town (eg. "Gangneung")
+        :param country: Filter by the name of the country (eg. "Südkorea")
+        :return: A list of `MatchMeta` objects
+        """
+
+        filter = {
+            'datetime': {}
+        }
+
+        if from_date:
+            filter['datetime']['$gte'] = datetime(from_date.year, from_date.month, from_date.day)
+
+        if until_date:
+            filter['datetime']['$lte'] = datetime(
+                until_date.year, until_date.month, until_date.day + 1)
+
+        if not filter['datetime']:
+            del filter['datetime']
 
         cursor = cls._search(filter, sport, discipline, town, country).sort([("datetime", 1)])
 
