@@ -18,6 +18,4 @@ class Match(Model):
         match['datetime'] = datetime.strptime(
             '%s %s' % (match['match_date'], match['match_time']),
             '%Y-%m-%d %H:%M')
-        match['date'] = match['datetime'].date
-        match['time'] = match['datetime'].time
         return match['match']
