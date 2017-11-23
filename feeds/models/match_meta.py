@@ -1,5 +1,5 @@
-from time import time
-from datetime import datetime
+from time import time as time_
+from datetime import datetime, date, time
 
 from .. import api
 from lib.mongodb import db
@@ -75,7 +75,7 @@ class MatchMeta(Model):
 
         # Single-element list at top level
         sp = obj[0]  # sport object
-        now = int(time())
+        now = int(time_())
 
         for co in sp['competition']:
             for se in co['season']:
@@ -95,6 +95,9 @@ class MatchMeta(Model):
                             '%s %s' % (ma['match_date'], ma['match_time']),
                             '%Y-%m-%d %H:%M'
                         )
+
+                        ma['date'] = date.strftime(ma['match_date'], '%Y-%m-%d')
+                        ma['time'] = time.strftime(ma['match_time'], '%H:%M')
                         cls.collection.replace_one({'id': ma['id']}, ma, upsert=True)
 
         cls.logger.info('%s match metas in db', cls.collection.count())
@@ -186,7 +189,7 @@ class MatchMeta(Model):
         """
 
         filter = {
-            'match_date': date.strftime('%Y-%m-%d'),
+            'date': date,
         }
 
         cursor = cls._search(filter, sport, discipline).sort([("datetime", 1)])

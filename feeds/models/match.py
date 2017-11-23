@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date, time
 
 from .. import api
 from lib.mongodb import db
@@ -18,4 +18,6 @@ class Match(Model):
         match['datetime'] = datetime.strptime(
             '%s %s' % (match['match_date'], match['match_time']),
             '%Y-%m-%d %H:%M')
+        match['date'] = date.strftime(match['match_date'], '%Y-%m-%d')
+        match['time'] = time.strftime(match['match_time'], '%H:%M')
         return match['match']
