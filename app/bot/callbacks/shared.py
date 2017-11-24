@@ -23,7 +23,7 @@ NEXT_REPORT_BTN = [
 ]
 
 SKIP_REPORT_BTN = [
-    'Wen interessierts?',
+    'Nächstes Thema',
     'Ist mir egal',
     'Zeig mir was anderes',
 ]

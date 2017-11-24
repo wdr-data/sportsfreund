@@ -13,7 +13,7 @@ def api_next(event, parameters, **kwargs):
     sender_id = event['sender']['id']
     sport = parameters.get('sport')
     discipline = parameters.get('discipline')
-
+    town = parameters.get('town')
     # get_match_id_by_parameter
     if not discipline and not sport:
         send_text(sender_id,
@@ -21,6 +21,19 @@ def api_next(event, parameters, **kwargs):
         return
 
     match_meta = MatchMeta.search_next(discipline=discipline or None, sport=sport or None)
+
+    if not match_meta:
+        if sport and discipline:
+            send_text(sender_id, 'Ähm, sicher, dass es einen {sport} {discipline} gibt? Ich glaub nicht!'.format(
+                sport = sport,
+                discipline = discipline
+            )
+                      )
+            return
+        else:
+            send_text(sender_id,
+                      'Sorry, aber ich hab nix zu deiner Anfrage keinen konkreten Wettkampf in meinem Kalender gefunden.')
+            return
 
     pl_next(event,{'calender.next': match_meta})
 
@@ -34,11 +47,13 @@ def pl_next(event, payload, **kwargs):
 
 
     send_text(sender_id, 'Moment, Ich schau kurz in meinem Kalender...')
-    sleep(5)
+    sleep(3)
     send_text(sender_id,
-              'Ah! Hier steht es ja:\n {discipline} der {gender} in {town} am {date} um {time}'.format(
+              'Ah! Hier hab ich es ja:')
+    send_text(sender_id,
+              '{discipline} {gender} in {town} am {date} um {time}'.format(
                   discipline = match_meta.discipline,
-                  gender = match_meta.gender,
+                  gender = 'der Damen ' if match_meta.gender == 'female' else( 'der Herren' if match_meta.gender == 'male'  else ''),
                   town = match_meta.town,
                   date = match_meta.match_date,
                   time = match_meta.match_time
@@ -46,11 +61,9 @@ def pl_next(event, payload, **kwargs):
               quick_replies=[
                   quick_reply('Ergebnis Dienst',
                               ['subscribe']
-                              ),
-                  quick_reply('Und das nächste?',
-                              {'calender.next': match_meta}
                               )
-              ])
+              ]
+              )
 
 
 
