@@ -79,7 +79,7 @@ def make_event_handler():
 
         # info.match.calender
         ApiAiHandler(calender.api_date, 'info.match.calender.date'),
-        ApiAiHandler(calender.api_next, 'info.match.calender.next'),
+        ApiAiHandler(calender.api_next, 'info.match.calender.next', follow_up=True),
         PayloadHandler(calender.pl_next, ['calender.next']),
 
         # info.olympia

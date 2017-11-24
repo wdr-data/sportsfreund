@@ -3,6 +3,7 @@ from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 
 from time import sleep
+from datetime import datetime
 import logging
 logger = logging.Logger(__name__)
 
@@ -46,16 +47,16 @@ def pl_next(event, payload, **kwargs):
     # get_match_by_match_id
 
 
-    send_text(sender_id, 'Moment, Ich schau kurz in meinem Kalender...')
+    send_text(sender_id, 'Moment, Ich schau kurz in meinen Kalender...')
     sleep(3)
     send_text(sender_id,
               'Ah! Hier hab ich es ja:')
     send_text(sender_id,
-              '{discipline} {gender} in {town} am {date} um {time}'.format(
+              '{date} um {time} Uhr, {discipline} {gender} in {town}'.format(
                   discipline = match_meta.discipline,
                   gender = 'der Damen ' if match_meta.gender == 'female' else( 'der Herren' if match_meta.gender == 'male'  else ''),
                   town = match_meta.town,
-                  date = match_meta.match_date,
+                  date = datetime.strptime(match_meta.match_date, '%Y-%m-%d').strftime('%d.%m.'),
                   time = match_meta.match_time
               ),
               quick_replies=[
