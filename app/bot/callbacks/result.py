@@ -43,44 +43,46 @@ def api_winner(event, parameters, **kwargs):
                                             sport=sport or None, town=town, country=country)
         match_id = [match.id for match in match_meta]
     else:
-        match_meta = MatchMeta.search_last(discipline=discipline or None, sport=sport or None,
-                                           town=town, country=country)
-        match_id = [match_meta.id]
+        match_meta = [MatchMeta.search_last(discipline=discipline or None, sport=sport or None,
+                                           town=town, country=country)]
+        match_id = [match.id for match in match_meta]
+    asked_match = [Match.by_id(id) for id in match_id]
 
-    matches = [Match.by_id(id) for id in match_id]
-    if not matches:
+    if not asked_match:
         send_text(sender_id,
                   'In dem angefragten Zeitraum hat kein Wettkampf in der Disziplin stattgefunden.')
         return
-    asked_match = matches[0]
 
     if not discipline:
-        discipline = match_meta.discipline
+        discipline = [match.discipline for match in match_meta]
 
     if not sport:
-        sport = match_meta.sport
+        sport = [match.sport for match in match_meta]
 
-    if asked_match[0].finished == 'yes':
-        results = asked_match.match_result
+    for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
+        if asked_match[0].finished == 'yes':
+            results = match.match_result
+            winner_team = Team.by_id(results[0].team_id)
 
-        winner_team = Team.by_id(results[0].team_id)
+            send_text(sender_id,
+                      '{winner} hat das {sport} Rennen in der Disziplin {discipline} '
+                      'in {town}, {country} am {date} gewonnen.'.format(
+                          winner=' '.join([winner_team.name,
+                                           flag(winner_team.country.iso),
+                                           winner_team.country.code]),
+                          sport=sport,
+                          discipline=discipline,
+                          town=meta.town,
+                          country=meta.country,
+                          date=meta.datetime.date().strftime('%d.%m.%Y'),
 
-        send_text(sender_id,
-                  '{winner} hat das {sport} Rennen in der Disziplin {discipline} '
-                  'in {town}, {country} am {date} gewonnen.'.format(
-                      winner=' '.join([winner_team.name,
-                                       flag(winner_team.country.iso),
-                                       winner_team.country.code]),
-                      sport=sport,
-                      discipline=discipline,
-                      town=match_meta.town,
-                      country=match_meta.country,
-                      date=match_meta.datetime.date().strftime('%d.%m.%Y'),
-
-                  ))
-    else:
-        send_text(sender_id,
-                  'Das Event wurde noch nicht beendet. Frage später erneut.')
+                      ))
+        else:
+            send_text(sender_id,
+                      'Das Event {sport} {discipline} wurde noch nicht beendet. Frage später erneut.'.format(
+                          sport=sport,
+                          discipline=discipline
+                      ))
 
 
 def api_podium(event, parameters, **kwargs):
@@ -94,55 +96,60 @@ def api_podium(event, parameters, **kwargs):
 
     if date and not period:
         date = datetime.strptime(date, '%Y-%m-%d')
-        match_meta = MatchMeta.search_date(date=date, discipline=discipline or None,
-                                           sport=sport or None, town=town, country=country)
+        match_meta = MatchMeta.search_date(
+            date=date, discipline=discipline or None, sport=sport or None, town=town, country=country)
         match_id = [match.id for match in match_meta]
     elif period and not date:
         from_date = period.split('/')[0]
         from_date = datetime.strptime(from_date, '%Y-%m-%d')
         until_date = period.split('/')[1]
         until_date = datetime.strptime(until_date, '%Y-%m-%d')
-        match_meta = MatchMeta.search_range(from_date=from_date, until_date=until_date, discipline=discipline or None,
-                                            sport=sport or None, town=town, country=country)
+        match_meta = MatchMeta.search_range(
+            from_date=from_date, until_date=until_date, discipline=discipline or None,
+            sport=sport or None, town=town, country=country)
         match_id = [match.id for match in match_meta]
     else:
-        match_meta = MatchMeta.search_last(discipline=discipline or None, sport=sport or None,
-                                           town=town, country=country)
-        match_id = [match_meta.id]
-    matches = [Match.by_id(id) for id in match_id]
-    if not matches:
+        match_meta = [MatchMeta.search_last(
+            discipline=discipline or None, sport=sport or None, town=town, country=country)]
+        match_id = [match.id for match in match_meta]
+    asked_match = [Match.by_id(id) for id in match_id]
+
+    if not asked_match:
         send_text(sender_id,
                   'In dem angefragten Zeitraum hat kein Wettkampf in der Disziplin {discipline} stattgefunden.'.format(
                       discipline=discipline))
         return
-    asked_match = matches[0]
 
     if not discipline:
-        discipline = match_meta.discipline
+        discipline = [match.discipline for match in match_meta]
 
     if not sport:
-        sport = match_meta.sport
+        sport = [match.sport for match in match_meta]
 
-    if asked_match.finished == 'yes':
-        results = asked_match.match_result
-        winner_teams = [Team.by_id(winner.team_id) for winner in results[:3]]
+    for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
+        if match.finished == 'yes':
+            results = match.match_result
+            winner_teams = [Team.by_id(winner.team_id) for winner in results[:3]]
 
-        reply = 'Ergebnis beim {sport} {discipline} in {town}, {country} am {date}:\n'.format(
-            sport=sport,
-            discipline=discipline,
-            town=match_meta.town,
-            country=match_meta.country,
-            date=match_meta.datetime.date().strftime('%d.%m.%Y'))
+            reply = 'Ergebnis beim {sport} {discipline} in {town}, {country} am {date}:\n'.format(
+                sport=sport,
+                discipline=discipline,
+                town=meta.town,
+                country=meta.country,
+                date=meta.datetime.date().strftime('%d.%m.%Y'))
 
-        reply += '\n'.join(
-            '{i}. {winner}'.format(
-                i=i + 1,
-                winner=' '.join([winner_team.name,
-                                 flag(winner_team.country.iso),
-                                 winner_team.country.code]))
-            for i, winner_team in enumerate(winner_teams))
+            reply += '\n'.join(
+                '{i}. {winner}'.format(
+                    i=i + 1,
+                    winner=' '.join([winner_team.name,
+                                     flag(winner_team.country.iso),
+                                     winner_team.country.code]))
+                for i, winner_team in enumerate(winner_teams))
 
-        send_text(sender_id, reply)
-    else:
-        send_text(sender_id,
-                  'Das Event wurde noch nicht beendet. Frage später erneut.')
+            send_text(sender_id, reply)
+        else:
+            send_text(sender_id,
+                      'Das Event {sport} {discipline} wurde noch nicht beendet. Frage später erneut.'.format(
+                          sport=sport,
+                          discipline=discipline
+                      ))
