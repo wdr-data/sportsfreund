@@ -92,7 +92,6 @@ def make_event_handler():
 
     ])
 
-
     def query_api_ai(event):
         """
         Runs the message text through api.ai if the message is a regular text message and returns
@@ -111,6 +110,9 @@ def make_event_handler():
             request.session_id = event['sender']['id']
             response = request.getresponse()
             nlp = json.loads(response.read().decode())
+
+            nlp['result']['parameters'] = {k: v or None for k, v in nlp['result']['parameters']}
+
             logging.debug(nlp)
             return nlp
         else:
