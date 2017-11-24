@@ -35,3 +35,12 @@ def pl_next(event, payload, **kwargs):
                   quick_reply('Und das nächste?', ['calender.next'])
               ])
 
+
+
+def api_date(event, parameters, **kwargs):
+    sender_id = event['sender']['id']
+    date = parameters.get('date')
+    sport = parameters.get('sport')
+
+    if not sport and not date:
+        send_text('')
