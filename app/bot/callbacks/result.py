@@ -31,20 +31,21 @@ def api_winner(event, parameters, **kwargs):
 
     if date and not period:
         date = datetime.strptime(date, '%Y-%m-%d').date()
-        match_meta = MatchMeta.search_date(date=date, discipline=discipline or None,
-                                           sport=sport or None, town=town or None, country=country or None)
+        match_meta = MatchMeta.search_date(date=date, discipline=discipline,
+                                           sport=sport, town=town, country=country)
         match_id = [match.id for match in match_meta]
     elif period and not date:
         from_date = period.split('/')[0]
         from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
         until_date = period.split('/')[1]
         until_date = datetime.strptime(until_date, '%Y-%m-%d').date()
-        match_meta = MatchMeta.search_range(from_date=from_date, until_date=until_date, discipline=discipline or None,
-                                            sport=sport or None, town=town or None, country=country or None)
+        match_meta = MatchMeta.search_range(
+            from_date=from_date, until_date=until_date, discipline=discipline,sport=sport,
+            town=town, country=country)
         match_id = [match.id for match in match_meta]
     else:
-        match_meta = [MatchMeta.search_last(discipline=discipline or None, sport=sport or None,
-                                           town=town or None, country=country or None)]
+        match_meta = [MatchMeta.search_last(discipline=discipline, sport=sport,
+                                           town=town, country=country)]
         match_id = [match.id for match in match_meta]
     asked_match = [Match.by_id(id) for id in match_id]
 
@@ -85,7 +86,8 @@ def api_winner(event, parameters, **kwargs):
                       ))
         else:
             send_text(sender_id,
-                      'Das Event {sport} {discipline} wurde noch nicht beendet. Frage später erneut.'.format(
+                      'Das Event {sport} {discipline} wurde noch nicht beendet. '
+                      'Frage später erneut.'.format(
                           sport=sport,
                           discipline=discipline
                       ))
@@ -103,7 +105,7 @@ def api_podium(event, parameters, **kwargs):
     if date and not period:
         date = datetime.strptime(date, '%Y-%m-%d').date()
         match_meta = MatchMeta.search_date(
-            date=date, discipline=discipline or None, sport=sport or None, town=town or None, country=country or None)
+            date=date, discipline=discipline, sport=sport, town=town, country=country)
         match_id = [match.id for match in match_meta]
     elif period and not date:
         from_date = period.split('/')[0]
@@ -111,19 +113,19 @@ def api_podium(event, parameters, **kwargs):
         until_date = period.split('/')[1]
         until_date = datetime.strptime(until_date, '%Y-%m-%d').date()
         match_meta = MatchMeta.search_range(
-            from_date=from_date, until_date=until_date, discipline=discipline or None,
-            sport=sport or None, town=town or None, country=country or None)
+            from_date=from_date, until_date=until_date, discipline=discipline,
+            sport=sport, town=town, country=country)
         match_id = [match.id for match in match_meta]
     else:
         match_meta = [MatchMeta.search_last(
-            discipline=discipline or None, sport=sport or None, town=town or None, country=country or None)]
+            discipline=discipline, sport=sport, town=town, country=country)]
         match_id = [match.id for match in match_meta]
     asked_match = [Match.by_id(id) for id in match_id]
 
     if not asked_match:
         send_text(sender_id,
-                  'In dem angefragten Zeitraum hat kein Wettkampf in der Disziplin {discipline} stattgefunden.'.format(
-                      discipline=discipline))
+                  'In dem angefragten Zeitraum hat kein Wettkampf in der Disziplin {discipline} '
+                  'stattgefunden.'.format(discipline=discipline))
         return
 
     if not discipline:
@@ -161,7 +163,8 @@ def api_podium(event, parameters, **kwargs):
             send_text(sender_id, reply)
         else:
             send_text(sender_id,
-                      'Das Event {sport} {discipline} wurde noch nicht beendet. Frage später erneut.'.format(
+                      'Das Event {sport} {discipline} wurde noch nicht beendet. '
+                      'Frage später erneut.'.format(
                           sport=sport,
                           discipline=discipline
                       ))
