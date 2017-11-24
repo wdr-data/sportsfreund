@@ -46,7 +46,7 @@ def api_winner(event, parameters, **kwargs):
     else:
         match_meta = [MatchMeta.search_last(discipline=discipline, sport=sport,
                                            town=town, country=country)]
-        match_id = [match.id for match in match_meta]
+        match_id = [match.id for match in match_meta if match]
     asked_match = [Match.by_id(id) for id in match_id]
 
     if not asked_match:
@@ -119,7 +119,7 @@ def api_podium(event, parameters, **kwargs):
     else:
         match_meta = [MatchMeta.search_last(
             discipline=discipline, sport=sport, town=town, country=country)]
-        match_id = [match.id for match in match_meta]
+        match_id = [match.id for match in match_meta if match]
     asked_match = [Match.by_id(id) for id in match_id]
 
     if not asked_match:
