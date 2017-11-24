@@ -17,7 +17,7 @@ from .callbacks.default import (
     get_started, start_message, greetings, push, push_step, subscribe, unsubscribe, share_bot,
     apiai_fulfillment, wiki, countdown, korea_standard_time, story, story_payload, report,
     report_step)
-from .callbacks import result, calender, general
+from .callbacks import result, calender, general, olympia
 from .callbacks.shared import get_push, schema
 from .callbacks import testing
 
@@ -78,8 +78,14 @@ def make_event_handler():
         ApiAiHandler(result.api_podium, 'info.match.result.podium', follow_up=True),
 
         # info.match.calender
+        ApiAiHandler(calender.api_date, 'info.match.calender.date'),
         ApiAiHandler(calender.api_next, 'info.match.calender.next'),
         PayloadHandler(calender.pl_next, ['calender.next']),
+
+        # info.olympia
+        ApiAiHandler(olympia.api_countdown_days, 'info.olympia.countown_days'),
+
+
         # dirty
         ApiAiHandler(dirty.force_start, 'dirty.force_start'),
         TextHandler(apiai_fulfillment, '.*')
