@@ -83,7 +83,7 @@ def make_event_handler():
         PayloadHandler(calender.pl_next, ['calender.next']),
 
         # info.olympia
-        ApiAiHandler(olympia.api_countdown_days, 'info.match.calender.date'),
+        ApiAiHandler(olympia.api_countdown_days, 'info.olympia.countown_days'),
 
 
         # dirty

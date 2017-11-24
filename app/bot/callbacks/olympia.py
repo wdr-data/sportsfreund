@@ -14,4 +14,3 @@ def api_countdown_days(event, **kwargs):
             minutes=(delta.seconds%3600)//60
         )
     send_text(sender_id, reply)
-    send_text('Ich kann dich gerne auf dem Laufenden halten. Meld dich einfach für meinen Olympia Service an.')
