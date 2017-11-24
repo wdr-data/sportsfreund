@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from ..fb import send_text
 from feeds.models.match import Match
@@ -29,17 +30,29 @@ def api_winner(event, parameters, **kwargs):
         return
 
     if date and not period:
+        datetime.strptime(date, '%Y-%m-%d')
         match_meta = MatchMeta.search_date(date=date, discipline=discipline or None,
                                            sport=sport or None, town=town, country=country)
+        match_id = [match.id for match in match_meta]
     elif period and not date:
         from_date = period.split('/')[0]
+        from_date = datetime.strptime(from_date, '%Y-%m-%d')
         until_date = period.split('/')[1]
+        until_date = datetime.strptime(until_date, '%Y-%m-%d')
         match_meta = MatchMeta.search_range(from_date=from_date, until_date=until_date, discipline=discipline or None,
                                             sport=sport or None, town=town, country=country)
+        match_id = [match.id for match in match_meta]
     else:
-        match_meta = MatchMeta.search_last(discipline=discipline or None, sport=sport or None,
-                                           town=town, country=country)
-    asked_match = Match.by_id(match_meta.id)
+        match_meta = [MatchMeta.search_last(discipline=discipline or None, sport=sport or None,
+                                           town=town, country=country)]
+        match_id = [match_meta.id]
+
+    matches = [Match.by_id(id) for id in match_id]
+    if not matches:
+        send_text(sender_id,
+                  'In dem angefragten Zeitraum hat kein Wettkampf in der Disziplin stattgefunden.')
+        return
+    asked_match = matches[0]
 
     if not discipline:
         discipline = match_meta.discipline
@@ -47,13 +60,7 @@ def api_winner(event, parameters, **kwargs):
     if not sport:
         sport = match_meta.sport
 
-    if not asked_match:
-        send_text(sender_id,
-                  'In dem angefragten Zeitraum hat kein Wettkampf in der Disziplin {discipline} stattgefunden.'.format(
-                      discipline=discipline))
-        return
-
-    if asked_match.finished == 'yes':
+    if asked_match[0].finished == 'yes':
         results = asked_match.match_result
 
         winner_team = Team.by_id(results[0].team_id)
@@ -86,29 +93,35 @@ def api_podium(event, parameters, **kwargs):
     country = parameters.get('country')
 
     if date and not period:
+        datetime.strptime(date, '%Y-%m-%d')
         match_meta = MatchMeta.search_date(date=date, discipline=discipline or None,
                                            sport=sport or None, town=town, country=country)
+        match_id = [match.id for match in match_meta]
     elif period and not date:
         from_date = period.split('/')[0]
+        from_date = datetime.strptime(from_date, '%Y-%m-%d')
         until_date = period.split('/')[1]
+        until_date = datetime.strptime(until_date, '%Y-%m-%d')
         match_meta = MatchMeta.search_range(from_date=from_date, until_date=until_date, discipline=discipline or None,
                                             sport=sport or None, town=town, country=country)
+        match_id = [match.id for match in match_meta]
     else:
         match_meta = MatchMeta.search_last(discipline=discipline or None, sport=sport or None,
                                            town=town, country=country)
-    asked_match = Match.by_id(match_meta.id)
+        match_id = [match_meta.id]
+    matches = [Match.by_id(id) for id in match_id]
+    if not matches:
+        send_text(sender_id,
+                  'In dem angefragten Zeitraum hat kein Wettkampf in der Disziplin {discipline} stattgefunden.'.format(
+                      discipline=discipline))
+        return
+    asked_match = matches[0]
 
     if not discipline:
         discipline = match_meta.discipline
 
     if not sport:
         sport = match_meta.sport
-
-    if not asked_match:
-        send_text(sender_id,
-                  'In dem angefragten Zeitraum hat kein Wettkampf in der Disziplin {discipline} stattgefunden.'.format(
-                      discipline=discipline))
-        return
 
     if asked_match.finished == 'yes':
         results = asked_match.match_result
