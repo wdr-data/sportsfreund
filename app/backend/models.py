@@ -1,9 +1,7 @@
-from datetime import date, time, datetime
+from datetime import datetime
 
 from django.db import models
 from django.utils import timezone
-from django.conf import settings
-from django.contrib import messages
 from django.utils.text import slugify
 
 from bot.fb import upload_attachment, UploadFailedError
@@ -41,6 +39,21 @@ class Push(models.Model):
 
     def __str__(self):
         return '%s - %s' % (self.pub_date.strftime('%d.%m.%Y'), self.headline)
+
+    @classmethod
+    def last(cls, *, count=1, offset=0, only_published=True, delivered=False, by_date=True):
+        pushes = cls.objects.all()
+
+        if only_published:
+            pushes = pushes.filter(published=True)
+
+        if not delivered:
+            pushes = pushes.filter(delivered=False)
+
+        if by_date:
+            pushes = pushes.order_by('pub_date')
+
+        return pushes[offset:count]
 
 
 class Report(models.Model):
@@ -90,6 +103,21 @@ class Report(models.Model):
             self.attachment_id = attachment_id
         else:
             self.attachment_id = None
+
+    @classmethod
+    def last(cls, *, count=1, offset=0, only_published=True, delivered=False, by_date=True):
+        reports = cls.objects.all()
+
+        if only_published:
+            reports = reports.filter(published=True)
+
+        if not delivered:
+            reports = reports.filter(delivered=False)
+
+        if by_date:
+            reports = reports.order_by('created')
+
+        return reports[offset:count]
 
 
 class ReportFragment(models.Model):
