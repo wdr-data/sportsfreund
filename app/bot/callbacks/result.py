@@ -18,13 +18,27 @@ def api_winner(event, parameters, **kwargs):
     sender_id = event['sender']['id']
     sport = parameters.get('sport')
     discipline = parameters.get('discipline')
+    date = parameters.get('date')
+    period = parameters.get('date-period')
+    town = parameters.get('town')
+    country = parameters.get('country')
 
     if not discipline and not sport:
         send_text(sender_id,
                   'Gewonnen? Biathlon oder Ski Alpin?')
         return
 
-    match_meta = MatchMeta.search_last(discipline=discipline or None, sport=sport or None)
+    if date and not period:
+        match_meta = MatchMeta.search_date(date=date, discipline=discipline or None,
+                                           sport=sport or None, town=town, country=country)
+    elif period and not date:
+        from_date = period.split('/')[0]
+        until_date = period.split('/')[1]
+        match_meta = MatchMeta.search_range(from_date=from_date, until_date=until_date, discipline=discipline or None,
+                                            sport=sport or None, town=town, country=country)
+    else:
+        match_meta = MatchMeta.search_last(discipline=discipline or None, sport=sport or None,
+                                           town=town, country=country)
     asked_match = Match.by_id(match_meta.id)
 
     if not discipline:
@@ -32,6 +46,12 @@ def api_winner(event, parameters, **kwargs):
 
     if not sport:
         sport = match_meta.sport
+
+    if not asked_match:
+        send_text(sender_id,
+                  'In dem angefragten Zeitraum hat kein Wettkampf in der Disziplin {discipline} stattgefunden.'.format(
+                      discipline=discipline))
+        return
 
     if asked_match.finished == 'yes':
         results = asked_match.match_result
@@ -60,9 +80,22 @@ def api_podium(event, parameters, **kwargs):
     sender_id = event['sender']['id']
     sport = parameters.get('sport')
     discipline = parameters.get('discipline')
+    date = parameters.get('date')
+    period = parameters.get('date-period')
+    town = parameters.get('town')
+    country = parameters.get('country')
 
-    match_meta = MatchMeta.search_last(discipline=discipline or None, sport=sport or None)
-    logger.debug('Match ID looking for: ' + str(match_meta.id))
+    if date and not period:
+        match_meta = MatchMeta.search_date(date=date, discipline=discipline or None,
+                                           sport=sport or None, town=town, country=country)
+    elif period and not date:
+        from_date = period.split('/')[0]
+        until_date = period.split('/')[1]
+        match_meta = MatchMeta.search_range(from_date=from_date, until_date=until_date, discipline=discipline or None,
+                                            sport=sport or None, town=town, country=country)
+    else:
+        match_meta = MatchMeta.search_last(discipline=discipline or None, sport=sport or None,
+                                           town=town, country=country)
     asked_match = Match.by_id(match_meta.id)
 
     if not discipline:
@@ -71,11 +104,18 @@ def api_podium(event, parameters, **kwargs):
     if not sport:
         sport = match_meta.sport
 
+    if not asked_match:
+        send_text(sender_id,
+                  'In dem angefragten Zeitraum hat kein Wettkampf in der Disziplin {discipline} stattgefunden.'.format(
+                      discipline=discipline))
+        return
+
     if asked_match.finished == 'yes':
         results = asked_match.match_result
         winner_teams = [Team.by_id(winner.team_id) for winner in results[:3]]
 
-        reply = 'Ergebnis beim {discipline} in {town}, {country} am {date}:\n'.format(
+        reply = 'Ergebnis beim {sport} {discipline} in {town}, {country} am {date}:\n'.format(
+            sport=sport,
             discipline=discipline,
             town=match_meta.town,
             country=match_meta.country,
