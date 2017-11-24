@@ -19,6 +19,7 @@ from .callbacks.default import (
     report_step)
 from .callbacks import result, calender, general
 from .callbacks.shared import get_push, schema
+from .callbacks import testing
 
 #dirty
 from .callbacks import dirty
@@ -34,7 +35,12 @@ ADMINS = [
 def make_event_handler():
     ai = ApiAI(DIALOGFLOW_TOKEN)
 
-    handlers = [
+    handlers = []
+
+    # testing
+    handlers.extend(testing.handlers)
+
+    handlers.extend([
         ApiAiHandler(greetings, 'gruss'),
         PayloadHandler(greetings, ['gruss']),
 
@@ -76,10 +82,10 @@ def make_event_handler():
         PayloadHandler(calender.pl_next, ['calender.next']),
         # dirty
         ApiAiHandler(dirty.force_start, 'dirty.force_start'),
+        TextHandler(apiai_fulfillment, '.*')
 
+    ])
 
-        TextHandler(apiai_fulfillment, '.*'),
-    ]
 
     def query_api_ai(event):
         """
