@@ -32,7 +32,7 @@ def api_winner(event, parameters, **kwargs):
     if date and not period:
         date = datetime.strptime(date, '%Y-%m-%d')
         match_meta = MatchMeta.search_date(date=date, discipline=discipline or None,
-                                           sport=sport or None, town=town, country=country)
+                                           sport=sport or None, town=town or None, country=country or None)
         match_id = [match.id for match in match_meta]
     elif period and not date:
         from_date = period.split('/')[0]
@@ -40,11 +40,11 @@ def api_winner(event, parameters, **kwargs):
         until_date = period.split('/')[1]
         until_date = datetime.strptime(until_date, '%Y-%m-%d')
         match_meta = MatchMeta.search_range(from_date=from_date, until_date=until_date, discipline=discipline or None,
-                                            sport=sport or None, town=town, country=country)
+                                            sport=sport or None, town=town or None, country=country or None)
         match_id = [match.id for match in match_meta]
     else:
         match_meta = [MatchMeta.search_last(discipline=discipline or None, sport=sport or None,
-                                           town=town, country=country)]
+                                           town=town or None, country=country or None)]
         match_id = [match.id for match in match_meta]
     asked_match = [Match.by_id(id) for id in match_id]
 
@@ -97,7 +97,7 @@ def api_podium(event, parameters, **kwargs):
     if date and not period:
         date = datetime.strptime(date, '%Y-%m-%d')
         match_meta = MatchMeta.search_date(
-            date=date, discipline=discipline or None, sport=sport or None, town=town, country=country)
+            date=date, discipline=discipline or None, sport=sport or None, town=town or None, country=country or None)
         match_id = [match.id for match in match_meta]
     elif period and not date:
         from_date = period.split('/')[0]
@@ -106,11 +106,11 @@ def api_podium(event, parameters, **kwargs):
         until_date = datetime.strptime(until_date, '%Y-%m-%d')
         match_meta = MatchMeta.search_range(
             from_date=from_date, until_date=until_date, discipline=discipline or None,
-            sport=sport or None, town=town, country=country)
+            sport=sport or None, town=town or None, country=country or None)
         match_id = [match.id for match in match_meta]
     else:
         match_meta = [MatchMeta.search_last(
-            discipline=discipline or None, sport=sport or None, town=town, country=country)]
+            discipline=discipline or None, sport=sport or None, town=town or None, country=country or None)]
         match_id = [match.id for match in match_meta]
     asked_match = [Match.by_id(id) for id in match_id]
 
