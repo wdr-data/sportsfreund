@@ -61,6 +61,10 @@ def api_winner(event, parameters, **kwargs):
 
     if not isinstance(sport, list):
         sport = [sport] * len(asked_match)
+
+    if not isinstance(discipline, list):
+        discipline = [discipline] * len(asked_match)
+
     for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
         if asked_match[0].finished == 'yes':
             results = match.match_result
@@ -130,6 +134,10 @@ def api_podium(event, parameters, **kwargs):
 
     if not isinstance(sport, list):
         sport = [sport] * len(asked_match)
+
+    if not isinstance(discipline, list):
+        discipline = [discipline] * len(asked_match)
+
     for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
         if match.finished == 'yes':
             results = match.match_result
