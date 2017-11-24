@@ -30,15 +30,15 @@ def api_winner(event, parameters, **kwargs):
         return
 
     if date and not period:
-        date = datetime.strptime(date, '%Y-%m-%d')
+        date = datetime.strptime(date, '%Y-%m-%d').date()
         match_meta = MatchMeta.search_date(date=date, discipline=discipline or None,
                                            sport=sport or None, town=town or None, country=country or None)
         match_id = [match.id for match in match_meta]
     elif period and not date:
         from_date = period.split('/')[0]
-        from_date = datetime.strptime(from_date, '%Y-%m-%d')
+        from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
         until_date = period.split('/')[1]
-        until_date = datetime.strptime(until_date, '%Y-%m-%d')
+        until_date = datetime.strptime(until_date, '%Y-%m-%d').date()
         match_meta = MatchMeta.search_range(from_date=from_date, until_date=until_date, discipline=discipline or None,
                                             sport=sport or None, town=town or None, country=country or None)
         match_id = [match.id for match in match_meta]
@@ -95,15 +95,15 @@ def api_podium(event, parameters, **kwargs):
     country = parameters.get('country')
 
     if date and not period:
-        date = datetime.strptime(date, '%Y-%m-%d')
+        date = datetime.strptime(date, '%Y-%m-%d').date()
         match_meta = MatchMeta.search_date(
             date=date, discipline=discipline or None, sport=sport or None, town=town or None, country=country or None)
         match_id = [match.id for match in match_meta]
     elif period and not date:
         from_date = period.split('/')[0]
-        from_date = datetime.strptime(from_date, '%Y-%m-%d')
+        from_date = datetime.strptime(from_date, '%Y-%m-%d'.date())
         until_date = period.split('/')[1]
-        until_date = datetime.strptime(until_date, '%Y-%m-%d')
+        until_date = datetime.strptime(until_date, '%Y-%m-%d').date()
         match_meta = MatchMeta.search_range(
             from_date=from_date, until_date=until_date, discipline=discipline or None,
             sport=sport or None, town=town or None, country=country or None)
