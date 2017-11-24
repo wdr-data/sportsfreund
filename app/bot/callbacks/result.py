@@ -59,6 +59,8 @@ def api_winner(event, parameters, **kwargs):
     if not sport:
         sport = [match.sport for match in match_meta]
 
+    if not isinstance(sport, list):
+        sport = [sport] * len(asked_match)
     for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
         if asked_match[0].finished == 'yes':
             results = match.match_result
@@ -101,7 +103,7 @@ def api_podium(event, parameters, **kwargs):
         match_id = [match.id for match in match_meta]
     elif period and not date:
         from_date = period.split('/')[0]
-        from_date = datetime.strptime(from_date, '%Y-%m-%d'.date())
+        from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
         until_date = period.split('/')[1]
         until_date = datetime.strptime(until_date, '%Y-%m-%d').date()
         match_meta = MatchMeta.search_range(
@@ -126,6 +128,8 @@ def api_podium(event, parameters, **kwargs):
     if not sport:
         sport = [match.sport for match in match_meta]
 
+    if not isinstance(sport, list):
+        sport = [sport] * len(asked_match)
     for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
         if match.finished == 'yes':
             results = match.match_result
