@@ -30,7 +30,7 @@ def api_winner(event, parameters, **kwargs):
         return
 
     if date and not period:
-        datetime.strptime(date, '%Y-%m-%d')
+        date = datetime.strptime(date, '%Y-%m-%d')
         match_meta = MatchMeta.search_date(date=date, discipline=discipline or None,
                                            sport=sport or None, town=town, country=country)
         match_id = [match.id for match in match_meta]
@@ -43,8 +43,8 @@ def api_winner(event, parameters, **kwargs):
                                             sport=sport or None, town=town, country=country)
         match_id = [match.id for match in match_meta]
     else:
-        match_meta = [MatchMeta.search_last(discipline=discipline or None, sport=sport or None,
-                                           town=town, country=country)]
+        match_meta = MatchMeta.search_last(discipline=discipline or None, sport=sport or None,
+                                           town=town, country=country)
         match_id = [match_meta.id]
 
     matches = [Match.by_id(id) for id in match_id]
@@ -93,7 +93,7 @@ def api_podium(event, parameters, **kwargs):
     country = parameters.get('country')
 
     if date and not period:
-        datetime.strptime(date, '%Y-%m-%d')
+        date = datetime.strptime(date, '%Y-%m-%d')
         match_meta = MatchMeta.search_date(date=date, discipline=discipline or None,
                                            sport=sport or None, town=town, country=country)
         match_id = [match.id for match in match_meta]
