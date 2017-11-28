@@ -52,7 +52,7 @@ def api_winner(event, parameters, **kwargs):
 
     if not asked_match:
         send_text(sender_id,
-                  'In dem angefragten Zeitraum hat kein Wettkampf in der Disziplin stattgefunden.')
+                  'In dem angefragten Zeitraum haben keine Wettkämpfe stattgefunden.')
         return
 
     if not discipline:
@@ -67,6 +67,8 @@ def api_winner(event, parameters, **kwargs):
     if not isinstance(discipline, list):
         discipline = [discipline] * len(asked_match)
 
+    send_text(sender_id,
+              'Folgende Wintersport-Ergebniss hab ich für dich:')
     for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
         if asked_match[0].finished == 'yes':
             results = match.match_result
@@ -142,13 +144,16 @@ def api_podium(event, parameters, **kwargs):
     if not isinstance(discipline, list):
         discipline = [discipline] * len(asked_match)
 
+    if len(asked_match)>1:
+        send_text(sender_id,
+              'Folgende Wintersport-Ergebniss hab ich für dich:')
     for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
         if match.finished == 'yes':
             results = match.match_result
             winner_teams = [Team.by_id(winner.team_id) for winner in results[:3]]
 
-            reply = 'Ergebnis beim {sport} {discipline} in {town}{country} am {day}, {date}:\n'.format(
-                sport='⛷',#sport,
+            reply = 'Ergebnis beim {sport} {discipline} in {town}, {country}, am {day}, {date}:\n'.format(
+                sport='⛷' if sport == 'Ski Alpin' else sport,
                 discipline=discipline,
                 town=meta.town,
                 country=flag(match.venue.country.iso),
