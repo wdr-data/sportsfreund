@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from datetime import date as dtdate
 
 from ..fb import send_text
 from feeds.models.match import Match
@@ -26,7 +27,7 @@ def api_winner(event, parameters, **kwargs):
 
     if not discipline and not sport:
         send_text(sender_id,
-                  'Gewonnen? Biathlon oder Ski Alpin?')
+                  'Meinst du im Biathlon oder Ski Alpin?')
         return
 
     if date and not period:
@@ -72,8 +73,8 @@ def api_winner(event, parameters, **kwargs):
             winner_team = Team.by_id(results[0].team_id)
 
             send_text(sender_id,
-                      '{winner} hat das {sport} Rennen in der Disziplin {discipline} '
-                      'in {town}, {country} am {date} gewonnen.'.format(
+                      '{winner} hat {today} das {sport} Rennen in der Disziplin {discipline} '
+                      'in {town}, {country} {date} gewonnen.'.format(
                           winner=' '.join([winner_team.name,
                                            flag(winner_team.country.iso),
                                            winner_team.country.code]),
@@ -81,7 +82,8 @@ def api_winner(event, parameters, **kwargs):
                           discipline=discipline,
                           town=meta.town,
                           country=meta.country,
-                          date=meta.datetime.date().strftime('%d.%m.%Y'),
+                          date='am ' + meta.datetime.date().strftime('%d.%m.%Y') if dtdate.today() != meta.datetime.date() else '',
+                          today='heute' if dtdate.today() == meta.datetime.date() else ''
 
                       ))
         else:
@@ -145,19 +147,20 @@ def api_podium(event, parameters, **kwargs):
             results = match.match_result
             winner_teams = [Team.by_id(winner.team_id) for winner in results[:3]]
 
-            reply = 'Ergebnis beim {sport} {discipline} in {town}, {country} am {date}:\n'.format(
-                sport=sport,
+            reply = 'Ergebnis beim {sport} {discipline} in {town}{country} am {day}, {date}:\n'.format(
+                sport='⛷',#sport,
                 discipline=discipline,
                 town=meta.town,
-                country=meta.country,
-                date=meta.datetime.date().strftime('%d.%m.%Y'))
+                country=flag(match.venue.country.iso),
+                day=int_to_weekday(meta.datetime.weekday()),
+                date=meta.datetime.date().strftime('%d.%m.%Y'),
+            )
 
             reply += '\n'.join(
-                '{i}. {winner}'.format(
-                    i=i + 1,
+                '{i} {winner}'.format(
+                    i=medals(i + 1),
                     winner=' '.join([winner_team.name,
-                                     flag(winner_team.country.iso),
-                                     winner_team.country.code]))
+                                     flag(winner_team.country.iso)]))
                 for i, winner_team in enumerate(winner_teams))
 
             send_text(sender_id, reply)
@@ -168,3 +171,27 @@ def api_podium(event, parameters, **kwargs):
                           sport=sport,
                           discipline=discipline
                       ))
+
+
+
+def medals(int):
+    medals = {1: '🥇',
+            2: '🥈',
+            3: '🥉'
+    }
+    return medals[int]
+
+
+def int_to_weekday(int):
+    day = {
+        0 : 'Montag',
+        1 : 'Dienstag',
+        2 : 'Mittwoch',
+        3 : 'Donnerstag',
+        4 : 'Freitag',
+        5 : 'Samstag',
+        6 : 'Sonntag',
+        11 : 'Wochenende',
+        21: 'Woche'
+    }
+    return day[int]
