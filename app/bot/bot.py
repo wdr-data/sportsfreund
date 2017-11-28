@@ -70,17 +70,18 @@ def make_event_handler():
         PayloadHandler(story_payload, ['story', 'fragment']),
 
         # info.general
-        ApiAiHandler(general.api_sport,'info.general.sport'),
-        ApiAiHandler(general.api_discipline,'info.general.discipline'),
+        # ApiAiHandler(general.api_sport,'info.general.sport'),
+        # ApiAiHandler(general.api_discipline,'info.general.discipline'),
+        ApiAiHandler(calender.api_next,'info.general.sport'),
+        ApiAiHandler(calender.api_next,'info.general.discipline'),
 
         # info.match.result
         ApiAiHandler(result.api_winner ,'info.match.result.winner', follow_up=True),
         ApiAiHandler(result.api_podium, 'info.match.result.podium', follow_up=True),
 
         # info.match.calender
-        ApiAiHandler(calender.api_date, 'info.match.calender.date'),
         ApiAiHandler(calender.api_next, 'info.match.calender.next', follow_up=True),
-        PayloadHandler(calender.pl_next, ['calender.next']),
+        PayloadHandler(calender.pl_entry_by_matchmeta, ['calender.entry_by_matchmeta']),
 
         # info.olympia
         ApiAiHandler(olympia.api_countdown_days, 'info.olympia.countown_days'),
