@@ -17,7 +17,7 @@ from .callbacks.default import (
     get_started, start_message, greetings, push, push_step, subscribe, unsubscribe, share_bot,
     apiai_fulfillment, wiki, countdown, korea_standard_time, story, story_payload, report,
     report_step)
-from .callbacks import result, calender, general, olympia
+from .callbacks import result, calender, general, olympia, subscription
 from .callbacks.shared import get_push, schema
 from .callbacks import testing
 
@@ -39,6 +39,7 @@ def make_event_handler():
 
     # testing
     handlers.extend(testing.handlers)
+    handlers.extend(subscription.handlers)
 
     handlers.extend([
         ApiAiHandler(greetings, 'gruss'),

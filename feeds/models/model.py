@@ -30,6 +30,26 @@ class FeedModelList(list):
         return self.__getitem__(slice(i, j))
 
 
+class Model(dict):
+
+    collection = None
+
+    logger = logging.Logger(__name__)
+
+    def __getattr__(self, name):
+        item = self[name]
+
+        if type(item) is dict:
+            return Model(item)
+
+        else:
+            return item
+
+    @classmethod
+    def query(cls, **kwargs):
+        return [cls(obj) for obj in cls.collection.find_many(kwargs)]
+
+
 class FeedModel(Model):
     """
     @DynamicAttrs
@@ -93,22 +113,6 @@ class FeedModel(Model):
 
         elif type(item) is list:
             return FeedModelList(item)
-
-        else:
-            return item
-
-
-class Model(dict):
-
-    collection = None
-
-    logger = logging.Logger(__name__)
-
-    def __getattr__(self, name):
-        item = self[name]
-
-        if type(item) is dict:
-            return Model(item)
 
         else:
             return item
