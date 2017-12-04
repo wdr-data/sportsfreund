@@ -19,7 +19,7 @@ import logging
 from feeds import api
 
 api.logger.addHandler(logging.StreamHandler(sys.stdout))
-Model.logger.addHandler(logging.StreamHandler(sys.stdout))
+FeedModel.logger.addHandler(logging.StreamHandler(sys.stdout))
 
 ma = Match.by_id(8471268, clear_cache=True)
 ma = Match.by_id(8471268)

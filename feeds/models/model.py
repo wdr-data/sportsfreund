@@ -2,15 +2,15 @@ from time import time
 import logging
 
 
-class ModelList(list):
+class FeedModelList(list):
     def __getitem__(self, key):
         item = super().__getitem__(key)
 
         if type(item) is dict:
-            return Model(item)
+            return FeedModel(item)
 
         elif type(item) is list:
-            return ModelList(item)
+            return FeedModelList(item)
 
         else:
             return item
@@ -18,10 +18,10 @@ class ModelList(list):
     def __iter__(self):
         for item in super().__iter__():
             if type(item) is dict:
-                yield Model(item)
+                yield FeedModel(item)
 
             elif type(item) is list:
-                yield ModelList(item)
+                yield FeedModelList(item)
 
             else:
                 yield item
@@ -30,19 +30,16 @@ class ModelList(list):
         return self.__getitem__(slice(i, j))
 
 
-class Model(dict):
+class FeedModel(Model):
     """
     @DynamicAttrs
     """
 
-    collection = None
     api_function = None
     api_id_name = None
     transform = None
     # cache_time = 60 * 60 * 24  # 1d cache by default
     cache_time = 60  # 1m cache for testing
-
-    logger = logging.Logger(__name__)
 
     @classmethod
     def by_id(cls, id, clear_cache=False):
@@ -92,10 +89,26 @@ class Model(dict):
         item = self[name]
 
         if type(item) is dict:
-            return Model(item)
+            return FeedModel(item)
 
         elif type(item) is list:
-            return ModelList(item)
+            return FeedModelList(item)
+
+        else:
+            return item
+
+
+class Model(dict):
+
+    collection = None
+
+    logger = logging.Logger(__name__)
+
+    def __getattr__(self, name):
+        item = self[name]
+
+        if type(item) is dict:
+            return Model(item)
 
         else:
             return item

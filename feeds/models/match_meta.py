@@ -3,11 +3,11 @@ from datetime import datetime
 
 from .. import api
 from lib.mongodb import db
-from .model import Model
+from .model import FeedModel
 from .disciplines_alias import DISCIPLINE_ALIASES
 
 
-class MatchMeta(Model):
+class MatchMeta(FeedModel):
     collection = db.matches_meta
     api_function = api.matches_by_topic_for_season
     api_id_name = 'to'

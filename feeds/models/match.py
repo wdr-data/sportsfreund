@@ -2,10 +2,10 @@ from datetime import datetime
 
 from .. import api
 from lib.mongodb import db
-from .model import Model
+from .model import FeedModel
 
 
-class Match(Model):
+class Match(FeedModel):
     collection = db.matches
     api_function = api.match
     api_id_name = 'ma'

@@ -1,9 +1,9 @@
 from .. import api
 from lib.mongodb import db
-from .model import Model
+from .model import FeedModel
 
 
-class Venue(Model):
+class Venue(FeedModel):
     collection = db.venues
     api_function = api.venue
     api_id_name = 've'
