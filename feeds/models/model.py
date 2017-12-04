@@ -47,7 +47,7 @@ class Model(dict):
 
     @classmethod
     def query(cls, **kwargs):
-        return [cls(obj) for obj in cls.collection.find_many(kwargs)]
+        return [cls(obj) for obj in cls.collection.find(kwargs)]
 
 
 class FeedModel(Model):
