@@ -106,7 +106,7 @@ def manage_subscriptions(event, payload, **kwargs):
                       'Diese Funktion ist erst zu den Olympischen Winterspielen verfügbar.')
 
 
-def change_subscription(event, payload, **kwargs):
+def change_subscriptions(event, payload, **kwargs):
     sender_id = event['sender']['id']
     type = payload['type']
     offset = payload.get('offset', 0)
