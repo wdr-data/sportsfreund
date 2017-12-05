@@ -1,3 +1,5 @@
+from bson.objectid import ObjectId
+
 from ..handlers.payloadhandler import PayloadHandler
 from ..fb import send_text, send_list, list_element, button_postback, send_buttons
 from ..handlers.apiaihandler import ApiAiHandler
@@ -143,10 +145,19 @@ def change_subscriptions(event, payload, **kwargs):
     send_list(sender_id, elements, button=button)
 
 
+def unsubscribe(event,payload):
+    sender_id = event['sender']['id']
+    sub_id = payload['unsubscribe']
+
+    Subscription.delete(_id=ObjectId(sub_id))
+    send_text(sender_id,
+              'Ich hab dich vom Service abgemeldet')
+
 
 handlers = [
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe', follow_up=True),
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe'),
     PayloadHandler(manage_subscriptions, ['target', 'state']),
-    PayloadHandler(change_subscriptions, ['type'])
+    PayloadHandler(change_subscriptions, ['type']),
+    PayloadHandler(unsubscribe,['unsubscribe'])
 ]
