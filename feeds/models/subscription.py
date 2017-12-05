@@ -63,16 +63,6 @@ class Subscription(Model):
 
         cls.collection.replace_one(data, data, upsert=True)
 
-    @classmethod
-    def delete(cls, **kwargs) -> None:
-        """
-        Delete subscription entry from database
-
-        :return:
-        """
-
-        return cls.collection.delete_many(kwargs)
-
     @staticmethod
     def describe_filter(filter_arg):
         if 'sport' in filter_arg and not 'discipline' in filter_arg:

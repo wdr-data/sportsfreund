@@ -50,7 +50,23 @@ class Model(dict):
 
     @classmethod
     def query(cls, **kwargs):
+        """
+        Get a list of all model instances from database that fit the filter.
+        `kwargs` is used as the filter dict for `find`.
+        """
+
         return [cls(obj) for obj in cls.collection.find(kwargs)]
+
+    @classmethod
+    def delete(cls, **kwargs):
+        """
+        Delete all model instances from database that fit the filter.
+        `kwargs` is used as the filter dict for `delete_many`.
+
+        :return: pymongo.results.DeleteResult
+        """
+
+        return cls.collection.delete_many(kwargs)
 
 
 class FeedModel(Model):
