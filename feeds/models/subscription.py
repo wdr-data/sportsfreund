@@ -52,3 +52,11 @@ class Subscription(Model):
 
         cls.collection.replace_one(data, data, upsert=True)
 
+    def delete(self) -> None:
+        """
+        Delete subscription entry from database
+
+        :return:
+        """
+
+        Subscription.collection.delete_one({'_id': self._id})
