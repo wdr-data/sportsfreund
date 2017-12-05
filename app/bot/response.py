@@ -1,15 +1,10 @@
-import os
 import json
 import logging
-from time import sleep
 
-import requests
-
+from lib.facebook import upload_attachment, guess_attachment_type
+from lib.queue import queue_job
 from .models import Attachment
 from lib.queue import queue_job
-
-PAGE_TOKEN = os.environ.get('FB_PAGE_TOKEN', 'na')
-HUB_VERIFY_TOKEN = os.environ.get('FB_HUB_VERIFY_TOKEN', 'na')
 
 logger = logging.getLogger(__name__)
 
@@ -356,61 +351,3 @@ def send(payload):
     """Queues a payload on the correct worker queue"""
     logger.debug("JSON Payload: " + json.dumps(payload))
     queue_job('fb.Send', {'payload': payload})
-
-
-class UploadFailedError(ValueError):
-    pass
-
-
-def upload_attachment(url, type=None, retries=3):
-    """
-    Uploads an attachment and returns the attachment ID
-
-    :param url The URL of the file to upload
-    :param type The type of the file. Can be 'image', 'video' or 'audio'.
-        If not provided, it will be guessed from the file extension.
-    :raises UploadFailedError if the upload failed after the specified number of retries
-    """
-    payload = {
-        "message": {
-            "attachment": {
-                "type": type or guess_attachment_type(url),
-                "payload": {
-                    "url": url,
-                    "is_reusable": True,
-                }
-            }
-        }
-    }
-    logger.debug("JSON Payload: " + json.dumps(payload))
-    headers = {'Content-Type': 'application/json'}
-
-    for i in range(retries):
-        try:
-            r = requests.post(
-                "https://graph.facebook.com/v2.6/me/message_attachments?access_token=" + PAGE_TOKEN,
-                data=json.dumps(payload),
-                headers=headers)
-            return json.loads(r.content.decode())['attachment_id']
-
-        except:
-            logging.exception("Uploading failed, retry %s/%s", i + 1, retries)
-            sleep(1)
-
-    else:
-        raise UploadFailedError('Uploading file %s with type %s failed.', url, type)
-
-
-def guess_attachment_type(filename):
-    """Guesses the attachment type from the file extension"""
-    ext = os.path.splitext(filename)[1].lower()
-    types = {
-        '.jpg': 'image',
-        '.jpeg': 'image',
-        '.png': 'image',
-        '.gif': 'image',
-        '.mp4': 'video',
-        '.mp3': 'audio',
-    }
-
-    return types.get(ext, None)

@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from datetime import date as dtdate
 
-from ..fb import send_text
+from ..response import send_text
 from feeds.models.match import Match
 from feeds.models.team import Team
 from feeds.models.match_meta import MatchMeta

@@ -4,7 +4,8 @@ import json
 
 from apiai import ApiAI
 
-from .fb import send_text, PAGE_TOKEN
+from lib.config import FB_PAGE_TOKEN
+from .response import send_text
 from .handlers.payloadhandler import PayloadHandler
 from .handlers.texthandler import TextHandler
 from .handlers.apiaihandler import ApiAiHandler
@@ -164,7 +165,7 @@ def make_event_handler():
 
                                 if int(sender_id) in ADMINS:
                                     txt = str(e)
-                                    txt = txt.replace(PAGE_TOKEN, '[redacted]')
+                                    txt = txt.replace(FB_PAGE_TOKEN, '[redacted]')
                                     txt = txt.replace(DIALOGFLOW_TOKEN, '[redacted]')
                                     send_text(sender_id, txt)
                             except:

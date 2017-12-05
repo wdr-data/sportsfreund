@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from django import forms
 
 from .models import Push, Report, ReportFragment, FacebookUser, Wiki, Info, Story, StoryFragment
-from bot.fb import UploadFailedError
+from lib.facebook import UploadFailedError
 
 UPLOAD_FAILED_MSG = 'Die Datei "%s" konnte nicht zu Facebook hochgeladen werden. ' \
                     'Bitte versuche es erneut.'

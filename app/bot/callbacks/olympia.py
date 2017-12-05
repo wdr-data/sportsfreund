@@ -1,6 +1,6 @@
 
 import datetime
-from ..fb import send_text
+from ..response import send_text
 
 def api_countdown_days(event, **kwargs):
     sender_id = event['sender']['id']
