@@ -1,16 +1,13 @@
 FROM python:3.6-alpine
 
 RUN apk --no-cache add musl-dev linux-headers g++ tini postgresql-dev && \
-    pip install numpy # installing beforehand so it can get cached by docker
+    pip install numpy pipenv # installing beforehand so it can get cached by docker
 
 COPY Pipfile* /app/
 
 WORKDIR /app
 
-RUN pip install pipenv && \
-    pipenv lock --requirements > /tmp/requirements-lock.txt && \
-    pip install -r /tmp/requirements-lock.txt && \
-    pipenv --rm
+RUN pipenv install --system
 
 COPY app /app
 COPY lib /pythonpkg/lib
