@@ -18,6 +18,7 @@ class Subscription(Model):
         SPORT = 'sport'
         DISCIPLINE = 'discipline'
         ATHLETE = 'athlete'
+        HIGHLIGHT = 'highlight'
 
     class Type(Enum):
         RESULT = 'result'
@@ -80,3 +81,12 @@ class Subscription(Model):
         """
 
         Subscription.collection.delete_one({'_id': self._id})
+
+    @staticmethod
+    def describe_filter(filter_arg):
+        if 'sport' in filter_arg and not 'discipline' in filter_arg:
+            return filter_arg['sport']
+        if 'discipline' in filter_arg:
+            return f"{filter_arg['sport']}/{filter_arg['discipline']}"
+        if 'athlete' in filter_arg:
+            return filter_arg['athlete']
