@@ -23,9 +23,9 @@ class Subscription(Model):
     class Type(Enum):
         RESULT = 'result'
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
 
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.target not in Subscription.Target:
             for t in Subscription.Target:
