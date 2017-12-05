@@ -12,6 +12,11 @@ def api_subscribe(event, parameters, **kwargs):
         send_text(sender_id,
                   'Magst du dich für Biathlon oder Ski-Alpin Ergebnisse anmelden?')
         return
+    subscribe(event, sport, discipline)
+
+
+def subscribe(event, sport, discipline=None):
+    sender_id = event['sender']['id']
 
     target = Subscription.Target.SPORT if sport else Subscription.Target.DISCIPLINE
 
