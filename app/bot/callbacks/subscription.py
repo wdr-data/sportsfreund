@@ -35,23 +35,34 @@ def send_subscriptions(event, **kwargs):
     subs = Subscription.query(psid=sender_id)
 
     if any(sub.target is Subscription.Target.HIGHLIGHT for sub in subs):
-        highlight_emoji, highlight_button = '✔', button_postback('Abmelden', ['highlight_subscribe'])
+        highlight_emoji, highlight_button = '✔', button_postback('Abmelden',
+                                                                 ['highlight_subscribe'])
     else:
-        highlight_emoji, highlight_button = '❌', button_postback('Anmelden', ['highlight_unsubscribe'])
+        highlight_emoji, highlight_button = '❌', button_postback('Anmelden',
+                                                                 ['highlight_unsubscribe'])
 
     if any(sub.type is Subscription.Type.RESULT for sub in subs):
         result_subtitle = ', '.join(
             [Subscription.describe_filter(sub.filter)
              for sub in subs if sub.type is Subscription.Type.RESULT])
-        result_subtitle = result_subtitle[:77] + '...' if len(result_subtitle) > 80 else result_subtitle
+
+        if len(result_subtitle) > 80:
+            result_subtitle = result_subtitle[:77] + '...'
+
         result_emoji = '✔'
     else:
         result_subtitle = 'Nicht angemeldet'
         result_emoji = '❌'
 
     elements = [
-        list_element('Highlights des Tages ' + highlight_emoji, result_subtitle, buttons=[highlight_button]),
-        list_element('Ergebnisdienst ' + result_emoji, result_subtitle, buttons=[button_postback('🔧 Ändern', ['result_subscriptions'])])
+        list_element(
+            'Highlights des Tages ' + highlight_emoji,
+            'TODO: Text festlegen',
+            buttons=[highlight_button]),
+        list_element(
+            'Ergebnisdienst ' + result_emoji,
+            result_subtitle,
+            buttons=[button_postback('🔧 Ändern', ['result_subscriptions'])])
     ]
 
     send_list(
