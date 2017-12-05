@@ -35,6 +35,18 @@ def subscribe(event, sport, discipline=None):
     send_subscriptions(event)
 
 
+def api_unsubscribe(event, parameters, **kwargs):
+    unsubscribe(event)
+
+def unsubscribe(event):
+    sender_id = event['sender']['id']
+    send_text(sender_id,
+              'Du möchtest dich von automatischen Nachrichten abmelden - OK. '
+              'In der Liste siehst du alle deine Anmeldungen. '
+              'Du kannst Sie jederzeit über die Buttons ändern.')
+    send_subscriptions(event)
+
+
 def send_subscriptions(event, **kwargs):
     sender_id = event['sender']['id']
     subs = Subscription.query(psid=sender_id)
@@ -78,4 +90,5 @@ def send_subscriptions(event, **kwargs):
 
 handlers = [
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe', follow_up=True)
+    ApiAiHandler(api_subscribe, 'push.subscription.subscribe')
 ]
