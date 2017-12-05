@@ -45,6 +45,9 @@ class Model(dict):
         else:
             return item
 
+    def __setattr__(self, key, value):
+        self[key] = value
+
     @classmethod
     def query(cls, **kwargs):
         return [cls(obj) for obj in cls.collection.find(kwargs)]
