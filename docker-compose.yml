@@ -10,6 +10,7 @@ services:
       DEBUG: "True"
       DATABASE_URL: "postgres://postgres:hackme@db:5432/postgres"
       MONGODB_URI: "mongodb://mongo:27017/main"
+      REDIS_URL: "redis://redis:6379"
       S3_ACCESS_KEY: "minio"
       S3_ACCESS_SECRET: "minio123"
       S3_BUCKET: "filestorage"
@@ -26,6 +27,20 @@ services:
       - db
       - mongo
       - storage
+      - redis
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    volumes:
+      - ./worker:/worker:ro
+    env_file: .env
+    environment:
+      MONGODB_URI: "mongodb://mongo:27017/main"
+      REDIS_URL: "redis://redis:6379"
+    depends_on:
+      - mongo
+      - redis
   web-migrate:
     build:
       context: .
@@ -74,15 +89,38 @@ services:
       mc mb myminio/filestorage &&
       mc policy download myminio/filestorage
       "
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
   localtunnel:
     image: efrecon/localtunnel
     env_file: .env
     restart: always
     depends_on:
       - web
-    command: --local-host web --port 8080 --subdomain ${TUNNEL_NAME}
+    command: --port 8080 --subdomain ${TUNNEL_NAME}
+    network_mode: "host"
+  worker_dashboard:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    command: mrq-dashboard
+    ports:
+      - "5555:5555"
+    env_file: .env
+    environment:
+      MRQ_QUEUE: "facebook"
+      MONGODB_URI: "mongodb://mongo:27017/main"
+      REDIS_URL: "redis://redis:6379"
+    depends_on:
+      - mongo
+      - redis
 
 volumes:
   db_data: {}
   mongo_data: {}
+  redis_data: {}
   storage_data: {}

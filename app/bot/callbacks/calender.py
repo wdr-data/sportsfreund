@@ -1,4 +1,4 @@
-from ..fb import send_text, quick_reply
+from ..response import send_text, quick_reply
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 

@@ -1,7 +1,7 @@
 
 from backend.models import Push, Report
 from ..handlers.texthandler import TextHandler
-from ..fb import send_list, list_element, button_postback
+from ..response import send_list, list_element, button_postback
 from .shared import schema
 
 """

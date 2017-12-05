@@ -2,8 +2,8 @@
 import logging
 
 #import necessary modules
-from ..fb import (send_buttons, button_postback, send_text, send_attachment_by_id,
-                  guess_attachment_type)
+from ..response import (send_buttons, button_postback, send_text, send_attachment_by_id,
+                        guess_attachment_type)
 from .default import story, get_started
 
 logger = logging.getLogger(__name__)

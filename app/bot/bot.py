@@ -1,15 +1,11 @@
 import logging
-from threading import Thread
-from time import sleep
 import os
 import json
 
-import schedule
-#from django.utils.timezone import localtime, now
 from apiai import ApiAI
 
-from backend.models import FacebookUser
-from .fb import send_text, PAGE_TOKEN
+from lib.config import FB_PAGE_TOKEN
+from .response import send_text
 from .handlers.payloadhandler import PayloadHandler
 from .handlers.texthandler import TextHandler
 from .handlers.apiaihandler import ApiAiHandler
@@ -18,7 +14,6 @@ from .callbacks.default import (
     apiai_fulfillment, wiki, countdown, korea_standard_time, story, story_payload, report,
     report_step)
 from .callbacks import result, calender, general, olympia, subscription
-from .callbacks.shared import get_push, schema
 from .callbacks import testing
 
 #dirty
@@ -170,7 +165,7 @@ def make_event_handler():
 
                                 if int(sender_id) in ADMINS:
                                     txt = str(e)
-                                    txt = txt.replace(PAGE_TOKEN, '[redacted]')
+                                    txt = txt.replace(FB_PAGE_TOKEN, '[redacted]')
                                     txt = txt.replace(DIALOGFLOW_TOKEN, '[redacted]')
                                     send_text(sender_id, txt)
                             except:
@@ -185,50 +180,4 @@ def make_event_handler():
     return event_handler
 
 
-def push_notification():
-    push = get_push()
-
-    if not push:
-        return
-
-    user_list = FacebookUser.objects.values_list('uid', flat=True)
-
-    unavailable_user_ids = list()
-
-    for user in user_list:
-
-        logger.debug("Send Push to: " + user)
-        try:
-            schema(push, user)
-        except Exception as e:
-            logger.exception("Push failed")
-            try:
-                if e.args[0]['code'] == 551:  # User is unavailable (probs deleted chat or account)
-                    unavailable_user_ids.append(user)
-                    logging.info('Removing user %s', user)
-            except:
-                pass
-
-        sleep(.5)
-
-    for user in unavailable_user_ids:
-        try:
-            FacebookUser.objects.get(uid=user).delete()
-        except:
-            logging.exception('Removing user %s failed', user)
-
-    push.delivered = True
-    push.save()
-
-
-def schedule_loop():
-    while True:
-        schedule.run_pending()
-        sleep(1)
-
-
 handle_events = make_event_handler()
-
-schedule.every(30).seconds.do(push_notification)
-schedule_loop_thread = Thread(target=schedule_loop, daemon=True)
-schedule_loop_thread.start()
