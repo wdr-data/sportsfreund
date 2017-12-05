@@ -24,8 +24,11 @@ def api_subscribe(event, parameters, **kwargs):
 
     Subscription.create(sender_id, target, filter_arg, type_arg)
 
+    send_text(sender_id,
+              'Vielen Dank für deine Anmeldung. In folgender Liste siehst du alle Themen, '
+              'über die ich dich automatisch informiere. Du kannst sie jederzeit ändern.')
+
 
 handlers = [
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe', follow_up=True)
 ]
-
