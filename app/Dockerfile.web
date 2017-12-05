@@ -12,13 +12,11 @@ RUN pipenv install --system
 COPY app /app
 COPY lib /pythonpkg/lib
 COPY feeds /pythonpkg/feeds
+COPY worker/mrq-config.py /mrq-config.py
 
 ENV PYTHONPATH=${PYTHONPATH}:/pythonpkg
 
 RUN SECRET_KEY=1 python manage.py collectstatic --noinput --clear
-
-RUN adduser -D webuser
-USER webuser
 
 EXPOSE 8080
 ENV PORT=8080

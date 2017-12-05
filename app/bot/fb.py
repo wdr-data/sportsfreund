@@ -6,6 +6,7 @@ from time import sleep
 import requests
 
 from .models import Attachment
+from lib.queue import queue_job
 
 PAGE_TOKEN = os.environ.get('FB_PAGE_TOKEN', 'na')
 HUB_VERIFY_TOKEN = os.environ.get('FB_HUB_VERIFY_TOKEN', 'na')
@@ -352,17 +353,9 @@ def send_attachment_by_id(recipient_id, attachment_id, type):
 
 
 def send(payload):
-    """Sends a payload via the graph API"""
+    """Queues a payload on the correct worker queue"""
     logger.debug("JSON Payload: " + json.dumps(payload))
-    headers = {'Content-Type': 'application/json'}
-    r = requests.post("https://graph.facebook.com/v2.6/me/messages?access_token=" + PAGE_TOKEN,
-                      data=json.dumps(payload),
-                      headers=headers)
-    response = r.content.decode()
-    logger.debug(response)
-    error = json.loads(response).get('error')
-    if error:
-        raise Exception(error)
+    queue_job('fb.Send', {'payload': payload})
 
 
 class UploadFailedError(ValueError):
