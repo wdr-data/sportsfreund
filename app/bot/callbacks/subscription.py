@@ -129,7 +129,7 @@ def change_subscriptions(event, payload, **kwargs):
 
     elements = [
         list_element(Subscription.describe_filter(sub.filter),
-                     button_postback('Abmelden', {'unsubscribe': str(sub._id)}))
+                     buttons=[button_postback('Abmelden', {'unsubscribe': str(sub._id)})])
         for sub in subs[offset:offset + num_subs]
     ]
 
