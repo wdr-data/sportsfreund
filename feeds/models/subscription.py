@@ -22,6 +22,26 @@ class Subscription(Model):
     class Type(Enum):
         RESULT = 'result'
 
+    def __init__(self, **kwargs):
+
+        super().__init__(**kwargs)
+
+        if self.target not in Subscription.Target:
+            for t in Subscription.Target:
+                if self.target == t.value:
+                    self.target = t
+                    break
+            else:
+                raise ValueError(f'invalid target: {self.target}')
+
+        if self.type not in Subscription.Type:
+            for t in Subscription.Type:
+                if self.type == t.value:
+                    self.type = t
+                    break
+            else:
+                raise ValueError(f'invalid type: {self.type}')
+
     @classmethod
     def create(cls, psid: str, target: Target, filter_arg: dict, type_arg: Type) -> None:
         """
