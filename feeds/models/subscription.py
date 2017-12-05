@@ -63,14 +63,15 @@ class Subscription(Model):
 
         cls.collection.replace_one(data, data, upsert=True)
 
-    def delete(self) -> None:
+    @classmethod
+    def delete(cls, **kwargs) -> None:
         """
         Delete subscription entry from database
 
         :return:
         """
 
-        Subscription.collection.delete_one({'_id': self._id})
+        return cls.collection.delete_many(kwargs)
 
     @staticmethod
     def describe_filter(filter_arg):
