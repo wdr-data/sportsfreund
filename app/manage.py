@@ -2,6 +2,10 @@
 import os
 import sys
 
+# Hack for providing stuff outsourced into /lib or /feeds
+if "./" not in sys.path:
+    sys.path.append("./")
+
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "main.settings")
     try:
