@@ -2,7 +2,15 @@ from lib.mongodb import db
 from .model import Model
 from enum import Enum
 
+
 class Subscription(Model):
+    """
+    Each subscription instance describes a tuple of user, target, filter, type
+    user describes who subscribed
+    target describes what kind of entity triggers the subscription
+    filter describes which attributes the target entity must have
+    type describes which kind of event triggers the subscription
+    """
 
     collection = db.subscriptions
 
@@ -15,7 +23,16 @@ class Subscription(Model):
         RESULT = 'result'
 
     @classmethod
-    def create(cls, psid, target, filter_arg, type_arg):
+    def create(cls, psid: str, target: Target, filter_arg: dict, type_arg: Type) -> None:
+        """
+        Create subscription entry in database
+
+        :param psid: user ID
+        :param target:
+        :param filter_arg:
+        :param type_arg:
+        :return:
+        """
 
         if target not in cls.Target:
             raise ValueError(f'invalid target: {target}')
