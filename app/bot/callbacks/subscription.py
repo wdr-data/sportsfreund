@@ -122,7 +122,7 @@ def change_subscriptions(event, payload, **kwargs):
                      f'Du bist für den Nachrichten Dienst {type} zum Thema '
                      f'{Subscription.describe_filter(subs[0].filter)} angemeldet. '
                      f'Möchtest du dich abmelden?',
-                     button_postback('Abmelden', ['unsubscribe']))
+                     buttons=[button_postback('Abmelden', ['unsubscribe'])])
         return
 
     num_subs = 4
