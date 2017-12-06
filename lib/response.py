@@ -350,4 +350,4 @@ def send_attachment_by_id(recipient_id, attachment_id, type):
 def send(payload):
     """Queues a payload on the correct worker queue"""
     logger.debug("JSON Payload: " + json.dumps(payload))
-    queue_job('fb.Send', {'payload': payload}, queue='facebook')
+    queue_job('fb.Send', {'payload': payload})

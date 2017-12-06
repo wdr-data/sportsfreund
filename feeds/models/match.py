@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Generator
 
 from itertools import islice
 
@@ -25,6 +26,15 @@ class Match(FeedModel):
             '%s %s' % (match['match_date'], match['match_time']),
             '%Y-%m-%d %H:%M')
         return match
+
+    def results_by_country(self, country: str) -> Generator[FeedModel]:
+        """
+        Filter results of this match by country
+        :param country: Full name of the country
+        :returns:
+        """
+
+        return (r for r in self.match_result if Team.by_id(r.team_id).country.name == country)
 
     @property
     def txt_podium(self):
