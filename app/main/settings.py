@@ -155,7 +155,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Error reporting on Sentry.io
 if os.environ.get('SENTRY_URL') is not None:
-    INSTALLED_APPS.append('raven.contrib.django.raven_compat')
+#    INSTALLED_APPS.append('raven.contrib.django.raven_compat')
     RAVEN_CONFIG = {
         'dsn': os.environ.get('SENTRY_URL'),
     }
