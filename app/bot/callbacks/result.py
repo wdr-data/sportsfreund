@@ -128,8 +128,8 @@ def api_podium(event, parameters, **kwargs):
 
     if not asked_match:
         send_text(sender_id,
-                  'In dem angefragten Zeitraum hat kein Wettkampf in der Disziplin {discipline} '
-                  'stattgefunden.'.format(discipline=discipline))
+                  'In dem angefragten Zeitraum hat kein Wettkampf '
+                  f'{("in der Disziplin " + discipline) if discipline else ""} stattgefunden.')
         return
 
     if not discipline:
