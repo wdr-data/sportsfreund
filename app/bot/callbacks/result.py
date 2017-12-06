@@ -5,15 +5,10 @@ from datetime import datetime
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.team import Team
+from lib.flag import flag
 from lib.response import send_text
 
 logger = logging.Logger(__name__)
-
-OFFSET = 127462 - ord('A')
-
-
-def flag(code):
-    return chr(ord(code[0]) + OFFSET) + chr(ord(code[1]) + OFFSET)
 
 
 def api_winner(event, parameters, **kwargs):

@@ -194,10 +194,3 @@ def int_to_weekday(int):
         21: 'Woche'
     }
     return day[int]
-
-
-
-
-def flag(code):
-    OFFSET=127462 - ord('A')
-    return chr(ord(code[0]) + OFFSET) + chr(ord(code[1]) + OFFSET)

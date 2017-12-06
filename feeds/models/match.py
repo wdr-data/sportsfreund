@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from lib.flag import flag
 from .. import api
 from lib.mongodb import db
 from .model import FeedModel
