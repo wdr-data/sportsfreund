@@ -3,7 +3,7 @@ import logging
 
 from lib.facebook import upload_attachment, guess_attachment_type
 from lib.queue import queue_job
-from .models import Attachment
+from .attachment import Attachment
 from lib.queue import queue_job
 
 logger = logging.getLogger(__name__)
@@ -306,13 +306,13 @@ def send_attachment(recipient_id, url, type=None):
     :param type: Type of the attachment. If not defined, guess_attachment_type is used
     """
     try:
-        attachment = Attachment.objects.get(url=url)
+        attachment = Attachment.query(url=url)[0]
         attachment_id = attachment.attachment_id
-    except Attachment.DoesNotExist:
+    except IndexError:
         attachment_id = upload_attachment(url, type)
         if attachment_id is None:
             raise ValueError('Uploading attachment with URL %s failed' % url)
-        Attachment(url=url, attachment_id=attachment_id).save()
+        Attachment.create(url=url, attachment_id=attachment_id)
 
     send_attachment_by_id(recipient_id, attachment_id, type or guess_attachment_type(url))
 

@@ -1,6 +1,8 @@
 
 import datetime
-from ..response import send_text
+
+from lib.response import send_text
+
 
 def api_countdown_days(event, **kwargs):
     sender_id = event['sender']['id']

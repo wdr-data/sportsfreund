@@ -1,8 +1,8 @@
 
 from backend.models import Push, Report
+
+from lib.response import send_list, list_element, button_postback
 from ..handlers.texthandler import TextHandler
-from ..response import send_list, list_element, button_postback
-from .shared import schema
 
 """
 Contains callbacks and handlers for testing functionality or previewing content in the bot.

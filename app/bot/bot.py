@@ -5,7 +5,7 @@ import os
 from apiai import ApiAI
 
 from lib.config import FB_PAGE_TOKEN
-from .response import send_text
+from lib.response import send_text
 # dirty
 from .callbacks import dirty
 from .callbacks import result, calender, olympia, subscription

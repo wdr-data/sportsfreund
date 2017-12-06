@@ -1,5 +1,5 @@
 from lib.mongodb import db
-from .model import Model
+from lib.model import Model
 from enum import Enum
 
 

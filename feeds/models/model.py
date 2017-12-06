@@ -1,5 +1,6 @@
 from time import time
-import logging
+
+from lib.model import Model
 
 
 class FeedModelList(list):
@@ -28,45 +29,6 @@ class FeedModelList(list):
 
     def __getslice__(self, i, j):
         return self.__getitem__(slice(i, j))
-
-
-class Model(dict):
-
-    collection = None
-
-    logger = logging.Logger(__name__)
-
-    def __getattr__(self, name):
-        item = self[name]
-
-        if type(item) is dict:
-            return Model(item)
-
-        else:
-            return item
-
-    def __setattr__(self, key, value):
-        self[key] = value
-
-    @classmethod
-    def query(cls, **kwargs):
-        """
-        Get a list of all model instances from database that fit the filter.
-        `kwargs` is used as the filter dict for `find`.
-        """
-
-        return [cls(obj) for obj in cls.collection.find(kwargs)]
-
-    @classmethod
-    def delete(cls, **kwargs):
-        """
-        Delete all model instances from database that fit the filter.
-        `kwargs` is used as the filter dict for `delete_many`.
-
-        :return: pymongo.results.DeleteResult
-        """
-
-        return cls.collection.delete_many(kwargs)
 
 
 class FeedModel(Model):

@@ -2,10 +2,10 @@ import logging
 from datetime import date as dtdate
 from datetime import datetime
 
-from ..response import send_text
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.team import Team
+from lib.response import send_text
 
 logger = logging.Logger(__name__)
 

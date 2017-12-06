@@ -6,8 +6,9 @@ from backend.models import FacebookUser, Wiki, Push, Report, Info, Story
 from django.utils import timezone
 from fuzzywuzzy import fuzz, process
 
-from ..response import (send_buttons, button_postback, send_text, send_attachment_by_id,
-                        guess_attachment_type, quick_reply, generic_element, send_generic, button_web_url, button_share)
+from lib.response import (send_buttons, button_postback, send_text, send_attachment_by_id,
+                          guess_attachment_type, quick_reply, generic_element, send_generic,
+                          button_web_url, button_share)
 from .shared import get_push, schema, send_push, get_pushes_by_date, get_latest_report, send_report
 
 logger = logging.getLogger(__name__)

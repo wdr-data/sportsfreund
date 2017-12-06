@@ -1,10 +1,10 @@
-from ..response import send_text, quick_reply
 import logging
 from datetime import datetime, date, timedelta
 from time import sleep
 
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
+from lib.response import send_text
 
 logger=logging.Logger(__name__)
 

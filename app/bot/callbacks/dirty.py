@@ -1,9 +1,8 @@
 # this dirty file is designed to impress the crowed on friday in the cantene
 import logging
 
-#import necessary modules
-from ..response import (send_buttons, button_postback, send_text, send_attachment_by_id,
-                        guess_attachment_type)
+# import necessary modules
+from lib.response import (send_buttons, button_postback, send_text)
 from .default import story, get_started
 
 logger = logging.getLogger(__name__)
