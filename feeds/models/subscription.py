@@ -34,31 +34,31 @@ class Subscription(Model):
             self.type = Subscription.Type(self.type)
 
     @classmethod
-    def create(cls, psid: str, target: Target, filter_arg: dict, type_arg: Type) -> None:
+    def create(cls, psid: str, target: Target, filter: dict, type: Type) -> None:
         """
         Create subscription entry in database
 
         :param psid: user ID
         :param target:
-        :param filter_arg:
-        :param type_arg:
+        :param filter:
+        :param type:
         :return:
         """
 
         if target not in cls.Target:
             raise ValueError(f'invalid target: {target}')
 
-        if type_arg not in cls.Type:
-            raise ValueError(f'invalid type: {type_arg}')
+        if type not in cls.Type:
+            raise ValueError(f'invalid type: {type}')
 
-        if not isinstance(filter_arg, dict):
-            raise ValueError(f'filter should be dict: {filter_arg}')
+        if not isinstance(filter, dict):
+            raise ValueError(f'filter should be dict: {filter}')
 
         data = {
             'psid': psid,
             'target': target.value,
-            'filter': filter_arg,
-            'type': type_arg.value,
+            'filter': filter,
+            'type': type.value,
         }
 
         cls.collection.replace_one(data, data, upsert=True)
