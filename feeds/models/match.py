@@ -1,5 +1,8 @@
 from datetime import datetime
 
+from itertools import islice
+
+from feeds.models.team import Team
 from lib.flag import flag
 from .. import api
 from lib.mongodb import db
@@ -22,3 +25,25 @@ class Match(FeedModel):
             '%s %s' % (match['match_date'], match['match_time']),
             '%Y-%m-%d %H:%M')
         return match
+
+    @property
+    def txt_podium(self):
+        winner_results = islice(sorted((r for r in self.match_result if r.match_result_at == '0'),
+                                key=(lambda r: int(r.rank))), 3)
+        winner_teams = [Team.by_id(winner.team_id) for winner in winner_results]
+
+        return '\n'.join(
+            '{i} {winner}'.format(
+                i=Match.medal(i + 1),
+                winner=' '.join([winner_team.name,
+                                 flag(winner_team.country.iso)]))
+            for i, winner_team in enumerate(winner_teams))
+
+    @staticmethod
+    def medal(rank):
+        medals = {
+            1: '🥇',
+            2: '🥈',
+            3: '🥉'
+        }
+        return medals[rank]

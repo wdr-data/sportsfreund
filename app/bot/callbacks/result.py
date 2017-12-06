@@ -144,8 +144,6 @@ def api_podium(event, parameters, **kwargs):
               'Folgende Wintersport-Ergebniss hab ich für dich:')
     for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
         if match.finished:
-            results = match.match_result
-            winner_teams = [Team.by_id(winner.team_id) for winner in results[:3]]
 
             reply = 'Ergebnis beim {sport} {discipline} in {town}, {country}, am {day}, {date}:\n'.format(
                 sport='⛷' if sport == 'Ski Alpin' else sport,
@@ -156,12 +154,7 @@ def api_podium(event, parameters, **kwargs):
                 date=meta.datetime.date().strftime('%d.%m.%Y'),
             )
 
-            reply += '\n'.join(
-                '{i} {winner}'.format(
-                    i=medals(i + 1),
-                    winner=' '.join([winner_team.name,
-                                     flag(winner_team.country.iso)]))
-                for i, winner_team in enumerate(winner_teams))
+            reply += match.txt_podium
 
             send_text(sender_id, reply)
         else:
@@ -174,12 +167,6 @@ def api_podium(event, parameters, **kwargs):
 
 
 
-def medals(int):
-    medals = {1: '🥇',
-            2: '🥈',
-            3: '🥉'
-    }
-    return medals[int]
 
 
 def int_to_weekday(int):
