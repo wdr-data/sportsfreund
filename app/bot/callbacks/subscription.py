@@ -145,7 +145,7 @@ def change_subscriptions(event, payload, **kwargs):
     send_list(sender_id, elements, button=button)
 
 
-def unsubscribe(event,payload):
+def unsubscribe(event, payload):
     sender_id = event['sender']['id']
     sub_id = payload['unsubscribe']
 
@@ -154,10 +154,18 @@ def unsubscribe(event,payload):
               'Ich hab dich vom Service abgemeldet')
 
 
+def subscribe_menu(event, payload):
+    sender_id = event['sender']['id']
+    send_text(sender_id, 'Dies ist die Übersicht deiner angemeldeten Services. '
+                         'Du kannst diese jederzeit ändern.')
+    send_subscriptions(event)
+
+
 handlers = [
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe', follow_up=True),
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe'),
     PayloadHandler(manage_subscriptions, ['target', 'state']),
     PayloadHandler(change_subscriptions, ['type']),
-    PayloadHandler(unsubscribe,['unsubscribe'])
+    PayloadHandler(unsubscribe, ['unsubscribe']),
+    PayloadHandler(subscribe_menu, ['subscribe_menu'])
 ]
