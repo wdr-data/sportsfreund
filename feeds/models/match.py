@@ -36,6 +36,15 @@ class Match(FeedModel):
 
         yield from (r for r in self.match_result if Team.by_id(r.team_id).country.name == country)
 
+    def results_by_team(self, team: str) -> Iterable[FeedModel]:
+        """
+        Filter results of this match by team
+        :param team: Full name of the team
+        :returns:
+        """
+
+        yield from (r for r in self.match_result if Team.by_id(r.team_id).name == team)
+
     @property
     def txt_podium(self):
         winner_results = islice(sorted((r for r in self.match_result if r.match_result_at == '0'),
