@@ -19,11 +19,16 @@ context.set_current_config(cfg)
 
 
 def _assemble_task_data(main_task_path, params, interval, queue=None):
-    task_data = {
-        'path': main_task_path,
-        'params': params,
-        'interval': interval
-    }
+    task_data = {}
+
+    if main_task_path is not None:
+        task_data['path'] = main_task_path
+
+    if params is not None:
+        task_data['params'] = params
+
+    if interval is not None:
+        task_data['interval'] = interval
 
     if queue is not None:
         task_data['queue'] = queue
@@ -40,6 +45,11 @@ def add_scheduled(main_task_path, params, interval, queue=None):
         {"$set": task_data},
         upsert=True
     )
+
+
+def get_scheduled(main_task_path=None, params=None, interval=None, queue=None):
+    query = _assemble_task_data(main_task_path, params, interval, queue)
+    return context.connections.mongodb_jobs.mrq_scheduled_jobs.find(query)
 
 
 def remove_scheduled(main_task_path, params, interval, queue=None):
