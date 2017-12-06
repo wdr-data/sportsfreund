@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Generator
+from typing import Iterable
 
 from itertools import islice
 
@@ -27,14 +27,14 @@ class Match(FeedModel):
             '%Y-%m-%d %H:%M')
         return match
 
-    def results_by_country(self, country: str) -> Generator[FeedModel]:
+    def results_by_country(self, country: str) -> Iterable[FeedModel]:
         """
         Filter results of this match by country
         :param country: Full name of the country
         :returns:
         """
 
-        return (r for r in self.match_result if Team.by_id(r.team_id).country.name == country)
+        yield from (r for r in self.match_result if Team.by_id(r.team_id).country.name == country)
 
     @property
     def txt_podium(self):
