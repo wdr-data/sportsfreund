@@ -65,7 +65,7 @@ def api_winner(event, parameters, **kwargs):
     send_text(sender_id,
               'Folgende Wintersport-Ergebniss hab ich für dich:')
     for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
-        if asked_match[0].finished == 'yes':
+        if asked_match[0].finished:
             results = match.match_result
             winner_team = Team.by_id(results[0].team_id)
 
@@ -143,7 +143,7 @@ def api_podium(event, parameters, **kwargs):
         send_text(sender_id,
               'Folgende Wintersport-Ergebniss hab ich für dich:')
     for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
-        if match.finished == 'yes':
+        if match.finished:
             results = match.match_result
             winner_teams = [Team.by_id(winner.team_id) for winner in results[:3]]
 

@@ -17,6 +17,7 @@ class Match(FeedModel):
 
         match['match']['match_result_at'] = match['match_result_at']
         match = match['match']
+        match['finished'] = match['finished'] == 'yes'
         match['datetime'] = datetime.strptime(
             '%s %s' % (match['match_date'], match['match_time']),
             '%Y-%m-%d %H:%M')
