@@ -9,6 +9,10 @@ COPY Pipfile* /worker/
 RUN pipenv install --system
 
 COPY worker /worker
+COPY lib /pythonpkg/lib
+COPY feeds /pythonpkg/feeds
+
+ENV PYTHONPATH=${PYTHONPATH}:/pythonpkg
 
 ENTRYPOINT ["/bin/sh", "-c"]
 CMD ["mrq-worker"]

@@ -222,8 +222,10 @@ class MatchMeta(FeedModel):
         """
         Searches for matches on a specific day and returns details about them
 
-        :param from_date: A `datetime.date` object specifying the earliest date to search
-        :param until_date: A `datetime.date` object specifying the latest date to search
+        :param from_date: A `datetime.date` or `datetime.datetime` object specifying the earliest
+            date to search
+        :param until_date: A `datetime.date` or `datetime.datetime` object specifying the latest
+            date to search
         :param sport: Filter by the name of the sport (eg. "Ski Alpin")
         :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
         :param town: Filter by the name of the town (eg. "Gangneung")
@@ -236,11 +238,15 @@ class MatchMeta(FeedModel):
         }
 
         if from_date:
-            filter['datetime']['$gte'] = datetime(from_date.year, from_date.month, from_date.day)
+            if not isinstance(from_date, datetime):
+                from_date = datetime(from_date.year, from_date.month, from_date.day)
+            filter['datetime']['$gte'] = from_date
 
         if until_date:
-            filter['datetime']['$lte'] = datetime(
-                until_date.year, until_date.month, until_date.day + 1)
+            if not isinstance(until_date, datetime):
+                until_date = datetime(
+                    until_date.year, until_date.month, until_date.day + 1)
+            filter['datetime']['$lte'] = until_date
 
         if not filter['datetime']:
             del filter['datetime']
