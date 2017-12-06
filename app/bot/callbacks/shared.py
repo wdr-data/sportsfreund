@@ -2,9 +2,9 @@
 import logging
 import random
 
+from backend.models import Push, Report, FacebookUser
 from django.utils import timezone
 
-from backend.models import Push, Report, FacebookUser
 from ..response import (send_text, send_attachment_by_id, quick_reply,
                         send_buttons, button_postback)
 from lib.facebook import guess_attachment_type

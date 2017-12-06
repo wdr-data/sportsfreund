@@ -1,15 +1,14 @@
 from ..response import send_text, quick_reply
+import logging
+from datetime import datetime, date, timedelta
+from time import sleep
+
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 
-from time import sleep
-from datetime import datetime, date, timedelta
-
-import logging
 logger=logging.Logger(__name__)
 
 match=Match()
-
 
 def api_next(event, parameters, **kwargs):
     sender_id=event['sender']['id']
