@@ -11,4 +11,4 @@ RUN pipenv install --system
 COPY worker /worker
 
 ENTRYPOINT ["/bin/sh", "-c"]
-CMD ["mrq-worker ${MRQ_QUEUE}"]
+CMD ["mrq-worker"]
