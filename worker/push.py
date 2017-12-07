@@ -9,6 +9,8 @@ from lib.push import Push
 from lib.response import send_text
 from lib import queue
 
+MATCH_CHECK_INTERVAL = 60
+
 
 class UpdateSchedule(Task):
 
@@ -31,7 +33,7 @@ class UpdateSchedule(Task):
         for m in meta:
             queue.add_scheduled("push.UpdateMatch",
                                 {'match_id': m.id, 'start_time': m.datetime},
-                                interval=60)
+                                interval=MATCH_CHECK_INTERVAL)
 
 
 class UpdateMatch(Task):
