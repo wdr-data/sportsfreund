@@ -64,7 +64,7 @@ class Push(Model):
         if not isinstance(target, dict):
             raise ValueError(f'invalid target: {target}')
 
-        if state is not cls.State:
+        if state not in cls.State:
             raise ValueError(f'invalid state: {state}')
 
         if not isinstance(date, datetime):
