@@ -48,11 +48,13 @@ class UpdateMatch(Task):
         """
         match_id = params['match_id']
         match = Match.by_id(match_id, clear_cache=True)
-        if match.finished and not Push.query(target={'match_id': match_id}):
+        if match.finished:
+            if not Push.query(target={'match_id': match_id}):
+                Push.create({'match_id': match_id}, Push.State.SENDING, datetime.now())
+                UpdateMatch.result_push(match)
+                Push.replace({'match_id': match_id}, Push.State.SENT)
+
             queue.remove_scheduled("push.UpdateMatch", params, interval=MATCH_CHECK_INTERVAL)
-            Push.create({'match_id': match_id}, Push.State.SENDING, datetime.now())
-            UpdateMatch.result_push(match)
-            Push.replace({'match_id': match_id}, Push.State.SENT)
 
     @staticmethod
     def result_push(match):
