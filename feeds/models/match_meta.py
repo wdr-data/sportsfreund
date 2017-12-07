@@ -44,6 +44,13 @@ class MatchMeta(FeedModel):
         raise NotImplementedError
 
     @classmethod
+    def by_match_id(cls, match_id):
+        try:
+            return cls.query(id=match_id)[0]
+        except IndexError:
+            return None
+
+    @classmethod
     def load_feed(cls, id, clear_cache=False):
         """
         Load all items in a matches-by-topic-for-season feed if its cache is expired
