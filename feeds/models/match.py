@@ -21,6 +21,7 @@ class Match(FeedModel):
 
         super().__init__(*args, **kwargs)
         self._meta = None
+        self._winner_result = None
 
     @classmethod
     def transform(cls, match):
@@ -72,6 +73,12 @@ class Match(FeedModel):
         return self._meta
 
     @property
+    def winner_result(self):
+        if not self._winner_result:
+            self._winner_result = self.results[0]
+        return self._winner_result
+
+    @property
     def lst_podium(self):
         winner_results = self.results[:3]
         winner_teams = [Team.by_id(winner.team_id) for winner in winner_results]
@@ -89,23 +96,29 @@ class Match(FeedModel):
         )]
 
         for i, (winner_team, winner_result) in enumerate(zip(winner_teams, winner_results)):
-            if not i:
-                point_str = winning_points
-            else:
-                point_str = winner_result.match_result - winning_points
-
-            if self.meta.sport in ['Biathlon']:
-                point_str = Match.fmt_millis(point_str, digits=1)
-            elif self.meta.sport in ['Ski Alpin']:
-                point_str = Match.fmt_millis(point_str, digits=2)
-
             header.append(
                 list_element(
                     f'{Match.medal(i + 1)} {winner_team.name}, {flag(winner_team.country.iso)}',
-                    f'{"+" if i else ""}{point_str}',
+                    f'{self.txt_points(winner_result)}',
                     image_url=Match.medal_pic(i + 1)))
 
         return header
+
+    def txt_points(self, result):
+        if result.rank == 1:
+            point_str = result.match_result
+        else:
+            point_str = result.match_result - self.winner_result.match_result
+
+        if self.meta.sport in ['Biathlon']:
+            point_str = Match.fmt_millis(point_str, digits=1)
+        elif self.meta.sport in ['Ski Alpin']:
+            point_str = Match.fmt_millis(point_str, digits=2)
+
+        if result.rank != 1:
+            point_str = '+' + point_str
+
+        return point_str
 
     @property
     def btn_podium(self):
