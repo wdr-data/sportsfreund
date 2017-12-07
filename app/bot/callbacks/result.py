@@ -162,7 +162,7 @@ def api_podium(event, parameters, **kwargs):
                 sender_id,
                 match.list_podium,
                 top_element_style='large',
-                button=button_postback('Mehr Platzierungen', {'result_details': match_id})
+                button=button_postback('Mehr Platzierungen', {'result_details': match.id})
             )
 
         else:
