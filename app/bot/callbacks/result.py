@@ -42,7 +42,7 @@ def api_winner(event, parameters, **kwargs):
         match_ids = [match.id for match in match_meta]
     else:
         match_meta = [MatchMeta.search_last(discipline=discipline, sport=sport,
-                                           town=town, country=country)]
+                                            town=town, country=country)]
         match_ids = [match.id for match in match_meta if match]
     asked_matches = [Match.by_id(id) for id in match_ids]
 
@@ -80,7 +80,8 @@ def api_winner(event, parameters, **kwargs):
                           discipline=discipline,
                           town=meta.town,
                           country=meta.country,
-                          date='am ' + meta.datetime.date().strftime('%d.%m.%Y') if dtdate.today() != meta.datetime.date() else '',
+                          date='am ' + meta.datetime.date().strftime('%d.%m.%Y')
+                          if dtdate.today() != meta.datetime.date() else '',
                           today='heute' if dtdate.today() == meta.datetime.date() else ''
 
                       ))
@@ -178,11 +179,11 @@ def result_details(event, payload):
     sender_id = event['sender']['id']
     match_id = payload['result_details']
     send_buttons(sender_id,
-              'Wovon denn?',
+                 'Wovon denn?',
                  buttons=[
                      button_postback(f"{flag('DE')} Athleten",
                                      {'result_by_country': 'de', 'match_id': match_id}),
-                     button_postback('Top 10', {'result_top_10': match_id }),
+                     button_postback('Top 10', {'result_top_10': match_id}),
                      button_postback('Anderes Land',
                                      {'result_by_country': None, 'match_id': match_id})
                  ])
@@ -203,7 +204,7 @@ def result_by_country(event, payload):
     if not country:
         send_text(sender_id,
                   'Von welchem Land darf ich dir die platzierten Athleten zeigen?')
-        #dummy to api
+        # dummy to api
         return
 
     send_text(sender_id,
