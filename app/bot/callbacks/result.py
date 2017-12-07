@@ -141,8 +141,8 @@ def api_podium(event, parameters, **kwargs):
         discipline = [discipline] * len(asked_match)
 
     if len(asked_match)>1:
-        send_text(sender_id,
-              'Folgende Wintersport-Ergebniss hab ich für dich:')
+        send_text(sender_id, 'Folgende Wintersport-Ergebnisse hab ich für dich:')
+
     for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
         if match.finished:
 
