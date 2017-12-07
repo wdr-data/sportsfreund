@@ -192,9 +192,17 @@ def result_details(event, payload):
 def result_top_10(event,payload):
     sender_id = event['sender']['id']
     match_id = payload['result_top_10']
+    match = Match.by_id(match_id)
+    results = match.results
+    teams = [Team.by_id(result.team_id) for result in results]
+
+    top_ten = '\n'.join(
+        f'{r.rank} {t.name} {flag(t.country.iso)} {match.txt_points(r)}'
+        for r, t in zip(results, teams))
 
     send_text(sender_id,
-              f'Hier die Top 10 zur match_id {match_id}')
+              f'Hier die Top 10 zu {match.meta.sport} {match.meta.discipline} '
+              f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}')
 
 
 def result_by_country(event, payload):
