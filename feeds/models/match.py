@@ -6,7 +6,7 @@ from itertools import islice
 from feeds.models.match_meta import MatchMeta
 from feeds.models.team import Team
 from lib.flag import flag
-from lib.response import list_element
+from lib.response import list_element, button_postback
 from .. import api
 from lib.mongodb import db
 from .model import FeedModel
@@ -97,6 +97,10 @@ class Match(FeedModel):
                     image_url=Match.medal_pic(i + 1)))
 
         return header
+
+    @property
+    def btn_podium(self):
+        return button_postback('Mehr Platzierungen', {'result_details': self.id})
 
     @property
     def txt_podium(self):
