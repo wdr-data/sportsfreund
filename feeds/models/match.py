@@ -162,4 +162,4 @@ class Match(FeedModel):
         while dt[0] in ('0', ':') and len(dt) > 1:
             dt = dt[1:]
 
-        return f'{dt}.{int(micro) // 10 ** (6 - digits)}'
+        return f'{dt}.{str(int(micro) // 10 ** (6 - digits)).zfill(digits)}'
