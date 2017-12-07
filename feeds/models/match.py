@@ -138,7 +138,7 @@ class Match(FeedModel):
         dt, micro = (datetime(1970, 1, 1) + timedelta(milliseconds=int(t))).strftime(
             '%H:%M:%S.%f').split('.')
 
-        while dt[0] in ('0', ':'):
+        while dt[0] in ('0', ':') and len(dt) > 1:
             dt = dt[1:]
 
         return f'{dt}.{int(micro) // 10 ** (6 - digits)}'
