@@ -59,7 +59,7 @@ class Match(FeedModel):
         return self._meta
 
     @property
-    def list_podium(self):
+    def lst_podium(self):
         winner_results = list(
             islice(
                 sorted(

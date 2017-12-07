@@ -161,7 +161,7 @@ def api_podium(event, parameters, **kwargs):
 
             send_list(
                 sender_id,
-                match.list_podium,
+                match.lst_podium,
                 top_element_style='large',
                 button=button_postback('Mehr Platzierungen', {'result_details': match.id})
             )
