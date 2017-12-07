@@ -23,7 +23,7 @@ class UpdateSchedule(Task):
         """
 
         meta = MatchMeta.search_range(from_date=datetime.now(),
-                                      until_date=datetime.now() + timedelta(days=10))
+                                      until_date=datetime.now() + timedelta(days=2))
 
         meta = [m for m in meta
                 if not queue.get_scheduled("push.UpdateMatch",
