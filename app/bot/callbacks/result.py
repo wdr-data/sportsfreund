@@ -146,14 +146,15 @@ def api_podium(event, parameters, **kwargs):
     for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
         if match.finished:
 
-            reply = 'Ergebnis beim {sport} {discipline} in {town}, {country}, am {day}, {date}:\n'.format(
-                sport='⛷' if sport == 'Ski Alpin' else sport,
-                discipline=discipline,
-                town=meta.town,
-                country=flag(match.venue.country.iso),
-                day=int_to_weekday(meta.datetime.weekday()),
-                date=meta.datetime.date().strftime('%d.%m.%Y'),
-            )
+            reply = 'Ergebnis beim {sport} {discipline} in {town}, {country}, am {day}, {date}:\n'\
+                .format(
+                    sport='⛷' if sport == 'Ski Alpin' else sport,
+                    discipline=discipline,
+                    town=meta.town,
+                    country=flag(match.venue.country.iso),
+                    day=int_to_weekday(meta.datetime.weekday()),
+                    date=meta.datetime.date().strftime('%d.%m.%Y'),
+                )
 
             send_text(sender_id, reply)
 
