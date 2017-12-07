@@ -6,7 +6,7 @@ from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.subscription import Subscription
 from lib.push import Push
-from lib.response import send_text
+from lib.response import send_text, send_list, button_postback
 from lib import queue
 
 MATCH_CHECK_INTERVAL = 60
@@ -76,4 +76,4 @@ class UpdateMatch(Task):
         for uid in user_ids:
             send_text(uid, f'Gerade wurde {meta.sport} {meta.discipline} in {meta.town} beendet.'
                            ' Hier die Ergebnisse frisch aus dem Nadeldrucker:')
-            send_text(uid, match.txt_podium)
+            send_list(uid, match.lst_podium, top_element_style='large', button=match.btn_podium)
