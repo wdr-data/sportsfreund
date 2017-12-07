@@ -34,6 +34,7 @@ def make_event_handler():
     # testing
     handlers.extend(testing.handlers)
     handlers.extend(subscription.handlers)
+    handlers.extend(result.handlers)
 
     handlers.extend([
         ApiAiHandler(greetings, 'gruss'),
