@@ -22,14 +22,14 @@ class MatchMeta(FeedModel):
         'Biathlon': BIATHLON,
     }
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         Match metadata model. Do not create instances using this constructor, only use the
         provided factory methods.
 
         @DynamicAttrs
         """
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def town(self):
