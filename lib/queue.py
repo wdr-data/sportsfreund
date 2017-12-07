@@ -1,7 +1,7 @@
 import datetime
 import os
 from mrq import context, config
-from mrq.job import queue_job
+import mrq.job
 from mrq.scheduler import _hash_task
 
 if not context.get_current_config():
@@ -17,6 +17,9 @@ if not context.get_current_config():
 
     cfg = config.get_config(file_path=file_path)
     context.set_current_config(cfg)
+
+# exported for usage with autoconfiguration
+queue_job = mrq.job.queue_job
 
 
 def _assemble_task_data(main_task_path, params, interval, queue=None):
