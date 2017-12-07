@@ -67,7 +67,7 @@ class Push(Model):
         if state not in cls.State:
             raise ValueError(f'invalid state: {state}')
 
-        if not isinstance(date, datetime):
+        if date is not None and not isinstance(date, datetime):
             raise ValueError(f'invalid date: {date}')
 
         data = {
