@@ -30,7 +30,7 @@ def api_winner(event, parameters, **kwargs):
         date = datetime.strptime(date, '%Y-%m-%d').date()
         match_meta = MatchMeta.search_date(date=date, discipline=discipline,
                                            sport=sport, town=town, country=country)
-        match_id = [match.id for match in match_meta]
+        match_ids = [match.id for match in match_meta]
     elif period and not date:
         from_date = period.split('/')[0]
         from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
@@ -39,14 +39,14 @@ def api_winner(event, parameters, **kwargs):
         match_meta = MatchMeta.search_range(
             from_date=from_date, until_date=until_date, discipline=discipline,sport=sport,
             town=town, country=country)
-        match_id = [match.id for match in match_meta]
+        match_ids = [match.id for match in match_meta]
     else:
         match_meta = [MatchMeta.search_last(discipline=discipline, sport=sport,
                                            town=town, country=country)]
-        match_id = [match.id for match in match_meta if match]
-    asked_match = [Match.by_id(id) for id in match_id]
+        match_ids = [match.id for match in match_meta if match]
+    asked_matches = [Match.by_id(id) for id in match_ids]
 
-    if not asked_match:
+    if not asked_matches:
         send_text(sender_id,
                   'In dem angefragten Zeitraum haben keine Wettkämpfe stattgefunden.')
         return
@@ -58,15 +58,15 @@ def api_winner(event, parameters, **kwargs):
         sport = [match.sport for match in match_meta]
 
     if not isinstance(sport, list):
-        sport = [sport] * len(asked_match)
+        sport = [sport] * len(asked_matches)
 
     if not isinstance(discipline, list):
-        discipline = [discipline] * len(asked_match)
+        discipline = [discipline] * len(asked_matches)
 
     send_text(sender_id,
               'Folgende Wintersport-Ergebniss hab ich für dich:')
-    for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
-        if asked_match[0].finished:
+    for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
+        if asked_matches[0].finished:
             results = match.match_result
             winner_team = Team.by_id(results[0].team_id)
 
@@ -106,7 +106,7 @@ def api_podium(event, parameters, **kwargs):
         date = datetime.strptime(date, '%Y-%m-%d').date()
         match_meta = MatchMeta.search_date(
             date=date, discipline=discipline, sport=sport, town=town, country=country)
-        match_id = [match.id for match in match_meta]
+        match_ids = [match.id for match in match_meta]
     elif period and not date:
         from_date = period.split('/')[0]
         from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
@@ -115,14 +115,14 @@ def api_podium(event, parameters, **kwargs):
         match_meta = MatchMeta.search_range(
             from_date=from_date, until_date=until_date, discipline=discipline,
             sport=sport, town=town, country=country)
-        match_id = [match.id for match in match_meta]
+        match_ids = [match.id for match in match_meta]
     else:
         match_meta = [MatchMeta.search_last(
             discipline=discipline, sport=sport, town=town, country=country)]
-        match_id = [match.id for match in match_meta if match]
-    asked_match = [Match.by_id(id) for id in match_id]
+        match_ids = [match.id for match in match_meta if match]
+    asked_matches = [Match.by_id(id) for id in match_ids]
 
-    if not asked_match:
+    if not asked_matches:
         send_text(sender_id,
                   'In dem angefragten Zeitraum hat kein Wettkampf'
                   f'{(" in der Disziplin " + discipline) if discipline else ""} stattgefunden.')
@@ -135,15 +135,15 @@ def api_podium(event, parameters, **kwargs):
         sport = [match.sport for match in match_meta]
 
     if not isinstance(sport, list):
-        sport = [sport] * len(asked_match)
+        sport = [sport] * len(asked_matches)
 
     if not isinstance(discipline, list):
-        discipline = [discipline] * len(asked_match)
+        discipline = [discipline] * len(asked_matches)
 
-    if len(asked_match)>1:
+    if len(asked_matches)>1:
         send_text(sender_id, 'Folgende Wintersport-Ergebnisse hab ich für dich:')
 
-    for match, meta, sport, discipline in zip(asked_match, match_meta, sport, discipline):
+    for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
         if match.finished:
 
             reply = 'Ergebnis beim {sport} {discipline} in {town}, {country}, am {day}, {date}:\n'\
