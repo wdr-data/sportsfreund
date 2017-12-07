@@ -2,11 +2,12 @@ import logging
 from datetime import date as dtdate
 from datetime import datetime
 
+from ..handlers.payloadhandler import PayloadHandler
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.team import Team
 from lib.flag import flag
-from lib.response import send_text
+from lib.response import send_text, send_list, button_postback, send_buttons
 
 logger = logging.Logger(__name__)
 
@@ -154,9 +155,15 @@ def api_podium(event, parameters, **kwargs):
                 date=meta.datetime.date().strftime('%d.%m.%Y'),
             )
 
-            reply += match.txt_podium
-
             send_text(sender_id, reply)
+
+            send_list(
+                sender_id,
+                match.list_podium,
+                top_element_style='large',
+                button=button_postback('Mehr Platzierungen', {'result_details': match_id})
+            )
+
         else:
             send_text(sender_id,
                       'Das Event {sport} {discipline} wurde noch nicht beendet. '
@@ -166,7 +173,40 @@ def api_podium(event, parameters, **kwargs):
                       ))
 
 
+def result_details(event, payload):
+    sender_id = event['sender']['id']
+    match_id = payload['result_details']
+    send_buttons(sender_id,
+              'Wovon denn?',
+                 buttons=[
+                     button_postback(f"{flag('DE')} Athleten",
+                                     {'result_by_country': 'de', 'match_id': match_id}),
+                     button_postback('Top 10', {'result_top_10': match_id }),
+                     button_postback('Anderes Land',
+                                     {'result_by_country': None, 'match_id': match_id})
+                 ])
 
+
+def result_top_10(event,payload):
+    sender_id = event['sender']['id']
+    match_id = payload['result_top_10']
+
+    send_text(sender_id,
+              f'Hier die Top 10 zur match_id {match_id}')
+
+
+def result_by_country(event, payload):
+    sender_id = event['sender']['id']
+    country = payload['result_by_country']
+
+    if not country:
+        send_text(sender_id,
+                  'Von welchem Land darf ich dir die platzierten Athleten zeigen?')
+        #dummy to api
+        return
+
+    send_text(sender_id,
+              f'Hier die Athleten aus Country {country}')
 
 
 def int_to_weekday(int):
@@ -182,3 +222,10 @@ def int_to_weekday(int):
         21: 'Woche'
     }
     return day[int]
+
+
+handlers = [
+    PayloadHandler(result_details, ['result_details']),
+    PayloadHandler(result_by_country, ['result_by_country', 'match_id']),
+    PayloadHandler(result_top_10, ['result_top_10'])
+]
