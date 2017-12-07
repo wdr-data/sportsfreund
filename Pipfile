@@ -36,6 +36,9 @@ django-storages = "*"
 "boto3" = "*"
 redis = "*"
 mrq = "*"
+"beautifulsoup4" = "*"
+"m3u8" = "*"
+lxml = "*"
 
 
 [dev-packages]

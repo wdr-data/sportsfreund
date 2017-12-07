@@ -1,7 +1,7 @@
 FROM python:3.6-alpine
 
-RUN apk --no-cache add musl-dev linux-headers g++ tini postgresql-dev && \
-    pip install numpy pipenv # installing beforehand so it can get cached by docker
+RUN apk --no-cache add musl-dev linux-headers g++ gcc tini postgresql-dev libxslt-dev libxml2-dev \
+    && pip install numpy lxml pipenv # installing beforehand so it can get cached by docker
 
 COPY Pipfile* /app/
 
