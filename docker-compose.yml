@@ -112,7 +112,6 @@ services:
       - "5555:5555"
     env_file: .env
     environment:
-      MRQ_QUEUE: "facebook"
       MONGODB_URI: "mongodb://mongo:27017/main"
       REDIS_URL: "redis://redis:6379"
     depends_on:
