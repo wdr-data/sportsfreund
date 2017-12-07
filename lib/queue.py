@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import os
 from mrq import context, config
 import mrq.job
@@ -40,10 +40,15 @@ def _assemble_task_data(main_task_path, params, interval, queue=None):
     return task_data
 
 
-def add_scheduled(main_task_path, params, interval, queue=None):
+def add_scheduled(main_task_path, params, interval, start_at=None, queue=None):
     task_data = _assemble_task_data(main_task_path, params, interval, queue)
-    task_data["datelastqueued"] = datetime.datetime.fromtimestamp(0)
     task_data['hash'] = _hash_task(task_data)
+
+    if isinstance(start_at, datetime):
+        task_data["datelastqueued"] = start_at
+    else:
+        task_data["datelastqueued"] = datetime.fromtimestamp(0)
+
     context.connections.mongodb_jobs.mrq_scheduled_jobs.update_one(
         {'hash': task_data['hash']},
         {"$set": task_data},

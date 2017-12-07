@@ -33,6 +33,7 @@ class UpdateSchedule(Task):
         for m in meta:
             queue.add_scheduled("push.UpdateMatch",
                                 {'match_id': m.id, 'start_time': m.datetime},
+                                start_at=m.datetime,
                                 interval=MATCH_CHECK_INTERVAL)
 
 
