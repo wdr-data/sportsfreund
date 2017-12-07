@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Iterable
+from typing import Iterable, List
 
 from itertools import islice
 
@@ -36,21 +36,31 @@ class Match(FeedModel):
 
     def results_by_country(self, country: str) -> Iterable[FeedModel]:
         """
-        Filter results of this match by country
+        Filter end results of this match by country
         :param country: Full name of the country
         :returns:
         """
 
-        yield from (r for r in self.match_result if Team.by_id(r.team_id).country.name == country)
+        yield from (r for r in self.results if Team.by_id(r.team_id).country.name == country)
 
     def results_by_team(self, team: str) -> Iterable[FeedModel]:
         """
-        Filter results of this match by team
+        Filter end results of this match by team
         :param team: Full name of the team
         :returns:
         """
 
-        yield from (r for r in self.match_result if Team.by_id(r.team_id).name == team)
+        yield from (r for r in self.results if Team.by_id(r.team_id).name == team)
+
+    @property
+    def results(self) -> List[FeedModel]:
+        """
+        Returns ordered end results
+        :return:
+        """
+        return sorted(
+            (r for r in self.match_result if r.match_result_at == '0'),
+            key=(lambda r: int(r.rank)))
 
     @property
     def meta(self):
@@ -60,11 +70,7 @@ class Match(FeedModel):
 
     @property
     def lst_podium(self):
-        winner_results = list(
-            islice(
-                sorted(
-                    (r for r in self.match_result if r.match_result_at == '0'),
-                    key=(lambda r: int(r.rank))), 3))
+        winner_results = self.results[:3]
         winner_teams = [Team.by_id(winner.team_id) for winner in winner_results]
 
         for r in winner_results:
@@ -104,8 +110,7 @@ class Match(FeedModel):
 
     @property
     def txt_podium(self):
-        winner_results = islice(sorted((r for r in self.match_result if r.match_result_at == '0'),
-                                key=(lambda r: int(r.rank))), 3)
+        winner_results = self.results[:3]
         winner_teams = [Team.by_id(winner.team_id) for winner in winner_results]
 
         return '\n'.join(
