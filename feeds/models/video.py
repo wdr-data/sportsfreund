@@ -20,7 +20,7 @@ class Video(Model):
     """
 
     collection = db.videos
-    cache_time = 60 * 60
+    cache_time = 60
 
     @classmethod
     def by_id(cls, id: str, clear_cache: bool=False):
@@ -82,6 +82,16 @@ class Video(Model):
 
         for e in feed.find_all('entry'):
 
+            entry_id = e.id.string
+            updated = datetime.strptime(e.updated.string, '%Y-%m-%dT%H:%M:%SZ')
+
+            # Load video from db to check if it was updated in feed
+            query = cls.query(id=entry_id)  # Don't use by_id to prevent feed update loop
+
+            if query:
+                if query[0].updated == updated:
+                    continue
+
             href = e.link['href']
 
             r = requests.get(href)
@@ -113,16 +123,17 @@ class Video(Model):
 
             cls.collection.replace_one(
                 {
-                    'id': e.id.string
+                    'id': entry_id
                 },
                 {
-                    'id': e.id.string,
+                    'id': entry_id,
                     'title': e.title.string,
                     'summary': e.summary.string,
                     'video_url': video_url,
                     'duration': duration,
                     'keywords': keywords,
                     'published': datetime.strptime(e.published.string, '%Y-%m-%dT%H:%M:%SZ'),
+                    'updated': updated,
                 }
                 , upsert=True)
 
