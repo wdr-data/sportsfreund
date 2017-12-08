@@ -10,6 +10,7 @@ def api_subscribe(event, parameters, **kwargs):
     sender_id = event['sender']['id']
     sport = parameters.get('sport')
     discipline = parameters.get('discipline')
+    athlete = parameters.get('')
 
     if not sport:
         send_text(sender_id,

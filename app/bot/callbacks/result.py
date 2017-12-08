@@ -211,7 +211,7 @@ def result_total(event, payload):
     send_buttons(sender_id,
                  f'Hier die Top 10 zu {match.meta.sport} {match.meta.discipline} '
                  f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}',
-                 buttons=button)
+                 buttons=[button])
 
 
 def result_by_country(event, payload):
