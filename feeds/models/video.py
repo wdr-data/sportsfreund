@@ -3,7 +3,6 @@ import json
 import m3u8
 import re
 from time import time
-import logging
 from urllib.parse import urlparse
 
 import os
@@ -91,8 +90,8 @@ class Video(Model):
                 page = BeautifulSoup(r.content.decode(), 'lxml')
 
             else:
-                logging.error(f"Video page {href} failed to load with status code "
-                              f"{r.status_code}")
+                cls.logger.error(f"Video page {href} failed to load with status code "
+                                 f"{r.status_code}")
                 continue
 
             try:
@@ -107,7 +106,7 @@ class Video(Model):
                 ).total_seconds())
 
             except:
-                logging.exception(f'Page {href} failed to parse')
+                cls.logger.exception(f'Page {href} failed to parse')
                 continue
 
             video_url = Video.extract_video_url(page)
