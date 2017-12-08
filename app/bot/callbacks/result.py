@@ -192,7 +192,7 @@ def result_details(event, payload):
 def result_total(event, payload):
     sender_id = event['sender']['id']
     step = payload['step']
-    match_id = payload['result_top_10']
+    match_id = payload['result_total']
     match = Match.by_id(match_id)
 
     if step == 'top_10':
