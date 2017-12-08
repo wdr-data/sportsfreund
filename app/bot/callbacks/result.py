@@ -107,7 +107,7 @@ def api_podium(event, parameters, **kwargs):
     if date and not period:
         date = datetime.strptime(date, '%Y-%m-%d').date()
         match_meta = MatchMeta.search_date(
-            date=date, discipline=discipline, sport=sport, town=town, country=country, finished=False)
+            date=date, discipline=discipline, sport=sport, town=town, country=country)
         match_ids = [match.id for match in match_meta]
     elif period and not date:
         from_date = period.split('/')[0]
@@ -116,11 +116,11 @@ def api_podium(event, parameters, **kwargs):
         until_date = datetime.strptime(until_date, '%Y-%m-%d').date()
         match_meta = MatchMeta.search_range(
             from_date=from_date, until_date=until_date, discipline=discipline,
-            sport=sport, town=town, country=country, finished=False)
+            sport=sport, town=town, country=country)
         match_ids = [match.id for match in match_meta]
     else:
         match_meta = [MatchMeta.search_last(
-            discipline=discipline, sport=sport, town=town, country=country, finished=False)]
+            discipline=discipline, sport=sport, town=town, country=country)]
         match_ids = [match.id for match in match_meta if match]
     asked_matches = [Match.by_id(id) for id in match_ids]
 
@@ -146,6 +146,8 @@ def api_podium(event, parameters, **kwargs):
         send_text(sender_id, 'Folgende Wintersport-Ergebnisse hab ich für dich:')
 
     for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
+        if match.finished:
+
             reply = '{sport} {discipline} in {town} {country} am {day}, {date}:\n'\
                 .format(
                     sport='⛷' if sport == 'Ski Alpin' else sport,
@@ -164,6 +166,14 @@ def api_podium(event, parameters, **kwargs):
                 top_element_style='large',
                 button=match.btn_podium
             )
+
+        else:
+            send_text(sender_id,
+                      'Das Event {sport} {discipline} wurde noch nicht beendet. '
+                      'Frage später erneut.'.format(
+                          sport=sport,
+                          discipline=discipline
+                      ))
 
 
 def result_details(event, payload):
