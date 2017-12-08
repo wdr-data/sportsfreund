@@ -8,7 +8,7 @@ from lib.config import FB_PAGE_TOKEN
 from lib.response import send_text
 # dirty
 from .callbacks import dirty
-from .callbacks import result, calender, olympia, subscription
+from .callbacks import result, calender, olympia, subscription, video
 from .callbacks import testing
 from .callbacks.default import (
     get_started, start_message, greetings, push, push_step, subscribe, unsubscribe, share_bot,
@@ -35,6 +35,7 @@ def make_event_handler():
     handlers.extend(testing.handlers)
     handlers.extend(subscription.handlers)
     handlers.extend(result.handlers)
+    handlers.extend(video.handlers)
 
     handlers.extend([
         ApiAiHandler(greetings, 'gruss'),
