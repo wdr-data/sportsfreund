@@ -14,7 +14,7 @@ def api_asking(event, parameters, **kwargs):
     sender_id = event['sender']['id']
 
     keywords = list(param for param in parameters.values() if param)
-    vid = Video.by_keyword(keywords)
+    vid = Video.by_keyword(keywords, max_duration=30)
 
     send_text(sender_id, 'Ich schaue mal in meinen Archiven... 🔍')
 
