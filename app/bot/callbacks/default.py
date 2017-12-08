@@ -61,9 +61,8 @@ def korea_standard_time(event, **kwargs):
 
 def get_started(event, **kwargs):
     sender_id = event['sender']['id']
-    reply = """
-Hallo, ich bin der Wintersport Dienst der Sportschau. Im Moment kenne ich nur Ski-Alpin und Biathlon
- Ergebnisse, da ich noch entwickelt werde. Was möchtest Du:"""
+    reply = ("Hallo, ich bin der Wintersport Dienst der Sportschau. Im Moment kenne ich nur Ski-Alpin und Biathlon"
+             "Ergebnisse, da ich noch entwickelt werde. Was möchtest Du:")
     next_state = 'step_one'
 
     send_buttons(sender_id, reply,
