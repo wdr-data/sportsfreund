@@ -2,12 +2,13 @@ import logging
 from datetime import date as dtdate
 from datetime import datetime
 
+from lib.model import Model
 from ..handlers.payloadhandler import PayloadHandler
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.team import Team
 from lib.flag import flag
-from lib.response import send_text, send_list, button_postback, send_buttons
+from lib.response import send_text, send_list, button_postback, send_buttons, quick_reply
 
 logger = logging.Logger(__name__)
 
@@ -182,8 +183,8 @@ def result_details(event, payload):
                  'Wovon denn?',
                  buttons=[
                      button_postback(f"{flag('DE')} Athleten",
-                                     {'result_by_country': 'de', 'match_id': match_id}),
-                     button_postback('Top 10', {'result_total': match_id, 'step': 'top_10'}),
+                                     {'result_by_country': 'Deutschland', 'match_id': match_id}),
+                     button_postback('Top 10', {'result_top_10': match_id}),
                      button_postback('Anderes Land',
                                      {'result_by_country': None, 'match_id': match_id})
                  ])
@@ -223,16 +224,38 @@ def result_total(event, payload):
 
 def result_by_country(event, payload):
     sender_id = event['sender']['id']
-    country = payload['result_by_country']
+    country_name = payload['result_by_country']
+    match_id = payload['match_id']
 
-    if not country:
+    if not country_name:
+        match = Match.by_id(match_id)
+        countries = list({Team.by_id(result.team_id).country for result in match.results})[:10]
+
+        quick = [quick_reply(f'{c.code} {flag(c.iso)}',
+                             {'result_by_country' : c.name, 'match_id': match_id})
+                 for c in countries]
         send_text(sender_id,
-                  'Von welchem Land darf ich dir die platzierten Athleten zeigen?')
-        # dummy to api
+                  'Von welchem Land darf ich dir die platzierten Athleten zeigen?',
+                  quick_replies=quick)
         return
 
+    country = Model(Team.collection.find_one({'country': {'name': country_name}})['country'])
+    match = Match.by_id(match_id)
+    results = match.results_by_country(country.name)
+    if not results:
+        send_text(sender_id,
+                  f'Es hat kein Athlet aus {country.code} {flag(country.iso)} das Rennen beendet.')
+        return
+
+    teams = [Team.by_id(result.team_id) for result in results]
+
+    athletes_by_country = '\n'.join(
+        f'{r.rank}. {t.name} {match.txt_points(r)}'
+        for r, t in zip(results, teams))
+
     send_text(sender_id,
-              f'Hier die Athleten aus Country {country}')
+              f'Hier die Ergebnisse der Athleten aus {flag(country.iso)}in'
+              f'in {match.meta.town}: \n\n{athletes_by_country}')
 
 
 def int_to_weekday(int):
