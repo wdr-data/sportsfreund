@@ -43,6 +43,7 @@ class Video(Model):
     def by_keyword(cls,
                    keywords: TypeVar('str or list of str', str, List[str]),
                    limit: int=1,
+                   max_duration=240,
                    clear_cache: bool=False,
                    ):
         """
@@ -51,6 +52,7 @@ class Video(Model):
 
         :param keywords: Single keyword or list of keywords
         :param limit: Number of results. Default is ``1``
+        :param max_duration: Maximum allowed video duration in seconds
         :param clear_cache: If the feed should be reloaded before the search. Default is ``False``
         :return: Single ``Video`` or None, if ``limit`` is ``1``, else a list of ``Video``
         """
@@ -63,7 +65,10 @@ class Video(Model):
             keywords = [item for sublist in keywords for item in sublist]  # Flatten list
 
         cur = cls.collection.find(
-            {'keywords': {'$all': keywords}}
+            {
+                'keywords': {'$all': keywords},
+                'duration': {'$lte': max_duration},
+            }
         ).sort(
             'published', pymongo.DESCENDING
         ).limit(limit)
