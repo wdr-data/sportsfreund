@@ -229,32 +229,37 @@ def result_by_country(event, payload):
 
     if not country_name:
         match = Match.by_id(match_id)
-        countries = list({Team.by_id(result.team_id).country for result in match.results})[:10]
+        countries_all = [Team.by_id(result.team_id).country for result in match.results]
+        countries = []
+        for c in countries_all:
+            if c in countries:
+                countries.append(c)
 
         quick = [quick_reply(f'{c.code} {flag(c.iso)}',
                              {'result_by_country' : c.name, 'match_id': match_id})
-                 for c in countries]
+                 for c in countries[:10]]
+
         send_text(sender_id,
                   'Von welchem Land darf ich dir die platzierten Athleten zeigen?',
                   quick_replies=quick)
         return
 
-    country = Model(Team.collection.find_one({'country': {'name': country_name}})['country'])
     match = Match.by_id(match_id)
-    results = match.results_by_country(country.name)
+    results = match.results_by_country(country_name)
     if not results:
         send_text(sender_id,
-                  f'Es hat kein Athlet aus {country.code} {flag(country.iso)} das Rennen beendet.')
+                  f'Es hat kein Athlet aus {country_name} das Rennen beendet.')
         return
 
     teams = [Team.by_id(result.team_id) for result in results]
+    country = teams[0].country
 
     athletes_by_country = '\n'.join(
         f'{r.rank}. {t.name} {match.txt_points(r)}'
         for r, t in zip(results, teams))
 
     send_text(sender_id,
-              f'Hier die Ergebnisse der Athleten aus {flag(country.iso)}in'
+              f'Hier die Ergebnisse der Athleten aus {country.code} {flag(country.iso)}in'
               f'in {match.meta.town}: \n\n{athletes_by_country}')
 
 
