@@ -197,10 +197,12 @@ def result_total(event, payload):
 
     if step == 'top_10':
         results = match.results[:10]
-        button = button_postback('Und der Rest?', {'result_rest': match_id, 'step': 'from_11'})
-    elif step == 'from_11':
+        button = button_postback('Und der Rest?', {'result_rest': match_id, 'step': None})
+        result_kind = 'Top 10'
+    else:
         results = match.result[11:]
-        button = None
+        button =
+        result_kind = 'restlichen Ergebnisse'
 
     teams = [Team.by_id(result.team_id) for result in results]
 
@@ -209,7 +211,7 @@ def result_total(event, payload):
         for r, t in zip(results, teams))
 
     send_buttons(sender_id,
-                 f'Hier die Top 10 zu {match.meta.sport} {match.meta.discipline} '
+                 f'Hier die {result_kind} zu {match.meta.sport} {match.meta.discipline} '
                  f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}',
                  buttons=[button])
 
