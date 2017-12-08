@@ -119,7 +119,7 @@ class MatchMeta(FeedModel):
         return True
 
     @classmethod
-    def _search(cls, base_filter, sport, discipline, town, country, **kwargs):
+    def _search(cls, base_filter, sport, discipline, town, country):
 
         if sport is not None:
             id = cls.TOPIC_IDS[sport]
@@ -128,7 +128,6 @@ class MatchMeta(FeedModel):
             cls.logger.warning('TODO check feeds with only discipline')
 
         filter = base_filter.copy()
-        filter.update(kwargs)
 
         if sport is not None:
             filter['sport'] = sport
@@ -145,7 +144,7 @@ class MatchMeta(FeedModel):
         return cls.collection.find(filter)
 
     @classmethod
-    def search_last(cls, *, sport=None, discipline=None, town=None, country=None, finished=None):
+    def search_last(cls, *, sport=None, discipline=None, town=None, country=None):
         """
         Searches the last match and returns details about it
 
@@ -163,7 +162,7 @@ class MatchMeta(FeedModel):
         }
 
         cursor = cls._search(
-            filter, sport, discipline, town, country, finished=finished).sort([("datetime", -1)]).limit(1)
+            filter, sport, discipline, town, country).sort([("datetime", -1)]).limit(1)
 
         if cursor and cursor.count():
             result = cursor.next()
@@ -197,7 +196,7 @@ class MatchMeta(FeedModel):
             return cls(**result)
 
     @classmethod
-    def search_date(cls, date, *, sport=None, discipline=None, town=None, country=None, finished=None):
+    def search_date(cls, date, *, sport=None, discipline=None, town=None, country=None):
         """
         Searches for matches on a specific day and returns details about them
 
@@ -213,13 +212,13 @@ class MatchMeta(FeedModel):
             'match_date': date.isoformat(),
         }
 
-        cursor = cls._search(filter, sport, discipline, town, country, finished=finished).sort([("datetime", 1)])
+        cursor = cls._search(filter, sport, discipline, town, country).sort([("datetime", 1)])
 
         return [cls(**result) for result in cursor]
 
     @classmethod
     def search_range(cls, *, from_date=None, until_date=None, sport=None, discipline=None,
-                     town=None, country=None, finished=None):
+                     town=None, country=None):
         """
         Searches for matches on a specific day and returns details about them
 
@@ -252,6 +251,6 @@ class MatchMeta(FeedModel):
         if not filter['datetime']:
             del filter['datetime']
 
-        cursor = cls._search(filter, sport, discipline, town, country, finished=finished).sort([("datetime", 1)])
+        cursor = cls._search(filter, sport, discipline, town, country).sort([("datetime", 1)])
 
         return [cls(**result) for result in cursor]
