@@ -12,6 +12,7 @@ def api_subscribe(event, parameters, **kwargs):
     discipline = parameters.get('discipline')
     first_name = parameters.get('first_name')
     last_name = parameters.get('last_name')
+    athlete = None
 
     if last_name and first_name:
         athlete = ' '.join([first_name, last_name])
