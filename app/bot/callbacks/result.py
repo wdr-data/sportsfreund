@@ -184,7 +184,7 @@ def result_details(event, payload):
                  buttons=[
                      button_postback(f"Deutsche Sportler",
                                      {'result_by_country': 'Deutschland', 'match_id': match_id}),
-                     button_postback('Top 10', {'result_top_10': match_id}),
+                     button_postback('Top 10', {'result_total': match_id, 'step': 'top_10'}),
                      button_postback('Anderes Land',
                                      {'result_by_country': None, 'match_id': match_id})
                  ])
