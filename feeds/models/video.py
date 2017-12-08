@@ -1,6 +1,8 @@
 import json
+from typing import TypeVar, List
 
 import m3u8
+import pymongo
 import re
 from time import time
 from urllib.parse import urlparse
@@ -38,10 +40,43 @@ class Video(Model):
         return cls(**obj)
 
     @classmethod
-    def by_keyword(cls, keyword: str, clear_cache: bool=False):
-        """Case insensitive search. Find all videos with the keyword."""
+    def by_keyword(cls,
+                   keywords: TypeVar('str or list of str', str, List[str]),
+                   limit: int=1,
+                   clear_cache: bool=False,
+                   ):
+        """
+        Case insensitive search ordered by date published, showing latest first.
+        Searches for videos that are tagged with all the keywords passed.
+
+        :param keywords: Single keyword or list of keywords
+        :param limit: Number of results. Default is ``1``
+        :param clear_cache: If the feed should be reloaded before the search. Default is ``False``
+        :return: Single ``Video`` or None, if ``limit`` is ``1``, else a list of ``Video``
+        """
         cls.load_feed(clear_cache=clear_cache)
-        return cls.query(keywords={'$all': keyword.lower().split()})
+
+        if isinstance(keywords, str):
+            keywords = keywords.lower().split()
+        else:
+            keywords = [kw.lower().split() for kw in keywords]
+            keywords = [item for sublist in keywords for item in sublist]  # Flatten list
+
+        cur = cls.collection.find(
+            {'keywords': {'$all': keywords}}
+        ).sort(
+            'published', pymongo.DESCENDING
+        ).limit(limit)
+
+        results = list(cur)
+
+        if limit == 1:
+            if results:
+                return cls(results[0])
+            else:
+                return None
+        else:
+            return [cls(r) for r in results]
 
     @classmethod
     def load_feed(cls, clear_cache: bool=False):
