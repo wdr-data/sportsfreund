@@ -5,6 +5,7 @@ from time import sleep
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from lib.response import send_text
+from lib.flag import flag
 
 logger = logging.Logger(__name__)
 
