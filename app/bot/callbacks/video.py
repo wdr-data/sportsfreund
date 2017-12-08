@@ -13,7 +13,7 @@ NO_VIDEO_FOUND = [
 def api_asking(event, parameters, **kwargs):
     sender_id = event['sender']['id']
 
-    keywords = list(parameters.values())
+    keywords = list(param for param in parameters.values() if param)
     vid = Video.by_keyword(keywords)
 
     send_text(sender_id, 'Ich schaue mal in meinen Archiven... 🔍')
