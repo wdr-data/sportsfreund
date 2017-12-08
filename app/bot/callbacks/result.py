@@ -183,26 +183,35 @@ def result_details(event, payload):
                  buttons=[
                      button_postback(f"{flag('DE')} Athleten",
                                      {'result_by_country': 'de', 'match_id': match_id}),
-                     button_postback('Top 10', {'result_top_10': match_id}),
+                     button_postback('Top 10', {'result_total': match_id, 'step': 'top_10'}),
                      button_postback('Anderes Land',
                                      {'result_by_country': None, 'match_id': match_id})
                  ])
 
 
-def result_top_10(event,payload):
+def result_total(event, payload):
     sender_id = event['sender']['id']
+    step = payload['step']
     match_id = payload['result_top_10']
     match = Match.by_id(match_id)
-    results = match.results[:10]
+
+    if step == 'top_10':
+        results = match.results[:10]
+        button = button_postback('Und der Rest?', {'result_rest': match_id, 'step': 'from_11'})
+    elif step == 'from_11':
+        results = match.result[11:]
+        button = None
+
     teams = [Team.by_id(result.team_id) for result in results]
 
     top_ten = '\n'.join(
         f'{r.rank}. {t.name} {flag(t.country.iso)} {match.txt_points(r)}'
         for r, t in zip(results, teams))
 
-    send_text(sender_id,
-              f'Hier die Top 10 zu {match.meta.sport} {match.meta.discipline} '
-              f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}')
+    send_buttons(sender_id,
+                 f'Hier die Top 10 zu {match.meta.sport} {match.meta.discipline} '
+                 f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}',
+                 buttons=button)
 
 
 def result_by_country(event, payload):
@@ -237,5 +246,5 @@ def int_to_weekday(int):
 handlers = [
     PayloadHandler(result_details, ['result_details']),
     PayloadHandler(result_by_country, ['result_by_country', 'match_id']),
-    PayloadHandler(result_top_10, ['result_top_10'])
+    PayloadHandler(result_total, ['result_total', 'step']),
 ]
