@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, date, timedelta
 from time import sleep
+from pycountry import countries
 
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
@@ -155,7 +156,7 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
     gender = 'der Damen ' if match_meta.gender == 'female' \
         else ('der Herren' if match_meta.gender == 'male'  else '')
 
-    country = pycountry.countries.get(alpha_3=match_meta.venue.country.code)
+    country = countries.get(alpha_3=match_meta.venue.country.code)
 
     send_text(sender_id,
               f"Am {int_to_weekday(d_date.weekday())}, {d_date.strftime('%d.%m.%Y')} um {match_meta.match_time} Uhr:"
