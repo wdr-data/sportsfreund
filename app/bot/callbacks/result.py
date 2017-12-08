@@ -182,7 +182,7 @@ def result_details(event, payload):
     send_buttons(sender_id,
                  'Was interessiert dich?',
                  buttons=[
-                     button_postback(f"{flag('DE')} Athleten",
+                     button_postback(f"Deutsche Sportler",
                                      {'result_by_country': 'Deutschland', 'match_id': match_id}),
                      button_postback('Top 10', {'result_top_10': match_id}),
                      button_postback('Anderes Land',
