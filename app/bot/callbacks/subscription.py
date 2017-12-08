@@ -13,12 +13,18 @@ def api_subscribe(event, parameters, **kwargs):
     first_name = parameters.get('first_name')
     last_name = parameters.get('last_name')
 
-    athlete = ' '.join([first_name, last_name])
+    if last_name and first_name:
+        athlete = ' '.join([first_name, last_name])
 
-    if not sport and not athlete:
+    if not sport and not first_name and not last_name:
         send_text(sender_id,
                   'Wofür möchtest du dich anmelden? Nenne mir einen Athleten oder '
                   'eine Sportart. Ich habe Infos zu Ski Alpin oder Biathlon.')
+        return
+    elif (last_name and not first_name) or (first_name and not last_name):
+        send_text(sender_id,
+                  'Wenn du dich für die Ergebnisse eines Athleten anmelden möchtest, '
+                  'schicke mir den Vor- und Nachnamen. Nur um Verwechslungen zu vermeiden ;)')
         return
 
     subscribe_flow(event, sport, discipline, athlete)
