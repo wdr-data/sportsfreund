@@ -87,7 +87,7 @@ Wenn Du mich etwas fragen möchtest, schreib mir eine Nachricht. Du kannst zum B
         send_buttons(sender_id, reply,
                      buttons=[
                         #button_postback('Ergebnis letztes Rennen', {'start_message': 'step_two'}),
-                        button_postback('Ergebnis letztes Rennen', {'start_message': 'step_two'}),
+                        button_postback("Was gibt's noch?", {'start_message': 'step_two'}),
 
                      ])
     elif state == 'step_two':
