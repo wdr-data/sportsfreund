@@ -98,7 +98,7 @@ class Match(FeedModel):
         for i, (winner_team, winner_result) in enumerate(zip(winner_teams, winner_results)):
             header.append(
                 list_element(
-                    f'{Match.medal(i + 1)} {winner_team.name}, {flag(winner_team.country.iso)}',
+                    f'{Match.medal(i + 1)} {winner_team.name}, {flag(winner_team.country.iso)} {winner_team.country.code}',
                     f'{self.txt_points(winner_result)}',
                     image_url=Match.medal_pic(i + 1)))
 
@@ -133,7 +133,8 @@ class Match(FeedModel):
             '{i} {winner}'.format(
                 i=Match.medal(i + 1),
                 winner=' '.join([winner_team.name,
-                                 flag(winner_team.country.iso)]))
+                                 flag(winner_team.country.iso),
+                                 winner_team.country.code]))
             for i, winner_team in enumerate(winner_teams))
 
     @staticmethod

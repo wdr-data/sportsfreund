@@ -153,7 +153,7 @@ def api_podium(event, parameters, **kwargs):
                     sport='⛷' if sport == 'Ski Alpin' else sport,
                     discipline=discipline,
                     town=meta.town,
-                    country=flag(match.venue.country.iso),
+                    country=f" {flag(match.venue.country.iso)} {match.venue.country.code}",
                     day=int_to_weekday(meta.datetime.weekday()),
                     date=meta.datetime.date().strftime('%d.%m.%Y'),
                 )
@@ -208,7 +208,7 @@ def result_total(event, payload):
     teams = [Team.by_id(result.team_id) for result in results]
 
     top_ten = '\n'.join(
-        f'{r.rank}. {t.name} {flag(t.country.iso)} {match.txt_points(r)}'
+        f'{r.rank}. {t.name} {flag(t.country.iso)} {t.country.code} {match.txt_points(r)}'
         for r, t in zip(results, teams))
 
     if button:
@@ -235,7 +235,7 @@ def result_by_country(event, payload):
             if c in countries:
                 countries.append(c)
 
-        quick = [quick_reply(f'{c.code} {flag(c.iso)}',
+        quick = [quick_reply(f'{flag(c.iso)} {c.code}',
                              {'result_by_country' : c.name, 'match_id': match_id})
                  for c in countries[:10]]
 
@@ -248,7 +248,7 @@ def result_by_country(event, payload):
     results = match.results_by_country(country_name)
     if not results:
         send_text(sender_id,
-                  f'Es hat kein Athlet aus {country_name} das Rennen beendet.')
+                  f'Es hat kein Athlet aus {flag(country.iso)} {country.code} das Rennen beendet.')
         return
 
     teams = [Team.by_id(result.team_id) for result in results]
