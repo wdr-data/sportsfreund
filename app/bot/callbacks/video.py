@@ -14,7 +14,7 @@ def api_asking(event, parameters, **kwargs):
     sender_id = event['sender']['id']
 
     keywords = list(param for param in parameters.values() if param)
-    vid = Video.by_keyword(keywords, max_duration=240)
+    vid = Video.by_keyword(keywords, max_duration=120)
 
     send_text(sender_id, 'Ich schaue mal in meinen Archiven... 🔍')
 
@@ -23,7 +23,12 @@ def api_asking(event, parameters, **kwargs):
         send_attachment(sender_id, vid.video_url)
 
     else:
-        send_text(sender_id, random.choice(NO_VIDEO_FOUND))
+        vid = Video.by_keyword(keywords, max_duration=100000)
+        if vid:
+            send_text(sender_id, f"{vid.summary}\n\nDieses Video ist leider zu lang für Facebook, "
+                                 f"aber du kannst es unter diesem Link anschauen: {vid.url}")
+        else:
+            send_text(sender_id, random.choice(NO_VIDEO_FOUND))
 
 
 handlers = [
