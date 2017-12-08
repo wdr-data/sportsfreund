@@ -210,10 +210,15 @@ def result_total(event, payload):
         f'{r.rank}. {t.name} {flag(t.country.iso)} {match.txt_points(r)}'
         for r, t in zip(results, teams))
 
-    send_buttons(sender_id,
-                 f'Hier die {result_kind} zu {match.meta.sport} {match.meta.discipline} '
-                 f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}',
-                 buttons=[button])
+    if button:
+        send_buttons(sender_id,
+                     f'Hier die {result_kind} zu {match.meta.sport} {match.meta.discipline} '
+                     f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}',
+                     buttons=[button])
+    else:
+        send_text(sender_id,
+                     f'Hier die {result_kind} zu {match.meta.sport} {match.meta.discipline} '
+                     f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}')
 
 
 def result_by_country(event, payload):
