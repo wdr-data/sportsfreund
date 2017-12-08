@@ -220,10 +220,7 @@ def result_by_country(event, payload):
     if not country_name:
         match = Match.by_id(match_id)
         countries_all = [Team.by_id(result.team_id).country for result in match.results]
-        countries = []
-        for c in countries_all:
-            if c in countries:
-                countries.append(c)
+        countries = countries_all
 
         quick = [quick_reply(f'{flag(c.iso)} {c.code}',
                              {'result_by_country' : c.name, 'match_id': match_id})
@@ -235,7 +232,11 @@ def result_by_country(event, payload):
         return
 
     match = Match.by_id(match_id)
-    results = match.results_by_country(country_name)
+    results_all = match.results_by_country(country_name)
+    results = []
+    for r in results_all:
+        results.append(r)
+        
     if not results:
         send_text(sender_id,
                   f'Es hat kein Athlet aus {flag(country.iso)} {country.code} das Rennen beendet.')
@@ -249,7 +250,7 @@ def result_by_country(event, payload):
         for r, t in zip(results, teams))
 
     send_text(sender_id,
-              f'Hier die Ergebnisse der Athleten aus {country.code} {flag(country.iso)}in'
+              f'Hier die Ergebnisse der Athleten aus {flag(country.iso)} '
               f'in {match.meta.town}: \n\n{athletes_by_country}')
 
 
