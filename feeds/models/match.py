@@ -110,6 +110,9 @@ class Match(FeedModel):
         else:
             point_str = result.match_result - self.winner_result.match_result
 
+        if not point_str:
+            return result.comment
+
         if self.meta.sport in ['Biathlon']:
             point_str = Match.fmt_millis(point_str, digits=1)
         elif self.meta.sport in ['Ski Alpin']:
