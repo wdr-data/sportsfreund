@@ -5,6 +5,7 @@ from mrq.task import Task
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.subscription import Subscription
+from feeds.models.team import Team
 from lib.push import Push
 from lib.response import send_text, send_list, button_postback
 from lib import queue
@@ -65,13 +66,20 @@ class UpdateMatch(Task):
         :return:
         """
         meta = MatchMeta.by_match_id(match.id)
+        results = match.results
+        teams = [Team.by_id(result.team_id).name for result in results]
 
-        sport_subs = Subscription.query(type=Subscription.Type.RESULT,
-                                        filter={'sport': meta.sport})
+        result_subs = Subscription.query(type=Subscription.Type.RESULT,
+                                         filter={'sport': meta.sport})
 
-        user_ids = {
-            s.psid for s in sport_subs
-        }
+        athlete_subs = [
+            Subscription(obj) for obj in
+            Subscription.collection.find({'filter.athlete': {'$exists': True, '$in': teams},
+                                          'type': Subscription.Type.RESULT.value})]
+
+        result_subs.extend(athlete_subs)
+
+        user_ids = {s.psid for s in result_subs}
 
         for uid in user_ids:
             send_text(uid, f'Gerade wurde {meta.sport} {meta.discipline} in {meta.town} beendet.'
