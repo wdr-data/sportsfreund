@@ -65,7 +65,7 @@ def api_winner(event, parameters, **kwargs):
         discipline = [discipline] * len(asked_matches)
 
     send_text(sender_id,
-              'Folgende Wintersport-Ergebniss hab ich für dich:')
+              'Folgende Wintersport-Ergebnisse hab ich für dich:')
     for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
         if asked_matches[0].finished:
             results = match.match_result
