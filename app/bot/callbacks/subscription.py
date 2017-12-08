@@ -10,24 +10,34 @@ def api_subscribe(event, parameters, **kwargs):
     sender_id = event['sender']['id']
     sport = parameters.get('sport')
     discipline = parameters.get('discipline')
-    athlete = parameters.get('')
+    first_name = parameters.get('first_name')
+    last_name = parameters.get('last_name')
 
-    if not sport:
+    athlete = ' '.join([first_name, last_name])
+
+    if not sport and not athlete:
         send_text(sender_id,
-                  'Magst du dich für Biathlon oder Ski-Alpin Ergebnisse anmelden?')
+                  'Wofür möchtest du dich anmelden? Nenne mir einen Athleten oder '
+                  'eine Sportart. Ich habe Infos zu Ski Alpin oder Biathlon.')
         return
-    subscribe_flow(event, sport, discipline)
+
+    subscribe_flow(event, sport, discipline, athlete)
 
 
-def subscribe_flow(event, sport, discipline=None):
+def subscribe_flow(event, sport=None, discipline=None, athlete=None):
     sender_id = event['sender']['id']
+    filter_arg = {}
 
-    target = Subscription.Target.SPORT if sport else Subscription.Target.DISCIPLINE
+    target = Subscription.Target.SPORT if sport else (
+        Subscription.Target.DISCIPLINE if discipline else Subscription.Target.ATHLETE)
 
-    filter_arg = {'sport': sport}
-
-    if discipline:
+    if sport:
+        filter_arg['sport'] = sport
+    elif discipline:
+        filter_arg['sport'] = sport
         filter_arg['discipline'] = discipline
+    elif athlete:
+        filter_arg['athlete'] = athlete
 
     type_arg = Subscription.Type.RESULT
 
