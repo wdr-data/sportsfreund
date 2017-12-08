@@ -148,7 +148,7 @@ def api_podium(event, parameters, **kwargs):
     for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
         if match.finished:
 
-            reply = 'Ergebnis beim {sport} {discipline} in {town}, {country}, am {day}, {date}:\n'\
+            reply = '{sport} {discipline} in {town} {country} am {day}, {date}:\n'\
                 .format(
                     sport='⛷' if sport == 'Ski Alpin' else sport,
                     discipline=discipline,
