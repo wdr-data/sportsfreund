@@ -180,7 +180,7 @@ def result_details(event, payload):
     sender_id = event['sender']['id']
     match_id = payload['result_details']
     send_buttons(sender_id,
-                 'Wovon denn?',
+                 'Was interessiert dich?',
                  buttons=[
                      button_postback(f"{flag('DE')} Athleten",
                                      {'result_by_country': 'Deutschland', 'match_id': match_id}),
