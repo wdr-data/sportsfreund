@@ -155,9 +155,9 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
         else ('der Herren' if match_meta.gender == 'male'  else '')
 
     send_text(sender_id,
-              f"{int_to_weekday(d_date.weekday())}, {d_date.strftime('%d.%m.')},"
-              f"{match_meta.match_time}Uhr, {match_meta.discipline} "
-              f"{gender} in {match_meta.town}")
+              f"Am {int_to_weekday(d_date.weekday())}, {d_date.strftime('%d.%m.%Y')} um {match_meta.match_time} Uhr:"
+              f"{match_meta.discipline} {gender}"
+              f"in {match_meta.town} {flag(match_meta.country.iso)} {match_meta.country.code}")
 
 
 def period_to_dates(period):
