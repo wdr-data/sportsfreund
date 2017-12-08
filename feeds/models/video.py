@@ -41,7 +41,7 @@ class Video(Model):
     def by_keyword(cls, keyword: str, clear_cache: bool=False):
         """Case insensitive search. Find all videos with the keyword."""
         cls.load_feed(clear_cache=clear_cache)
-        return cls.query(keywords=keyword.lower())
+        return cls.query(keywords={'$all': keyword.lower().split()})
 
     @classmethod
     def load_feed(cls, clear_cache: bool=False):
@@ -96,7 +96,7 @@ class Video(Model):
 
             try:
                 meta_keywords = page.find('meta', attrs={'name': 'Keywords'})
-                keywords = meta_keywords['content'].lower().split(', ')
+                keywords = [kw.lower().strip() for kw in meta_keywords['content'].split(',')]
 
                 meta_duration = page.find('meta', attrs={'itemprop': 'duration'})
                 duration = datetime.strptime(meta_duration['content'], '%H:%M:%S')
