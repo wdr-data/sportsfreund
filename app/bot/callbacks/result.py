@@ -200,7 +200,7 @@ def result_total(event, payload):
         button = button_postback('Und der Rest?', {'result_total': match_id, 'step': None})
         result_kind = 'Top 10'
     else:
-        results = match.result[11:]
+        results = match.results[11:]
         button = None
         result_kind = 'restlichen Ergebnisse'
 
