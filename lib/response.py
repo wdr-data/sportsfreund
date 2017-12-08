@@ -305,16 +305,8 @@ def send_attachment(recipient_id, url, type=None):
     :param url: The URL of the attachment
     :param type: Type of the attachment. If not defined, guess_attachment_type is used
     """
-    try:
-        attachment = Attachment.query(url=url)[0]
-        attachment_id = attachment.attachment_id
-    except IndexError:
-        attachment_id = upload_attachment(url, type)
-        if attachment_id is None:
-            raise ValueError('Uploading attachment with URL %s failed' % url)
-        Attachment.create(url=url, attachment_id=attachment_id)
-
-    send_attachment_by_id(recipient_id, attachment_id, type or guess_attachment_type(url))
+    queue_job('fb.SendAttachment',
+              {'recipient_id': recipient_id, 'url': url, 'type': type})
 
 
 def send_attachment_by_id(recipient_id, attachment_id, type):
