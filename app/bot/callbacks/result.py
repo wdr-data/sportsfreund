@@ -201,7 +201,7 @@ def result_total(event, payload):
         result_kind = 'Top 10'
     else:
         results = match.result[11:]
-        button =
+        button = None
         result_kind = 'restlichen Ergebnisse'
 
     teams = [Team.by_id(result.team_id) for result in results]
