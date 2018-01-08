@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime, date, timedelta
+from calendar import day_name as int_to_weekday
 from time import sleep
 from pycountry import countries
 
@@ -174,18 +175,3 @@ def period_to_dates(period):
     until_date = period.split('/')[1]
     until_date = datetime.strptime(until_date, '%Y-%m-%d').date()
     return from_date, until_date
-
-
-def int_to_weekday(int):
-    day = {
-        0: 'Montag',
-        1: 'Dienstag',
-        2: 'Mittwoch',
-        3: 'Donnerstag',
-        4: 'Freitag',
-        5: 'Samstag',
-        6: 'Sonntag',
-        11: 'Wochenende',
-        21: 'Woche'
-    }
-    return day[int]

@@ -1,6 +1,7 @@
 import logging
 from datetime import date as dtdate
 from datetime import datetime
+from calendar import day_name as int_to_weekday
 
 from lib.model import Model
 from ..handlers.payloadhandler import PayloadHandler
@@ -262,21 +263,6 @@ def result_by_country(event, payload):
     send_text(sender_id,
               f'Hier die Ergebnisse der Athleten aus {flag(country.iso)} '
               f'in {match.meta.town}: \n\n{athletes_by_country}')
-
-
-def int_to_weekday(int):
-    day = {
-        0 : 'Montag',
-        1 : 'Dienstag',
-        2 : 'Mittwoch',
-        3 : 'Donnerstag',
-        4 : 'Freitag',
-        5 : 'Samstag',
-        6 : 'Sonntag',
-        11 : 'Wochenende',
-        21: 'Woche'
-    }
-    return day[int]
 
 
 handlers = [
