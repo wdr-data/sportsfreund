@@ -30,6 +30,7 @@ class Match(FeedModel):
         match['match']['match_result_at'] = match['match_result_at']
         match = match['match']
         match['finished'] = match['finished'] == 'yes'
+        match['match_incident'] = match.get('match_incident')
 
         if match['match_time'] == 'unknown':
             match['match_time'] = 'unbekannt'

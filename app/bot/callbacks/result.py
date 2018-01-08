@@ -68,7 +68,13 @@ def api_winner(event, parameters, **kwargs):
     send_text(sender_id,
               'Folgende Wintersport-Ergebnisse hab ich für dich:')
     for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
-        if asked_matches[0].finished:
+        if match.match_incident:
+            send_text(sender_id,
+                      f"Ich habe gehört, der Wettkampf {discipline} in {meta.town}, "
+                      f"welcher am {meta.datetime.date().strftime('%d.%m.%Y')} "
+                      f"geplant war, sei {meta.match_incident.name}."
+                      )
+        elif asked_matches[0].finished:
             results = match.match_result
             winner_team = Team.by_id(results[0].team_id)
 

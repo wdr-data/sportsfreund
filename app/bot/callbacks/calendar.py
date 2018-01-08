@@ -152,7 +152,6 @@ def multiple_entry(event, meta):
 def pl_entry_by_matchmeta(event, payload, **kwargs):
     sender_id = event['sender']['id']
     match_meta = payload['calendar.entry_by_matchmeta']
-    incident = match_meta.get('match_incident')
 
     if not isinstance(match_meta, MatchMeta):
         match_meta = MatchMeta.by_id(match_meta)
@@ -167,7 +166,7 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
     except KeyError:
         country = None
 
-    if incident:
+    if match_meta.match_incident:
         send_text(
             sender_id,
             f"Ich habe gehört, der Wettkampf {match_meta.discipline} {gender} in {match_meta.town}, "
