@@ -161,12 +161,16 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
     gender = 'der Damen ' if match_meta.gender == 'female' \
         else ('der Herren' if match_meta.gender == 'male'  else '')
 
-    country = countries.get(alpha_3=match_meta.venue.country.code)
+    try:
+        country = countries.get(alpha_3=match_meta.venue.country.code)
+    except KeyError:
+        country = None
 
-    send_text(sender_id,
-              f"Am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} um {match_meta.match_time} Uhr:"
-              f"{match_meta.discipline} {gender}"
-              f"in {match_meta.town} {flag(country.alpha_2)} {match_meta.venue.country.code}")
+    send_text(
+        sender_id,
+        f"Am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} um "
+        f"{match_meta.match_time} Uhr: {match_meta.discipline} {gender} in {match_meta.town} "
+        f"{flag(country.alpha_2) if country else '🏳️‍🌈'} {match_meta.venue.country.code}")
 
 
 def period_to_dates(period):
