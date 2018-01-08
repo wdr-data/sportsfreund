@@ -33,7 +33,7 @@ class Match(FeedModel):
         match['datetime'] = datetime.strptime(
             '%s %s' % (match['match_date'], match['match_time']),
             '%Y-%m-%d %H:%M')
-        for mr in match['match_result']:
+        for mr in match.get('match_result', []):
             mr['rank'] = int(mr['rank'])
             mr['match_result'] = int(mr['match_result'])
         return match
