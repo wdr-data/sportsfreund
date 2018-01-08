@@ -151,6 +151,10 @@ def multiple_entry(event, meta):
 def pl_entry_by_matchmeta(event, payload, **kwargs):
     sender_id = event['sender']['id']
     match_meta = payload['calendar.entry_by_matchmeta']
+
+    if not isinstance(match_meta, MatchMeta):
+        match_meta = MatchMeta.by_id(match_meta)
+
     d_date = datetime.strptime(match_meta.match_date, '%Y-%m-%d')
 
     gender = 'der Damen ' if match_meta.gender == 'female' \
