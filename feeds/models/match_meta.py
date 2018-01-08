@@ -99,8 +99,15 @@ class MatchMeta(FeedModel):
                         ma['discipline'] = ro['name']
                         ma['discipline_short'] = DISCIPLINE_ALIASES.get(ro['name'], ro['name'])
                         ma['_cached_at'] = now
+
+                        if ma['match_time'] == 'unknown':
+                            ma['match_time'] = 'unbekannt'
+                            datetime_str = '%s %s' % (ma['match_date'], '23:59')
+                        else:
+                            datetime_str = '%s %s' % (ma['match_date'], ma['match_time'])
+
                         ma['datetime'] = datetime.strptime(
-                            '%s %s' % (ma['match_date'], ma['match_time']),
+                            datetime_str,
                             '%Y-%m-%d %H:%M'
                         )
 

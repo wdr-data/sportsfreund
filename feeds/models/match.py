@@ -30,9 +30,17 @@ class Match(FeedModel):
         match['match']['match_result_at'] = match['match_result_at']
         match = match['match']
         match['finished'] = match['finished'] == 'yes'
+
+        if match['match_time'] == 'unknown':
+            match['match_time'] = 'unbekannt'
+            datetime_str = '%s %s' % (match['match_date'], '23:59')
+        else:
+            datetime_str = '%s %s' % (match['match_date'], match['match_time'])
+
         match['datetime'] = datetime.strptime(
-            '%s %s' % (match['match_date'], match['match_time']),
+            datetime_str,
             '%Y-%m-%d %H:%M')
+
         for mr in match.get('match_result', []):
             mr['rank'] = int(mr['rank'])
             mr['match_result'] = int(mr['match_result'])
