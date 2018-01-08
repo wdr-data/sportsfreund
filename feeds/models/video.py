@@ -64,11 +64,16 @@ class Video(Model):
             keywords = [kw.lower().split() for kw in keywords]
             keywords = [item for sublist in keywords for item in sublist]  # Flatten list
 
+        filter = {
+            'keywords': {'$all': keywords},
+            'duration': {'$lte': max_duration},
+        }
+
+        if not keywords:
+            del filter['keywords']
+
         cur = cls.collection.find(
-            {
-                'keywords': {'$all': keywords},
-                'duration': {'$lte': max_duration},
-            }
+            filter
         ).sort(
             'published', pymongo.DESCENDING
         ).limit(limit)
