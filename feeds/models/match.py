@@ -98,8 +98,8 @@ class Match(FeedModel):
         winning_points = winner_results[0].match_result
 
         header = [list_element(
-            self.venue.name,
             f'{self.meta.sport}, {self.meta.discipline}',
+            f'{self.venue.kind}: {self.venue.name}',
             image_url='https://i.imgur.com/DnWwUM5.jpg' if self.meta.sport == 'Ski Alpin'
             else 'https://i.imgur.com/Bu05xF6.jpg'
         )]
