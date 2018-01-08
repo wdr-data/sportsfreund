@@ -4,8 +4,6 @@
   vars:
     pass_pattern: '^[\w\d]$'
   tasks:
-    - name: Include Variables
-      include_vars: "config.yml"
     - name: Create Postgres Database
       block:
         - name: Generate DB Password

@@ -2,8 +2,6 @@
 
 - hosts: localhost
   tasks:
-    - name: Include Variables
-      include_vars: "config.yml"
     - name: Create media access user
       iam:
         iam_type: user
