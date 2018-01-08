@@ -153,7 +153,13 @@ def api_podium(event, parameters, **kwargs):
         send_text(sender_id, 'Folgende Wintersport-Ergebnisse hab ich für dich:')
 
     for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
-        if match.finished:
+        if match.match_incident:
+            send_text(sender_id,
+                      f"Ich habe gehört, der Wettkampf {discipline} in {meta.town}, "
+                      f"welcher am {meta.datetime.date().strftime('%d.%m.%Y')} "
+                      f"geplant war, sei {meta.match_incident.name}."
+                      )
+        elif match.finished:
 
             reply = '{sport} {discipline} in {town} {country} am {day}, {date}:\n'\
                 .format(
