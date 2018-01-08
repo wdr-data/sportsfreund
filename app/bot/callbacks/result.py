@@ -243,11 +243,11 @@ def result_by_country(event, payload):
     if not country_name:
         match = Match.by_id(match_id)
         countries_all = [Team.by_id(result.team_id).country for result in match.results]
-        countries = countries_all
+        countries = [ii for n, ii in enumerate(countries_all) if ii not in countries_all[:n]]
 
         quick = [quick_reply(f'{flag(c.iso)} {c.code}',
                              {'result_by_country' : c.name, 'match_id': match_id})
-                 for c in countries[:10]]
+                 for c in countries[:11]]
 
         send_text(sender_id,
                   'Von welchem Land darf ich dir die platzierten Athleten zeigen?',
