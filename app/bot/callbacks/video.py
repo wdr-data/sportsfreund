@@ -1,6 +1,6 @@
 import random
 
-from app.bot.handlers.apiaihandler import ApiAiHandler
+from ..handlers.apiaihandler import ApiAiHandler
 from feeds.models.video import Video
 from lib.response import send_attachment, send_text
 
