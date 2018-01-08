@@ -138,19 +138,19 @@ def api_next(event, parameters, **kwargs):
         sleep(3)
         send_text(sender_id,
                   f'Ah! Hier hab ich ja das nächste {match_meta.sport} Rennen:')
-        pl_entry_by_matchmeta(event, {'calender.entry_by_matchmeta': match_meta})
+        pl_entry_by_matchmeta(event, {'calendar.entry_by_matchmeta': match_meta})
 
 
 def multiple_entry(event, meta):
     sender_id = event['sender']['id']
 
     for match_meta in meta:
-        pl_entry_by_matchmeta(event, {'calender.entry_by_matchmeta': match_meta})
+        pl_entry_by_matchmeta(event, {'calendar.entry_by_matchmeta': match_meta})
 
 
 def pl_entry_by_matchmeta(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    match_meta = payload['calender.entry_by_matchmeta']
+    match_meta = payload['calendar.entry_by_matchmeta']
     d_date = datetime.strptime(match_meta.match_date, '%Y-%m-%d')
 
     gender = 'der Damen ' if match_meta.gender == 'female' \

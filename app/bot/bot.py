@@ -8,7 +8,7 @@ from lib.config import FB_PAGE_TOKEN
 from lib.response import send_text
 # dirty
 from .callbacks import dirty
-from .callbacks import result, calender, olympia, subscription, video
+from .callbacks import result, calendar, olympia, subscription, video
 from .callbacks import testing
 from .callbacks.default import (
     get_started, start_message, greetings, push, push_step, subscribe, unsubscribe, share_bot,
@@ -69,16 +69,16 @@ def make_event_handler():
         # info.general
         # ApiAiHandler(general.api_sport,'info.general.sport'),
         # ApiAiHandler(general.api_discipline,'info.general.discipline'),
-        ApiAiHandler(calender.api_next,'info.general.sport'),
-        ApiAiHandler(calender.api_next,'info.general.discipline'),
+        ApiAiHandler(calendar.api_next, 'info.general.sport'),
+        ApiAiHandler(calendar.api_next, 'info.general.discipline'),
 
         # info.match.result
         ApiAiHandler(result.api_winner ,'info.match.result.winner', follow_up=True),
         ApiAiHandler(result.api_podium, 'info.match.result.podium', follow_up=True),
 
-        # info.match.calender
-        ApiAiHandler(calender.api_next, 'info.match.calender.next', follow_up=True),
-        PayloadHandler(calender.pl_entry_by_matchmeta, ['calender.entry_by_matchmeta']),
+        # info.match.calendar
+        ApiAiHandler(calendar.api_next, 'info.match.calendar.next', follow_up=True),
+        PayloadHandler(calendar.pl_entry_by_matchmeta, ['calendar.entry_by_matchmeta']),
 
         # info.olympia
         ApiAiHandler(olympia.api_countdown_days, 'info.olympia.countown_days'),
