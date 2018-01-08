@@ -1,0 +1,4 @@
+---
+
+- import_playbook: s3.yml
+- import_playbook: postgres.yml

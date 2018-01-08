@@ -1,0 +1,77 @@
+---
+
+- hosts: localhost
+  tasks:
+    - name: Include Variables
+      include_vars: "config.yml"
+    - name: Create media access user
+      iam:
+        iam_type: user
+        name: "{{ prefix }}-{{ item }}-media"
+        state: present
+        access_key_state: create
+      items: "{{ stages }}"
+      register: user_creation
+    - name: Store Access Credentials as Kubernetes Secret
+      include_tasks: utils/k8s-secret.yml
+      vars:
+        stage: "{{ item.item }}"
+        secret:
+          name: "s3creds"
+          entries:
+            access_key_id: "{{ item.user_meta.access_keys[0].access_key_id }}"
+            secret_access_key: "{{ item.user_meta.access_keys[0].secret_access_key }}"
+      when: item.changed
+      items: "{{ user_creation.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+    - name: Create S3 bucket for Django assets
+      s3_bucket:
+        name: "{{ prefix }}-{{ item }}-media"
+        versioning: yes
+        state: present
+        region: "{{ default_region }}"
+        profile: "{{ aws_profile }}"
+        policy: |
+          {
+            "Id": "Policy1515361869506",
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "AllowPublicRead",
+                "Action": [
+                  "s3:GetObject"
+                ],
+                "Effect": "Allow",
+                "Resource": "arn:aws:s3:::{{ prefix }}-{{ item }}-media/*",
+                "Principal": "*"
+              }
+            ]
+          }
+      items: "{{ stages }}"
+    - name: Create bucket access policy
+      iam_policy:
+        iam_name: "{{ item.invocation.module_args.name }}"
+        iam_type: user
+        policy_name: "{{ item.invocation.module_args.name }}-bucket"
+        policy_json: |
+          {
+              "Version": "2012-10-17",
+              "Statement": [
+                  {
+                      "Sid": "AllowFullBucketAccess",
+                      "Effect": "Allow",
+                      "Action": "s3:*",
+                      "Resource": [
+                          "arn:aws:s3:::sportsfreund-staging-media",
+                          "arn:aws:s3:::sportsfreund-staging-media/*"
+                      ]
+                  }
+              ]
+          }
+        state: present
+        region: "{{ default_region }}"
+        profile: "{{ aws_profile }}"
+      items: "{{ user_creation.results }}"
+      loop_control:
+        label: "{{ item.item }}"

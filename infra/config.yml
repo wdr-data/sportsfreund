@@ -1,0 +1,7 @@
+default_region: eu-central-1
+k8s_url: "hacks.k8s.wdr.cloud"
+prefix: sportsfreund-k8s
+stages:
+  - staging
+
+aws_profile: "{{ ansible_env.AWS_PROFILE | default('default') }}"

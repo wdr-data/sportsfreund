@@ -1,0 +1,45 @@
+---
+
+- hosts: localhost
+  vars:
+    pass_pattern: '^[\w\d]$'
+  tasks:
+    - name: Include Variables
+      include_vars: "config.yml"
+    - name: Create Postgres Database
+      block:
+        - name: Generate DB Password
+          command: "openssl rand -base64 30"
+          register: db_pass
+          changed_when: false
+          check_mode: no
+          items: "{{ stages }}"
+        - name: Create Database in AWS
+          rds:
+            command: create
+            db_engine: postgres
+            db_name: "main"
+            instance_name: "{{ prefix }}-{{ item.item }}"
+            instance_type: db.t2.small
+            profile: "{{ aws_profile }}"
+            region: "{{ default_region }}"
+            size: 5
+            username: app
+            password: "{{ item.stdout | list | select('match', pass_pattern) | join('') }}"
+            wait: yes
+          items: "{{ db_pass.results }}"
+          loop_control:
+            label: "{{ item.item }}"
+          register: database_creation
+    - name: Store Database Connection URL
+      include_tasks: utils/k8s-secret.yml
+      vars:
+        stage: "{{ item.item.item }}"
+        secret:
+          name: "postgres-url"
+          entries:
+            url: "postgres://app:{{ item.invocation.module_args.password }}@{{ item.instance.endpoint }}/main"
+      items: "{{ database_creation.results }}"
+      loop_control:
+        label: "{{ item.item.item }}"
+      when: item.changed
