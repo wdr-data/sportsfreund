@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime, date, timedelta
-from calendar import day_name as int_to_weekday
+from calendar import day_name
 from time import sleep
 from pycountry import countries
 
@@ -164,7 +164,7 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
     country = countries.get(alpha_3=match_meta.venue.country.code)
 
     send_text(sender_id,
-              f"Am {int_to_weekday(d_date.weekday())}, {d_date.strftime('%d.%m.%Y')} um {match_meta.match_time} Uhr:"
+              f"Am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} um {match_meta.match_time} Uhr:"
               f"{match_meta.discipline} {gender}"
               f"in {match_meta.town} {flag(country.alpha_2)} {match_meta.venue.country.code}")
 

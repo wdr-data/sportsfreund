@@ -1,7 +1,7 @@
 import logging
 from datetime import date as dtdate
 from datetime import datetime
-from calendar import day_name as int_to_weekday
+from calendar import day_name
 
 from lib.model import Model
 from ..handlers.payloadhandler import PayloadHandler
@@ -155,7 +155,7 @@ def api_podium(event, parameters, **kwargs):
                     discipline=discipline,
                     town=meta.town,
                     country=f" {flag(match.venue.country.iso)} {match.venue.country.code}",
-                    day=int_to_weekday(meta.datetime.weekday()),
+                    day=day_name[meta.datetime.weekday()],
                     date=meta.datetime.date().strftime('%d.%m.%Y'),
                 )
 
