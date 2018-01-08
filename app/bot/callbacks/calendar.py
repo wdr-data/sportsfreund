@@ -152,6 +152,7 @@ def multiple_entry(event, meta):
 def pl_entry_by_matchmeta(event, payload, **kwargs):
     sender_id = event['sender']['id']
     match_meta = payload['calendar.entry_by_matchmeta']
+    incident = match_meta.get('match_incident')
 
     if not isinstance(match_meta, MatchMeta):
         match_meta = MatchMeta.by_id(match_meta)
@@ -166,11 +167,18 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
     except KeyError:
         country = None
 
-    send_text(
-        sender_id,
-        f"Am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} um "
-        f"{match_meta.match_time} Uhr: {match_meta.discipline} {gender} in {match_meta.town} "
-        f"{flag(country.alpha_2) if country else '🏳️‍🌈'} {match_meta.venue.country.code}")
+    if incident:
+        send_text(
+            sender_id,
+            f"Ich habe gehört, der Wettkampf {match_meta.discipline} {gender} in {match_meta.town}, "
+            f"welcher am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} "
+            f"geplant war, sei {match_meta.match_incident.name}.")
+    else:
+        send_text(
+            sender_id,
+            f"Am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} um "
+            f"{match_meta.match_time} Uhr: {match_meta.discipline} {gender} in {match_meta.town} "
+            f"{flag(country.alpha_2) if country else '🏳️‍🌈'} {match_meta.venue.country.code}")
 
 
 def period_to_dates(period):
