@@ -22,6 +22,7 @@ class Subscription(Model):
 
     class Type(Enum):
         RESULT = 'result'
+        HIGHLIGHT = 'highlight'
 
     def __init__(self, *args, **kwargs):
 

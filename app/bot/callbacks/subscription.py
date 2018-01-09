@@ -112,19 +112,26 @@ def send_subscriptions(event, **kwargs):
     )
 
 
-def manage_subscriptions(event, payload, **kwargs):
+def highlight_subscriptions(event, payload, **kwargs):
     sender_id = event['sender']['id']
     state = payload['state']
     target = payload['target']
+    subs = Subscription.query(psid=sender_id)
 
-    if target == 'highlight':
-        if state == 'subscribe':
-            send_text(sender_id,
-                      'Diese Funktion ist erst zu den Olympischen Winterspielen verfügbar.')
-        elif state == 'unsubscribe':
-            send_text(sender_id,
-                      'Diese Funktion ist erst zu den Olympischen Winterspielen verfügbar.')
-
+    if state == 'subscribe':
+        target = Subscription.Target.HIGHLIGHT
+        filter_arg = {}
+        filter_arg['highlight'] = 'Highlight'
+        type_arg = Subscription.Type.HIGHLIGHT
+        Subscription.create(sender_id, target, filter_arg, type_arg)
+        send_text(sender_id,
+                  'Vielen Dank, ich habe dich für die Highlights angemeldet. Du erhältst nun '
+                  'täglich eine Nachricht von mir, in der ich dich über das Geschehen '
+                  'rund um die Olympiade informiere.')
+    elif state == 'unsubscribe':
+        for sub in subs:
+            if sub.target is Subscription.Target.HIGHLIGHT:
+                unsubscribe(event, {'unsubscribe': str(sub._id)})
 
 def change_subscriptions(event, payload, **kwargs):
     sender_id = event['sender']['id']
@@ -182,7 +189,7 @@ def subscribe_menu(event, payload):
 handlers = [
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe', follow_up=True),
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe'),
-    PayloadHandler(manage_subscriptions, ['target', 'state']),
+    PayloadHandler(highlight_subscriptions, ['target', 'state']),
     PayloadHandler(change_subscriptions, ['type']),
     PayloadHandler(unsubscribe, ['unsubscribe']),
     PayloadHandler(subscribe_menu, ['subscribe_menu'])
