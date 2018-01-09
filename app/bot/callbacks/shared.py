@@ -195,7 +195,14 @@ def send_push(user_id, push, report_nr, state):
     if show_skip:
         quick_replies.append(skip_button)
 
-    send_text(user_id, reply, quick_replies=quick_replies)
+    reply_split = reply.split('\n\n')
+
+    for i, r in enumerate(reply_split):
+        if len(reply_split) - 1 == i:
+            quick_replies = [more_button]
+            send_text(user_id, r, quick_replies=quick_replies)
+        else:
+            send_text(user_id, r)
 
     if next_state is None:
         try:
@@ -247,9 +254,12 @@ def send_report(user_id, report, state):
     if media:
         send_attachment_by_id(user_id, str(media), guess_attachment_type(str(url)))
 
-    if next_state is not None:
-        quick_replies = [more_button]
-        send_text(user_id, reply, quick_replies=quick_replies)
+    reply_split = reply.split('\n\n')
 
-    else:
-        send_text(user_id, reply)
+    for i, r in enumerate(reply_split):
+        if next_state is not None and len(reply_split) - 1 == i:
+            quick_replies = [more_button]
+            send_text(user_id, r, quick_replies=quick_replies)
+
+        else:
+            send_text(user_id, r)
