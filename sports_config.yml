@@ -1,0 +1,64 @@
+---
+# result_type: TIME | POINTS
+# competition_type: SINGLE | RACE | TOURNAMENT
+
+- name: Biathlon
+  topic_id: 1814
+  result_type: TIME
+  competition_term: Rennen
+  article: das
+  disciplines:
+    - name: Einzel
+      competition_type: SINGLE
+      article: das
+    - name: Staffel
+      competition_type: RACE
+      article: die
+    - name: Massenstart
+      competition_type: RACE
+      article: der
+    - name: Verfolgung
+      competition_type: RACE
+      article: die
+    - name: Sprint
+      competition_type: SINGLE
+      article: der
+
+- name: Ski Alpin
+  topic_id: 1773
+  result_type: TIME
+  competition_term: Rennen
+  article: das
+  disciplines:
+    - name: Abfahrt
+      competition_type: SINGLE
+      article: die
+    - name: Super G
+      competition_type: SINGLE
+      article: der
+    - name: Riesenslalom
+      competition_type: SINGLE
+      article: der
+    - name: Slalom
+      competition_type: SINGLE
+      article: der
+    - name: Kombination
+      competition_type: SINGLE
+      article: die
+    - name: Parallel
+      competition_type: SINGLE
+      article:
+
+- name: Skispringen
+  topic_id: 1789
+  result_type: POINTS
+  competition_term: Springen
+  article: das
+  disciplines:
+    - name: Skispringen
+      cometition_type: SINGLE
+      article: das
+    - name: Skifliegen
+      competition_type: SINGLE
+      article: das
+...
