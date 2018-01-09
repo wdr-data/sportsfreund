@@ -34,7 +34,7 @@
       vars:
         stage: "{{ item.item.item }}"
         secret:
-          name: "postgres-url"
+          name: "postgres"
           entries:
             url: "postgres://app:{{ item.invocation.module_args.password }}@{{ item.instance.endpoint }}/main"
       items: "{{ database_creation.results }}"
