@@ -47,6 +47,24 @@
             ]
           }
       items: "{{ stages }}"
+      register: bucket_creation
+    - include_tasks: utils/k8s-creds.yml
+    - name: Store Kubernetes config for Bucket
+      kubernetes:
+        api_endpoint: "api.{{ k8s_url }}"
+        username: admin
+        password: "{{ k8s_credentials }}"
+        inline_data: |
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: s3bucket
+            namespace: {{ namespace }}-{{ item.item }}
+          data:
+            name: {{ item.name }}
+      items: "{{ bucket_creation.results }}"
+      loop_control:
+        label: "{{ item.item }}"
     - name: Create bucket access policy
       iam_policy:
         iam_name: "{{ item.invocation.module_args.name }}"
