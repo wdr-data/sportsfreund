@@ -7,8 +7,7 @@ from backend.models import Push, Report, FacebookUser
 from django.utils import timezone
 
 from lib.facebook import guess_attachment_type
-from lib.response import (send_text, send_attachment_by_id, quick_reply,
-                          send_buttons, button_postback)
+from lib.response import (quick_reply, button_postback)
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +83,7 @@ def get_latest_report(sport=None, discipline=None):
         return None
 
 
-def schema(push, user_id):
+def schema(push, event):
     if push.reports.count():
         quick_replies = [
             quick_reply(
@@ -94,10 +93,11 @@ def schema(push, user_id):
     else:
         quick_replies = None
 
-    send_text(user_id, push.text, quick_replies=quick_replies)
+    event.send_text(push.text, quick_replies=quick_replies)
 
 
-def send_push(user_id, push, report_nr, state):
+def send_push(event, push, report_nr, state):
+    user_id = event['sender']['id']
     media = ''
     url = ''
     next_state = None
@@ -186,7 +186,7 @@ def send_push(user_id, push, report_nr, state):
     )
 
     if media:
-        send_attachment_by_id(user_id, str(media), guess_attachment_type(str(url)))
+        event.send_attachment_by_id(str(media), guess_attachment_type(str(url)))
 
     quick_replies = []
 
@@ -201,20 +201,21 @@ def send_push(user_id, push, report_nr, state):
     for i, r in enumerate(reply_split):
         if len(reply_split) - 1 == i:
             quick_replies = [more_button]
-            send_text(user_id, r, quick_replies=quick_replies)
+            event.send_text(r, quick_replies=quick_replies)
         else:
-            send_text(user_id, r)
+            event.send_text(r)
 
     if next_state is None:
         try:
             FacebookUser.objects.get(uid=user_id)
         except FacebookUser.DoesNotExist:
-            send_buttons(user_id, 'Du bist noch nicht für die täglichen Nachrichten angemeldet. '
-                                  'Möchtest du das jetzt nachholen?',
-                         buttons=[button_postback('Ja, bitte!', ['subscribe'])])
+            event.send_buttons('Du bist noch nicht für die täglichen Nachrichten angemeldet. '
+                               'Möchtest du das jetzt nachholen?',
+                               buttons=[button_postback('Ja, bitte!', ['subscribe'])])
 
 
-def send_report(user_id, report, state):
+def send_report(event, report, state):
+    user_id = event['sender']['id']
     reply = ''
     media = ''
     url = ''
@@ -253,14 +254,14 @@ def send_report(user_id, report, state):
     )
 
     if media:
-        send_attachment_by_id(user_id, str(media), guess_attachment_type(str(url)))
+        event.send_attachment_by_id(str(media), guess_attachment_type(str(url)))
 
     reply_split = [s for s in re.split(r"(\r|\n|(\r\n)){2}", reply) if s and s.strip()]
 
     for i, r in enumerate(reply_split):
         if next_state is not None and len(reply_split) - 1 == i:
             quick_replies = [more_button]
-            send_text(user_id, r, quick_replies=quick_replies)
+            event.send_text(r, quick_replies=quick_replies)
 
         else:
-            send_text(user_id, r)
+            event.send_text(r)

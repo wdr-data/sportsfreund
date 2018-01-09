@@ -1,13 +1,12 @@
 from bson.objectid import ObjectId
 
 from feeds.models.subscription import Subscription
-from lib.response import send_text, send_list, list_element, button_postback, send_buttons
+from lib.response import list_element, button_postback
 from ..handlers.apiaihandler import ApiAiHandler
 from ..handlers.payloadhandler import PayloadHandler
 
 
 def api_subscribe(event, parameters, **kwargs):
-    sender_id = event['sender']['id']
     sport = parameters.get('sport')
     discipline = parameters.get('discipline')
     first_name = parameters.get('first_name')
@@ -18,14 +17,12 @@ def api_subscribe(event, parameters, **kwargs):
         athlete = ' '.join([first_name, last_name])
 
     if not sport and not first_name and not last_name:
-        send_text(sender_id,
-                  'Wofür möchtest du dich anmelden? Nenne mir einen Athleten oder '
-                  'eine Sportart. Ich habe Infos zu Ski Alpin oder Biathlon.')
+        event.send_text('Wofür möchtest du dich anmelden? Nenne mir einen Athleten oder '
+                        'eine Sportart. Ich habe Infos zu Ski Alpin oder Biathlon.')
         return
     elif (last_name and not first_name) or (first_name and not last_name):
-        send_text(sender_id,
-                  'Wenn du dich für die Ergebnisse eines Athleten anmelden möchtest, '
-                  'schicke mir den Vor- und Nachnamen. Nur um Verwechslungen zu vermeiden ;)')
+        event.send_text('Wenn du dich für die Ergebnisse eines Athleten anmelden möchtest, '
+                        'schicke mir den Vor- und Nachnamen. Nur um Verwechslungen zu vermeiden ;)')
         return
 
     subscribe_flow(event, sport, discipline, athlete)
@@ -50,8 +47,7 @@ def subscribe_flow(event, sport=None, discipline=None, athlete=None):
 
     Subscription.create(sender_id, target, filter_arg, type_arg)
 
-    send_text(sender_id,
-              'Vielen Dank für deine Anmeldung. In folgender Liste siehst du alle Themen, '
+    event.send_text('Vielen Dank für deine Anmeldung. In folgender Liste siehst du alle Themen, '
               'über die ich dich automatisch informiere. Du kannst sie jederzeit ändern.')
     send_subscriptions(event)
 
@@ -61,9 +57,7 @@ def api_unsubscribe(event, parameters, **kwargs):
 
 
 def unsubscribe_flow(event):
-    sender_id = event['sender']['id']
-    send_text(sender_id,
-              'Du möchtest dich von automatischen Nachrichten abmelden - OK. '
+    event.send_text('Du möchtest dich von automatischen Nachrichten abmelden - OK. '
               'In der Liste siehst du alle deine Anmeldungen. '
               'Du kannst Sie jederzeit über die Buttons ändern.')
     send_subscriptions(event)
@@ -106,10 +100,7 @@ def send_subscriptions(event, **kwargs):
             buttons=[button_postback('🔧 Ändern', {'type': 'result'})])
     ]
 
-    send_list(
-        sender_id,
-        elements,
-    )
+    event.send_list(elements)
 
 
 def highlight_subscriptions(event, payload, **kwargs):
@@ -124,10 +115,9 @@ def highlight_subscriptions(event, payload, **kwargs):
         filter_arg['highlight'] = 'Highlight'
         type_arg = Subscription.Type.HIGHLIGHT
         Subscription.create(sender_id, target, filter_arg, type_arg)
-        send_text(sender_id,
-                  'Vielen Dank, ich habe dich für die Highlights angemeldet. Du erhältst nun '
-                  'täglich eine Nachricht von mir, in der ich dich über das Geschehen '
-                  'rund um die Olympiade informiere.')
+        event.send_text('Vielen Dank, ich habe dich für die Highlights angemeldet. Du erhältst nun '
+                        'täglich eine Nachricht von mir, in der ich dich über das Geschehen '
+                        'rund um die Olympiade informiere.')
     elif state == 'unsubscribe':
         for sub in subs:
             if sub.target is Subscription.Target.HIGHLIGHT:
@@ -140,11 +130,10 @@ def change_subscriptions(event, payload, **kwargs):
     subs = Subscription.query(psid=sender_id, type=type)
 
     if len(subs) == 0:
-        send_text(sender_id, 'Du bist noch für keinen Nachrichten Dienst angemeldet.')
+        event.send_text('Du bist noch für keinen Nachrichten Dienst angemeldet.')
         return
     elif len(subs) == 1:
-        send_buttons(sender_id,
-                     f'Du bist für den Nachrichten Dienst {type} zum Thema '
+        event.send_buttons(f'Du bist für den Nachrichten Dienst {type} zum Thema '
                      f'{Subscription.describe_filter(subs[0].filter)} angemeldet. '
                      f'Möchtest du dich abmelden?',
                      buttons=[button_postback('Abmelden', ['unsubscribe'])])
@@ -167,21 +156,18 @@ def change_subscriptions(event, payload, **kwargs):
     else:
         button = None
 
-    send_list(sender_id, elements, button=button)
+    event.send_list(elements, button=button)
 
 
 def unsubscribe(event, payload):
-    sender_id = event['sender']['id']
     sub_id = payload['unsubscribe']
 
     Subscription.delete(_id=ObjectId(sub_id))
-    send_text(sender_id,
-              'Ich hab dich vom Service abgemeldet')
+    event.send_text('Ich hab dich vom Service abgemeldet')
 
 
 def subscribe_menu(event, payload):
-    sender_id = event['sender']['id']
-    send_text(sender_id, 'Dies ist die Übersicht deiner angemeldeten Services. '
+    event.send_text('Dies ist die Übersicht deiner angemeldeten Services. '
                          'Du kannst diese jederzeit ändern.')
     send_subscriptions(event)
 

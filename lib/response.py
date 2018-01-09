@@ -1,148 +1,192 @@
 import json
 import logging
+from enum import Enum
 
-from lib.facebook import upload_attachment, guess_attachment_type
-from lib.queue import queue_job
-from .attachment import Attachment
 from lib.queue import queue_job
 
 logger = logging.getLogger(__name__)
 
 
-def send_text(recipient_id, text, quick_replies=None):
-    """
-    Sends a text message to a recipient, optionally with quick replies
-    :param recipient_id: The user ID of the recipient
-    :param text: The text to be sent
-    :param quick_replies: A list of quick replies (optional)
-    """
-
-    prefix = ''
-    max_len = 640
-
-    while len(text) > max_len:
-        max_len = 630
-
-        split_at = text.rfind(' ', 0, max_len)
-        part = text[:split_at or 630]
-
-        send_text(recipient_id, prefix + part + '...')
-
-        prefix = '...'
-        text = text[split_at or 630:]
-
-    message = {'text': prefix + text}
-
-    # Facebook does not allow empty lists of quick replies
-    if quick_replies:
-        message['quick_replies'] = quick_replies
-
-    payload = {
-        'recipient': {
-            'id': recipient_id,
-        },
-        'message': message,
-    }
-
-    send(payload)
+class SenderTypes(Enum):
+    FACEBOOK = 'facebook'
 
 
-def send_buttons(recipient_id, text, buttons):
-    """
-    Sends a text message with up to 3 buttons to a recipient
-    :param recipient_id: The user ID of the recipient
-    :param text: The text to be sent (max. 640 characters)
-    :param buttons: Up to 3 buttons
-    """
+class Replyable(dict):
+    def __init__(self, event: dict, type: SenderTypes):
+        super().__init__(event)
 
-    prefix = ''
-    max_len = 640
+        if type not in SenderTypes:
+            raise ValueError(f'invalid type: {type}')
 
-    while len(text) > max_len:
-        max_len = 630
+        self.type = type
 
-        split_at = text.rfind(' ', 0, max_len)
-        part = text[:split_at or 630]
+    def send_text(self, text, quick_replies=None):
+        """
+        Sends a text message to a recipient, optionally with quick replies
+        :param text: The text to be sent
+        :param quick_replies: A list of quick replies (optional)
+        """
 
-        send_text(recipient_id, prefix + part + '...')
+        prefix = ''
+        max_len = 640
 
-        prefix = '...'
-        text = text[split_at or 630:]
+        while len(text) > max_len:
+            max_len = 630
 
-    payload = {
-        'recipient': {
-            'id': recipient_id
-        },
-        'message': {
-            'attachment': {
-                'type': 'template',
-                'payload': {
-                    'template_type': 'button',
-                    'text': prefix + text,
-                    'buttons': buttons
+            split_at = text.rfind(' ', 0, max_len)
+            part = text[:split_at or 630]
+
+            self.send_text(prefix + part + '...')
+
+            prefix = '...'
+            text = text[split_at or 630:]
+
+        message = {'text': prefix + text}
+
+        # Facebook does not allow empty lists of quick replies
+        if quick_replies:
+            message['quick_replies'] = quick_replies
+
+        payload = {
+            'message': message,
+        }
+
+        self.send(payload)
+
+    def send_buttons(self, text, buttons):
+        """
+        Sends a text message with up to 3 buttons to a recipient
+        :param text: The text to be sent (max. 640 characters)
+        :param buttons: Up to 3 buttons
+        """
+
+        prefix = ''
+        max_len = 640
+
+        while len(text) > max_len:
+            max_len = 630
+
+            split_at = text.rfind(' ', 0, max_len)
+            part = text[:split_at or 630]
+
+            self.send_text(prefix + part + '...')
+
+            prefix = '...'
+            text = text[split_at or 630:]
+
+        payload = {
+            'message': {
+                'attachment': {
+                    'type': 'template',
+                    'payload': {
+                        'template_type': 'button',
+                        'text': prefix + text,
+                        'buttons': buttons
+                    }
                 }
             }
         }
-    }
 
-    send(payload)
+        self.send(payload)
 
-def send_generic(recipient_id, elements):
-    """
-    Sends a generic template with up to 10 elements to a recipient
-    :param recipient_id: The user ID of the recipient
-    :param elements: Up to 10 elements
-    """
+    def send_generic(self, elements):
+        """
+        Sends a generic template with up to 10 elements to a recipient
+        :param elements: Up to 10 elements
+        """
 
-    payload = {
-        'recipient': {
-            'id': recipient_id
-        },
-        'message': {
-            'attachment': {
-                'type': 'template',
-                'payload': {
-                    'template_type': 'generic',
-                    'elements': elements
+        payload = {
+            'message': {
+                'attachment': {
+                    'type': 'template',
+                    'payload': {
+                        'template_type': 'generic',
+                        'elements': elements
+                    }
                 }
             }
         }
-    }
 
-    send(payload)
+        self.send(payload)
 
-def send_list(recipient_id, elements, top_element_style='compact', button=None):
-    """
-    Sends a list template to the recipient
-    :param recipient_id: The user ID of the recipient
-    :param elements: A list of 2-4 elements generated by list_element
-    :param top_element_style: Can be either 'large' or 'compact'
-    :param button: Optional button_postback to show at the end of the list
-    :return:
-    """
-    payload = {
-        "recipient": {
-            "id": recipient_id
-        },
-        "message": {
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "list",
-                    "top_element_style": top_element_style,
-                    "elements": elements,
-                    "buttons": [
-                        button
-                    ]
+    def send_list(self, elements, top_element_style='compact', button=None):
+        """
+        Sends a list template to the recipient
+        :param elements: A list of 2-4 elements generated by list_element
+        :param top_element_style: Can be either 'large' or 'compact'
+        :param button: Optional button_postback to show at the end of the list
+        :return:
+        """
+        payload = {
+            "message": {
+                "attachment": {
+                    "type": "template",
+                    "payload": {
+                        "template_type": "list",
+                        "top_element_style": top_element_style,
+                        "elements": elements,
+                        "buttons": [
+                            button
+                        ]
+                    }
                 }
             }
         }
-    }
 
-    if not button:
-        payload['message']['attachment']['payload'].pop('buttons')
+        if not button:
+            payload['message']['attachment']['payload'].pop('buttons')
 
-    send(payload)
+        self.send(payload)
+
+    def send_attachment(self, url, type=None):
+        """
+        Send an attachment by URL. If the URL has not been uploaded before, it will be uploaded and the
+        attachment ID will be saved to the database. If the URL has been uploaded before, the ID is
+        fetched from the database. Then, the attachment is sent by ID.
+        :param url: The URL of the attachment
+        :param type: Type of the attachment. If not defined, guess_attachment_type is used
+        """
+        if self.type != SenderTypes.FACEBOOK:
+            raise NotImplementedError("Sending attachments to non-Facebook users is not possible yet.")
+
+        queue_job('fb.SendAttachment',
+                  {'recipient_id': self['sender']['id'], 'url': url, 'type': type})
+
+    def send_attachment_by_id(self, attachment_id, type):
+        """
+        Sends an attachment via ID
+        :param attachment_id: The attachment ID returned by upload_attachment
+        :param type: The attachment type (see guess_attachment_type)
+        """
+
+        # create a media object
+        media = {'attachment_id': attachment_id}
+
+        # add the image object to an attachment of type "image"
+        attachment = {
+            'type': type,
+            'payload': media
+        }
+
+        # add the attachment to a message instead of "text"
+        message = {'attachment': attachment}
+
+        # now create the final payload with the recipient
+        payload = {
+            'message': message
+        }
+        self.send(payload)
+
+    def send(self, payload):
+        """Queues a payload on the correct worker queue"""
+        logger.debug("JSON Payload: " + json.dumps(payload))
+
+        if self.type == SenderTypes.FACEBOOK:
+            payload['recipient'] = {
+                'id': self['sender']['id'],
+            }
+
+            queue_job('fb.Send', {'payload': payload})
 
 
 def list_element(title, subtitle=None, image_url=None, buttons=None, default_action=None):
@@ -176,7 +220,6 @@ def list_element(title, subtitle=None, image_url=None, buttons=None, default_act
         payload.pop('default_action')
 
     return payload
-
 
 def button_postback(title, payload):
     """
@@ -272,7 +315,6 @@ def button_url(title, url, webview_height_ratio='full'):
         'webview_height_ratio': webview_height_ratio
     }
 
-
 def quick_reply(title, payload, image_url=None):
     """
     Creates a dict to use with send_text
@@ -294,52 +336,3 @@ def quick_reply(title, payload, image_url=None):
         payload_['image_url'] = image_url
 
     return payload_
-
-
-def send_attachment(recipient_id, url, type=None):
-    """
-    Send an attachment by URL. If the URL has not been uploaded before, it will be uploaded and the
-    attachment ID will be saved to the database. If the URL has been uploaded before, the ID is
-    fetched from the database. Then, the attachment is sent by ID.
-    :param recipient_id: The user ID of the recipient
-    :param url: The URL of the attachment
-    :param type: Type of the attachment. If not defined, guess_attachment_type is used
-    """
-    queue_job('fb.SendAttachment',
-              {'recipient_id': recipient_id, 'url': url, 'type': type})
-
-
-def send_attachment_by_id(recipient_id, attachment_id, type):
-    """
-    Sends an attachment via ID
-    :param recipient_id: The user ID of the recipient
-    :param attachment_id: The attachment ID returned by upload_attachment
-    :param type: The attachment type (see guess_attachment_type)
-    """
-
-    recipient = {'id': recipient_id}
-
-    # create a media object
-    media = {'attachment_id': attachment_id}
-
-    # add the image object to an attachment of type "image"
-    attachment = {
-        'type': type,
-        'payload': media
-    }
-
-    # add the attachment to a message instead of "text"
-    message = {'attachment': attachment}
-
-    # now create the final payload with the recipient
-    payload = {
-        'recipient': recipient,
-        'message': message
-    }
-    send(payload)
-
-
-def send(payload):
-    """Queues a payload on the correct worker queue"""
-    logger.debug("JSON Payload: " + json.dumps(payload))
-    queue_job('fb.Send', {'payload': payload})

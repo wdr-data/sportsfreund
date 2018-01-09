@@ -1,7 +1,7 @@
 
 from backend.models import Push, Report
 
-from lib.response import send_list, list_element, button_postback
+from lib.response import list_element, button_postback
 from ..handlers.texthandler import TextHandler
 
 """
@@ -9,39 +9,29 @@ Contains callbacks and handlers for testing functionality or previewing content 
 """
 
 def push(event, **kwargs):
-    sender_id = event['sender']['id']
-
     pushes = Push.last(count=4, only_published=False, delivered=True, by_date=False)
 
-    send_list(
-        sender_id,
-        [
-            list_element(
-                str(p),
-                subtitle=p.text[:80],
-                buttons=[button_postback('Test',
-                                         {'push': p.id, 'report': None, 'next_state': 'intro'})])
-            for p in pushes
-        ]
-    )
+    event.send_list([
+        list_element(
+            str(p),
+            subtitle=p.text[:80],
+            buttons=[button_postback('Test',
+                                     {'push': p.id, 'report': None, 'next_state': 'intro'})])
+        for p in pushes
+    ])
 
 
 def report(event, **kwargs):
-    sender_id = event['sender']['id']
-
     reports = Report.last(count=4, only_published=False, delivered=True, by_date=False)
 
-    send_list(
-        sender_id,
-        [
-            list_element(
-                str(r),
-                subtitle=r.text[:80],
-                buttons=[button_postback('Test',
-                                         {'report': r.id, 'next_state': 'intro'})])
-            for r in reports
-        ]
-    )
+    event.send_list([
+        list_element(
+            str(r),
+            subtitle=r.text[:80],
+            buttons=[button_postback('Test',
+                                     {'report': r.id, 'next_state': 'intro'})])
+        for r in reports
+    ])
 
 
 handlers = [

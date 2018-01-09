@@ -20,5 +20,5 @@ from lib.config import FB_PAGE_TOKEN
 from . import views
 
 urlpatterns = [
-    url(r'^%s/$' % FB_PAGE_TOKEN, views.webhook, name='webhook'),
+    url(r'^%s/$' % FB_PAGE_TOKEN, views.webhook_fb, name='webhook'),
 ]

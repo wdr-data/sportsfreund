@@ -1,11 +1,9 @@
-from lib.response import send_text, send_buttons, button_postback
+from lib.response import button_postback
 
 def api_sport(event,parameters,**kwargs):
-    sender_id = event['sender']['id']
     sport = parameters.get('sport')
 
-    send_buttons(sender_id,
-                 text = sport + ' sagst du? Was magst du wissen?',
+    event.send_buttons(text = sport + ' sagst du? Was magst du wissen?',
                 buttons=[
                     button_postback('Letztes Rennen',
                                     ['start']),
@@ -17,10 +15,8 @@ def api_sport(event,parameters,**kwargs):
 
 
 def api_discipline(event,parameters,**kwargs):
-    sender_id = event['sender']['id']
     discipline = parameters.get('discipline')
 
-    send_text(sender_id,
-              'Infos zum '+ discipline)
+    event.send_text('Infos zum '+ discipline)
 
 

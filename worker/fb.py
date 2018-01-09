@@ -6,7 +6,7 @@ from mrq.task import Task
 
 from lib.attachment import Attachment
 from lib.facebook import upload_attachment, guess_attachment_type
-from lib.response import send_attachment_by_id
+from lib.response import Replyable, SenderTypes
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +39,8 @@ class SendAttachment(Task):
         """Sends a payload via the graph API"""
 
         recipient_id = params['recipient_id']
+        event = Replyable({'sender': {'id': recipient_id}}, SenderTypes.FACEBOOK)
+
         url = params['url']
         type = params['type']
 
@@ -51,4 +53,4 @@ class SendAttachment(Task):
                 raise ValueError('Uploading attachment with URL %s failed' % url)
             Attachment.create(url=url, attachment_id=attachment_id)
 
-        send_attachment_by_id(recipient_id, attachment_id, type or guess_attachment_type(url))
+        event.send_attachment_by_id(attachment_id, type or guess_attachment_type(url))

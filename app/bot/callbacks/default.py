@@ -6,8 +6,8 @@ from backend.models import FacebookUser, Wiki, Push, Report, Info, Story
 from django.utils import timezone
 from fuzzywuzzy import fuzz, process
 
-from lib.response import (send_buttons, button_postback, send_text, send_attachment_by_id,
-                          guess_attachment_type, quick_reply, generic_element, send_generic,
+from lib.facebook import guess_attachment_type
+from lib.response import (button_postback, quick_reply, generic_element,
                           button_web_url, button_share)
 from .shared import get_push, schema, send_push, get_pushes_by_date, get_latest_report, send_report
 
@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 def greetings(event, **kwargs):
-    sender_id = event['sender']['id']
     infos = Info.objects.all().order_by('-id')[:1]
 
     if infos:
@@ -24,8 +23,7 @@ def greetings(event, **kwargs):
                  + info.content)
 
         if info.attachment_id:
-            send_attachment_by_id(
-                sender_id,
+            event.send_attachment_by_id(
                 info.attachment_id,
                 guess_attachment_type(str(info.media))
             )
@@ -33,10 +31,9 @@ def greetings(event, **kwargs):
     else:
         reply = event['message']['nlp']['result']['fulfillment']['speech']
 
-    send_text(sender_id, reply)
+    event.send_text(reply)
 
 def countdown(event, **kwargs):
-    sender_id = event['sender']['id']
     today = datetime.datetime.today()
     olympia_start = datetime.datetime(2018, 2, 9, 12)
     delta = olympia_start - today
@@ -47,25 +44,23 @@ def countdown(event, **kwargs):
             hours=delta.seconds//3600,
             minutes=(delta.seconds%3600)//60
         )
-    send_text(sender_id, reply)
+    event.send_text(reply)
 
 def korea_standard_time(event, **kwargs):
-    sender_id = event['sender']['id']
     kst = datetime.datetime.utcnow() + datetime.timedelta(hours=9)
 
     reply = 'In Pyeongchang, dem Austragungsort der Olympischen Winterspiele, ist es {hours}:{minutes} Uhr KST.'.format(
             hours=kst.hour,
             minutes=kst.minute
         )
-    send_text(sender_id, reply)
+    event.send_text(reply)
 
 def get_started(event, **kwargs):
-    sender_id = event['sender']['id']
     reply = ("Hallo, ich bin der Wintersport Dienst der Sportschau. Im Moment kenne ich nur Ski-Alpin und Biathlon"
              "Ergebnisse, da ich noch entwickelt werde. Was möchtest Du:")
     next_state = 'step_one'
 
-    send_buttons(sender_id, reply,
+    event.send_buttons(reply,
                  buttons=[
                     button_postback('Nachrichten bekommen',
                                     ['subscribe']
@@ -77,14 +72,13 @@ def get_started(event, **kwargs):
 
 
 def start_message(event, payload, **kwargs):
-    sender_id = event['sender']['id']
     state = payload.get('start_message')
 
     if state == 'step_one':
         reply = """
 Wenn Du mich etwas fragen möchtest, schreib mir eine Nachricht. Du kannst zum Beispiel schreiben: 'Wer hat beim Ski-Alpin gewonnen?' oder 'Ski-Alpin Ergebnis'
 """
-        send_buttons(sender_id, reply,
+        event.send_buttons(reply,
                      buttons=[
                         #button_postback('Ergebnis letztes Rennen', {'start_message': 'step_two'}),
                         button_postback("Was gibt's noch?", {'start_message': 'step_two'}),
@@ -95,10 +89,9 @@ Wenn Du mich etwas fragen möchtest, schreib mir eine Nachricht. Du kannst zum B
 Unten neben der Texteingabe gibt es ein Menü. Da findet Ihr mehr Infos zu mir und meinen Funktionen.
 Abonniert meine Highlights und Ihr bekommt - zurzeit noch unregelmäßig - Ergebnisse, Fun-Facts
 und die stärksten Geschichten des Wintersports bequem per Messenger Nachricht."""
-        send_text(sender_id, reply)
+        event.send_text(reply)
 
 def share_bot(event, **kwargs):
-    sender_id = event['sender']['id']
     reply = "Teile den Sportsfreund mit deinen Freunden!"
 
     title = "Der Sportsfreund ist ein Facebook Messenger Dienst der Sportschau"
@@ -107,21 +100,19 @@ def share_bot(event, **kwargs):
     shared_content = [generic_element(title, subtitle, buttons = [button_web_url("Schreibe dem Sportsfreund", "https://www.m.me/sportsfreund.sportschau")])]
     message = generic_element("Teile den Sportsfreund mit deinen Freunden!", buttons = [button_share(shared_content)])
 
-    send_generic(sender_id,
-                elements = [message])
+    event.send_generic(elements=[message])
 
 
 def push(event, parameters, **kwargs):
-    sender_id = event['sender']['id']
     date = parameters and parameters.get('date')
 
     if not date:
         push = get_push(force_latest=True)
         if push:
-            schema(push, sender_id)
+            schema(push, event)
         else:
             reply = 'Keine Pushes gefunden.'
-            send_text(sender_id, reply)
+            event.send_text(reply)
 
     else:
         if len(date) == 1:
@@ -131,45 +122,42 @@ def push(event, parameters, **kwargs):
         if len(pushes) == 0:
             reply = 'Für dieses Datum liegen mir keine Nachrichten vor. ' \
                     'Wähle ein Datum, welches zwischen dem XX.XX.2018 und heute liegt.'
-            send_text(sender_id, reply)
+            event.send_text(reply)
 
         else:
-            schema(pushes[-1], sender_id)
+            schema(pushes[-1], event)
 
 
 def push_step(event, payload, **kwargs):
-    sender_id = event['sender']['id']
     push_id = payload['push']
     report_nr = payload['report']
     next_state = payload['next_state']
 
     push = Push.objects.get(id=push_id)
 
-    send_push(sender_id, push, report_nr, next_state)
+    send_push(event, push, report_nr, next_state)
 
 
 def report(event, parameters, **kwargs):
-    sender_id = event['sender']['id']
     sport = parameters and parameters.get('sport')
     discipline = parameters and parameters.get('discipline')
 
     report = get_latest_report(sport=sport, discipline=discipline)
 
     if report:
-        send_report(sender_id, report, 'intro')
+        send_report(event, report, 'intro')
     else:
         reply = 'Keine Meldung gefunden.'
-        send_text(sender_id, reply)
+        event.send_text(reply)
 
 
 def report_step(event, payload, **kwargs):
-    sender_id = event['sender']['id']
     report_id = payload['report']
     next_state = payload['next_state']
 
     report = Report.objects.get(id=report_id)
 
-    send_report(sender_id, report, next_state)
+    send_report(event, report, next_state)
 
 
 def subscribe(event, **kwargs):
@@ -177,7 +165,7 @@ def subscribe(event, **kwargs):
 
     if FacebookUser.objects.filter(uid=user_id).exists():
         reply = "Du bist bereits für Push-Nachrichten angemeldet."
-        send_text(user_id, reply)
+        event.send_text(reply)
 
     else:
         now = timezone.localtime(timezone.now())
@@ -200,9 +188,9 @@ def subscribe(event, **kwargs):
 Das hat geklappt. Du bist jetzt für die Ski-Alpin und Biathlon News angemeldet. Du kannst dich über das Menü wieder abmelden."""
 
         if buttons:
-            send_buttons(user_id, reply, buttons=buttons)
+            event.send_buttons(reply, buttons=buttons)
         else:
-            send_text(user_id, reply)
+            event.send_text(reply)
 
 
 def unsubscribe(event, **kwargs):
@@ -211,16 +199,14 @@ def unsubscribe(event, **kwargs):
     if FacebookUser.objects.filter(uid=user_id).exists():
         logger.debug('deleted user with ID: ' + str(FacebookUser.objects.get(uid=user_id)))
         FacebookUser.objects.get(uid=user_id).delete()
-        send_text(user_id,
-                "Schade, dass du uns verlassen möchtest. Du wurdest aus der Empfängerliste für "
-                "Push Benachrichtigungen gestrichen. "
-                "Wenn du doch nochmal Interesse hast, kannst du mich auch einfach fragen: \n"
-                "z.B. \"Wie war der Push von gestern/ vorgestern/ letztem Sonntag?\""
-        )
+        event.send_text("Schade, dass du uns verlassen möchtest. Du wurdest aus der Empfängerliste für "
+                        "Push Benachrichtigungen gestrichen. "
+                        "Wenn du doch nochmal Interesse hast, kannst du mich auch einfach fragen: \n"
+                        "z.B. \"Wie war der Push von gestern/ vorgestern/ letztem Sonntag?\"")
     else:
         reply = "Du bist noch kein Nutzer der Push-Nachrichten. Wenn du dich anmelden möchtest, " \
                 "wähle \"Anmelden\" über das Menü."
-        send_text(user_id, reply)
+        event.send_text(reply)
 
 
 def wiki(event, parameters, **kwargs):
@@ -246,8 +232,7 @@ def wiki(event, parameters, **kwargs):
 
         if match.attachment_id:
             try:
-                send_attachment_by_id(
-                    user_id,
+                event.send_attachment_by_id(
                     str(match.attachment_id),
                     type=guess_attachment_type(str(match.media))
                 )
@@ -255,15 +240,13 @@ def wiki(event, parameters, **kwargs):
                 logging.exception('Sending attachment failed')
 
     if reply:
-        send_text(user_id, reply)
+        event.send_text(reply)
 
 
 def apiai_fulfillment(event, **kwargs):
-    sender_id = event['sender']['id']
-
     fulfillment = event['message']['nlp']['result']['fulfillment']
     if fulfillment['speech']:
-        send_text(sender_id, fulfillment['speech'])
+        event.send_text(fulfillment['speech'])
 
 
 def story_payload(event, payload, **kwargs):
@@ -271,8 +254,6 @@ def story_payload(event, payload, **kwargs):
 
 
 def story(event, slug, fragment_nr):
-    user_id = event['sender']['id']
-
     reply = ''
     media = ''
     url = ''
@@ -333,10 +314,10 @@ def story(event, slug, fragment_nr):
         )
 
     if media:
-        send_attachment_by_id(user_id, str(media), guess_attachment_type(str(url)))
+        event.send_attachment_by_id(str(media), guess_attachment_type(str(url)))
 
     if quick_replies:
-        send_text(user_id, reply, quick_replies=quick_replies)
+        event.send_text(reply, quick_replies=quick_replies)
 
     else:
-        send_text(user_id, reply)
+        event.send_text(reply)

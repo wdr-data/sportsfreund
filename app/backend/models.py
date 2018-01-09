@@ -4,7 +4,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
 
-from lib.facebook import upload_attachment, UploadFailedError
+from lib.facebook import upload_attachment
 
 
 def default_pub_date():
