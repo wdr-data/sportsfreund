@@ -131,7 +131,7 @@ def send_push(user_id, push, report_nr, state):
 
         if report.fragments.count():
             next_state = 0
-            button_title = report.fragments.all()[0].question
+            button_title = report.fragments.order_by('id')[0].question
         else:
             button_title = random.choice(NEXT_REPORT_BTN)
             next_state = 'intro'
@@ -144,7 +144,7 @@ def send_push(user_id, push, report_nr, state):
 
     # Report Fragment
     elif report.fragments.count() > state:
-        fragments = report.fragments.all()
+        fragments = report.fragments.order_by('id')
         fragment = fragments[state]
         reply = fragment.text
         show_skip = True
@@ -218,14 +218,14 @@ def send_report(user_id, report, state):
 
         if report.fragments.count():
             next_state = 0
-            button_title = report.fragments.all()[0].question
+            button_title = report.fragments.order_by('id')[0].question
 
         if report.attachment_id:
             media = report.attachment_id
             url = report.media
 
     elif report.fragments.count() > state:
-        fragments = report.fragments.all()
+        fragments = report.fragments.order_by('id')
         fragment = fragments[state]
         reply = fragment.text
 
