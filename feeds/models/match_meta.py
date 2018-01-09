@@ -99,6 +99,7 @@ class MatchMeta(FeedModel):
                         ma['discipline'] = ro['name']
                         ma['discipline_short'] = DISCIPLINE_ALIASES.get(ro['name'], ro['name'])
                         ma['_cached_at'] = now
+                        ma['match_incident'] = ma.get('match_incident')
 
                         if ma['match_time'] == 'unknown':
                             ma['match_time'] = 'unbekannt'
