@@ -1,6 +1,7 @@
 
 import logging
 import random
+import re
 
 from backend.models import Push, Report, FacebookUser
 from django.utils import timezone
@@ -195,7 +196,7 @@ def send_push(user_id, push, report_nr, state):
     if show_skip:
         quick_replies.append(skip_button)
 
-    reply_split = reply.split('\n\n')
+    reply_split = [s for s in re.split(r"(\r|\n|(\r\n)){2}", reply) if s and s.strip()]
 
     for i, r in enumerate(reply_split):
         if len(reply_split) - 1 == i:
@@ -254,7 +255,7 @@ def send_report(user_id, report, state):
     if media:
         send_attachment_by_id(user_id, str(media), guess_attachment_type(str(url)))
 
-    reply_split = reply.split('\n\n')
+    reply_split = [s for s in re.split(r"(\r|\n|(\r\n)){2}", reply) if s and s.strip()]
 
     for i, r in enumerate(reply_split):
         if next_state is not None and len(reply_split) - 1 == i:
