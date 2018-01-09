@@ -6,10 +6,16 @@ ansible-vault create group_vars/all/vault.yml
 ```
 
 ```yaml
-mongodb_url:
-  staging: ""
-redis_url:
-  staging: ""
+insert_secrets:
+  - name: mongodb
+    values:
+      staging:
+        url: "<MONGODB_URL>"
+  - name: redis
+    values:
+      staging:
+        url: "<REDIS_URL>"
+
 ```
 
 ### Running Playbooks
