@@ -1,11 +1,8 @@
 
 import datetime
 
-from lib.response import send_text
-
 
 def api_countdown_days(event, **kwargs):
-    sender_id = event['sender']['id']
     today = datetime.datetime.today()
     olympia_start = datetime.datetime(2018, 2, 9, 12)
     delta = olympia_start - today
@@ -15,4 +12,4 @@ def api_countdown_days(event, **kwargs):
             hours=delta.seconds//3600,
             minutes=(delta.seconds%3600)//60
         )
-    send_text(sender_id, reply)
+    event.send_text(reply)

@@ -6,8 +6,7 @@ from backend.models import Push, Report, FacebookUser
 from django.utils import timezone
 
 from lib.facebook import guess_attachment_type
-from lib.response import (send_text, send_attachment_by_id, quick_reply,
-                          send_buttons, button_postback)
+from lib.response import (quick_reply, button_postback)
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +82,7 @@ def get_latest_report(sport=None, discipline=None):
         return None
 
 
-def schema(push, user_id):
+def schema(push, event):
     if push.reports.count():
         quick_replies = [
             quick_reply(
@@ -93,10 +92,11 @@ def schema(push, user_id):
     else:
         quick_replies = None
 
-    send_text(user_id, push.text, quick_replies=quick_replies)
+    event.send_text(push.text, quick_replies=quick_replies)
 
 
-def send_push(user_id, push, report_nr, state):
+def send_push(event, push, report_nr, state):
+    user_id = event['sender']['id']
     media = ''
     url = ''
     next_state = None
@@ -185,7 +185,7 @@ def send_push(user_id, push, report_nr, state):
     )
 
     if media:
-        send_attachment_by_id(user_id, str(media), guess_attachment_type(str(url)))
+        event.send_attachment_by_id(str(media), guess_attachment_type(str(url)))
 
     quick_replies = []
 
@@ -195,18 +195,19 @@ def send_push(user_id, push, report_nr, state):
     if show_skip:
         quick_replies.append(skip_button)
 
-    send_text(user_id, reply, quick_replies=quick_replies)
+    event.send_text(reply, quick_replies=quick_replies)
 
     if next_state is None:
         try:
             FacebookUser.objects.get(uid=user_id)
         except FacebookUser.DoesNotExist:
-            send_buttons(user_id, 'Du bist noch nicht für die täglichen Nachrichten angemeldet. '
-                                  'Möchtest du das jetzt nachholen?',
-                         buttons=[button_postback('Ja, bitte!', ['subscribe'])])
+            event.send_buttons('Du bist noch nicht für die täglichen Nachrichten angemeldet. '
+                               'Möchtest du das jetzt nachholen?',
+                               buttons=[button_postback('Ja, bitte!', ['subscribe'])])
 
 
-def send_report(user_id, report, state):
+def send_report(event, report, state):
+    user_id = event['sender']['id']
     reply = ''
     media = ''
     url = ''
@@ -245,11 +246,11 @@ def send_report(user_id, report, state):
     )
 
     if media:
-        send_attachment_by_id(user_id, str(media), guess_attachment_type(str(url)))
+        event.send_attachment_by_id(str(media), guess_attachment_type(str(url)))
 
     if next_state is not None:
         quick_replies = [more_button]
-        send_text(user_id, reply, quick_replies=quick_replies)
+        event.send_text(reply, quick_replies=quick_replies)
 
     else:
-        send_text(user_id, reply)
+        event.send_text(reply)

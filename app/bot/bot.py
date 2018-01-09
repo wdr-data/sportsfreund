@@ -5,7 +5,7 @@ import os
 from apiai import ApiAI
 
 from lib.config import FB_PAGE_TOKEN
-from lib.response import send_text
+from lib.response import Replyable
 # dirty
 from .callbacks import dirty
 from .callbacks import result, calendar, olympia, subscription, video
@@ -132,12 +132,9 @@ def make_event_handler():
 
         return False
 
-    def event_handler(data):
+    def event_handler(events, type):
         """handle all incoming messages"""
-        messaging_events = data['entry'][0]['messaging']
-        logger.debug(messaging_events)
-
-        for event in messaging_events:
+        for event in events:
             message = event.get('message')
 
             if message:
@@ -147,6 +144,8 @@ def make_event_handler():
                     message['nlp'] = nlp
 
                 api_ai_story_hook(event, nlp)
+
+            event = Replyable(event, type)
 
             for handler in handlers:
                 try:
@@ -159,16 +158,13 @@ def make_event_handler():
 
                             try:
                                 sender_id = event['sender']['id']
-                                send_text(
-                                    sender_id,
-                                    'Huppsala, das hat nicht funktioniert :('
-                                )
+                                event.send_text('Huppsala, das hat nicht funktioniert :(')
 
                                 if int(sender_id) in ADMINS:
                                     txt = str(e)
                                     txt = txt.replace(FB_PAGE_TOKEN, '[redacted]')
                                     txt = txt.replace(DIALOGFLOW_TOKEN, '[redacted]')
-                                    send_text(sender_id, txt)
+                                    event.send_text(txt)
                             except:
                                 pass
 

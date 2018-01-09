@@ -2,7 +2,7 @@
 import logging
 
 # import necessary modules
-from lib.response import (send_buttons, button_postback, send_text)
+from lib.response import (button_postback)
 from .default import story, get_started
 
 logger = logging.getLogger(__name__)
@@ -699,38 +699,29 @@ athletes_list = [{'first_name': 'Felix',
 
 
 def results_ski_alpin_api(event,parameters,**kwargs):
-    sender_id = event['sender']['id']
     city = parameters.get('city')
     discipline = parameters.get('discipline')
     sport = parameters.get('sport')
 
-
-
-    send_text(sender_id,
-              'Hier stehen die ersten drei')
+    event.send_text('Hier stehen die ersten drei')
 
 def force_start(event, **kwargs):
     get_started(event)
 
 def athlete_api(event,parameters,**kwargs):
-    sender_id = event['sender']['id']
     first_name = parameters.get('first_name')
     last_name = parameters.get('last_name')
 
     if not first_name and not last_name:
-        send_text(sender_id,
-                  'Komisch, ich habe keinen Namen erhalten')
+        event.send_text('Komisch, ich habe keinen Namen erhalten')
     elif not first_name and last_name:
-        send_text(sender_id,
-                  'Hier infos zu ' + last_name)
+        event.send_text('Hier infos zu ' + last_name)
     elif first_name and not last_name:
-        send_text(sender_id,
-                  'Hier infos zu ' + first_name + 'Ich brauche noch deinen Nachnamen')
+        event.send_text('Hier infos zu ' + first_name + 'Ich brauche noch deinen Nachnamen')
     elif first_name and last_name:
         athlete(event, {'athlete': {'first_name': first_name, 'last_name': last_name}})
 
 def athlete(event,payload,**kwargs):
-    sender_id = event['sender']['id']
     first_name = payload['athlete']['first_name']
     last_name = payload['athlete']['last_name']
 
@@ -767,20 +758,18 @@ def athlete(event,payload,**kwargs):
         reply = 'Zu diesem Athleten habe ich leider noch keine Informationen.'
 
     if buttons:
-        send_buttons(sender_id, reply, buttons=buttons)
+        event.send_buttons(reply, buttons=buttons)
     else:
-        send_text(sender_id, reply)
+        event.send_text(reply)
 
 def fun_fact(event, payload, **kwargs):
-    sender_id = event['sender']['id']
-    send_text(sender_id, 'Ein paar Fun Facts zum Sportler...')
+    event.send_text('Ein paar Fun Facts zum Sportler...')
 
     slug = 'fakt-neureuther-verletzungen-1'
     fragment_nr=None
     story(event, slug, fragment_nr)
 
 def follow(event, payload, **kwargs):
-    sender_id = event['sender']['id']
     athlete_id = payload['follow']
 
     by_uuid = dict()
@@ -792,31 +781,25 @@ def follow(event, payload, **kwargs):
             'Ich werde dich informieren, sobald es Neuigkeiten zu vermelden gibt. ' \
             'Gewinnt oder verliert der Athlet das nächste Rennen? - Du wirst es von mir erfahren!'
 
-    send_text(sender_id, reply)
+    event.send_text(reply)
 
 def next_event_api(event,parameters,**kwargs):
-    sender_id = event['sender']['id']
     city = parameters.get('city')
     discipline = parameters.get('discipline')
     sport = parameters.get('sport')
 
     if not discipline and not sport and not city:
-        send_text(sender_id,
-                  'Ich schaue gerne in meinem Kalender nach. Welche Sportart interessiert dich?')
+        event.send_text('Ich schaue gerne in meinem Kalender nach. Welche Sportart interessiert dich?')
     elif not discipline and not sport and city:
-        send_text(sender_id,
-                  'Nächstes event in ' + city + 'ist folgendes:')
+        event.send_text('Nächstes event in ' + city + 'ist folgendes:')
     elif not discipline and sport:
         if sport != 'Ski Alpin':
-            send_text(sender_id,
-                      'Sorry, aber ich habe noch kein Infos zum ' + sport +'. Bisher kenne ich nur ein wenig im Ski Alpin aus.')
-        send_text(sender_id,
-                  'Nächste event in der Diszipline '+discipline + 'findet am ... in city statt')
+            event.send_text('Sorry, aber ich habe noch kein Infos zum ' + sport +'. Bisher kenne ich nur ein wenig im Ski Alpin aus.')
+        event.send_text('Nächste event in der Diszipline '+discipline + 'findet am ... in city statt')
     elif discipline:
         next_event(event, {'search_parameters': {'city': city, 'discipline': discipline, 'sport': sport}})
 
 def next_event(event, payload, **kwargs):
-    sender_id = event['sender']['id']
     discipline = payload['search_parameters']['discipline']
 
     logger.info('Anfrage nach Infos zu ' + discipline)
@@ -831,15 +814,12 @@ def next_event(event, payload, **kwargs):
     #
     # event_info = by_discipline[discipline]
 
-    send_text(sender_id,
-              'Hier bekommst du demnächst Infos zum ' + discipline)
+    event.send_text('Hier bekommst du demnächst Infos zum ' + discipline)
 
 def world_cup_standing_api(event,parameters,**kwargs):
-    sender_id = event['sender']['id']
     sport = parameters.get('sport')
     discipline = parameters.get('discipline')
 
 
 
-    send_text(sender_id,
-              'info zum Worldcup stand')
+    event.send_text('info zum Worldcup stand')
