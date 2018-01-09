@@ -1,26 +1,16 @@
-from time import time as time
 from datetime import datetime
+from time import time as time
 
-from .. import api
+from feeds.config import DISCIPLINE_ALIASES, sport_by_name
 from lib.mongodb import db
 from .model import FeedModel
-from .disciplines_alias import DISCIPLINE_ALIASES
+from .. import api
 
 
 class MatchMeta(FeedModel):
     collection = db.matches_meta
     api_function = api.matches_by_topic_for_season
     api_id_name = 'to'
-
-    OLYMPIA = 1757
-
-    SKI_ALPIN = 1773
-    BIATHLON = 1814
-
-    TOPIC_IDS = {
-        'Ski Alpin': SKI_ALPIN,
-        'Biathlon': BIATHLON,
-    }
 
     def __init__(self, *args, **kwargs):
         """
@@ -130,7 +120,7 @@ class MatchMeta(FeedModel):
     def _search(cls, base_filter, sport, discipline, town, country):
 
         if sport is not None:
-            id = cls.TOPIC_IDS[sport]
+            id = sport_by_name[sport].topic_id
             cls.load_feed(id)
         else:
             cls.logger.warning('TODO check feeds with only discipline')
