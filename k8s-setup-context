@@ -1,0 +1,17 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- hosts: localhost
+  tasks:
+    - name: Load variables
+      include_vars: "infra/group_vars/all/vars.yml"
+    - name: Create context
+      command: |
+        kubectl config set-context {{ namespace }}-{{ item }}
+        --cluster {{ k8s_url }}
+        --namespace {{ namespace }}-{{ item }}
+        --user {{ k8s_url }}
+      items: "{{ stages }}"
+    - name: Use context
+      command: "kubectl config use-context {{ namespace }}-{{ ansible_env.ENVIRONMENT }}"
+      when: ansible_env.ENVIRONMENT is defined
