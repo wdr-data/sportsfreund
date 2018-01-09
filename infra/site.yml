@@ -1,5 +1,6 @@
 ---
 
+- import_playbook: k8s-setup.yml
 - import_playbook: s3.yml
 - import_playbook: postgres.yml
 - import_playbook: misc_secrets.yml

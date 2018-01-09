@@ -1,6 +1,7 @@
 default_region: eu-central-1
 k8s_url: "hacks.k8s.wdr.cloud"
 prefix: sportsfreund-k8s
+namespace: sportsfreund
 stages:
   - staging
 

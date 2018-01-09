@@ -1,0 +1,16 @@
+---
+
+- hosts: localhost
+  tasks:
+    - include_tasks: utils/k8s-creds.yml
+    - name: Create Kubernetes Namespaces
+      kubernetes:
+        api_endpoint: "api.{{ k8s_url }}"
+        username: admin
+        password: "{{ k8s_credentials }}"
+        inline_data: |
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: {{ namespace }}-{{ item }}
+      items: "{{ stages }}"
