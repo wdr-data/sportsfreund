@@ -6,6 +6,7 @@ from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.subscription import Subscription
 from feeds.models.team import Team
+from feeds.config import sport_by_name, CompetitionType
 from lib.push import Push
 from lib.response import send_text, send_list, button_postback
 from lib import queue
@@ -49,7 +50,18 @@ class UpdateMatch(Task):
         """
         match_id = params['match_id']
         match = Match.by_id(match_id, clear_cache=True)
-        if match.finished:
+        disciplines = sport_by_name[match.meta.sport].disciplines
+
+        for discipline in disciplines:
+            if discipline.name == match.meta.discipline_short:
+                race = discipline.competition_type == CompetitionType.RACE
+                ranks = {r.rank for r in match.match_result if not int(r.match_result_at)}
+                break
+        else:
+            race = False
+            ranks = set()
+
+        if match.finished or (race and all(rank in ranks for rank in (1, 2, 3))):
             if not Push.query(target={'match_id': match_id}):
                 Push.create({'match_id': match_id}, Push.State.SENDING, datetime.now())
                 UpdateMatch.result_push(match)
