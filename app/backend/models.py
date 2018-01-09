@@ -51,7 +51,9 @@ class Push(models.Model):
             pushes = pushes.filter(delivered=False)
 
         if by_date:
-            pushes = pushes.order_by('pub_date')
+            pushes = pushes.order_by('-pub_date')
+        else:
+            pushes = pushes.order_by('-id')
 
         return pushes[offset:count]
 
@@ -115,7 +117,9 @@ class Report(models.Model):
             reports = reports.filter(delivered=False)
 
         if by_date:
-            reports = reports.order_by('created')
+            reports = reports.order_by('-created')
+        else:
+            reports = reports.order_by('-id')
 
         return reports[offset:count]
 
