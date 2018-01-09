@@ -5,6 +5,7 @@
 - name: Biathlon
   topic_id: 1814
   result_type: TIME
+  result_digits: 1
   competition_term: Rennen
   article: das
   disciplines:
@@ -27,6 +28,7 @@
 - name: Ski Alpin
   topic_id: 1773
   result_type: TIME
+  result_digits: 2
   competition_term: Rennen
   article: das
   disciplines:
@@ -52,6 +54,7 @@
 - name: Skispringen
   topic_id: 1789
   result_type: POINTS
+  result_digits: 1
   competition_term: Springen
   article: das
   disciplines:

@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from calendar import day_name
 from typing import Iterable, List
+import locale
 
-from itertools import islice
-
+from feeds.config import sport_by_name, ResultType
 from feeds.models.match_meta import MatchMeta
 from feeds.models.team import Team
 from lib.flag import flag
@@ -11,6 +11,9 @@ from lib.response import list_element, button_postback
 from .. import api
 from lib.mongodb import db
 from .model import FeedModel
+
+
+locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
 
 
 class Match(FeedModel):
@@ -116,21 +119,24 @@ class Match(FeedModel):
         return header
 
     def txt_points(self, result):
-        if result.rank == 1:
-            point_str = result.match_result
-        else:
-            point_str = result.match_result - self.winner_result.match_result
+        conf = sport_by_name[self.meta.sport]
 
-        if not point_str:
-            return result.comment
+        if conf.result_type is ResultType.TIME:
+            if result.rank == 1:
+                point_str = result.match_result
+            else:
+                point_str = result.match_result - self.winner_result.match_result
 
-        if self.meta.sport in ['Biathlon']:
-            point_str = Match.fmt_millis(point_str, digits=1)
-        elif self.meta.sport in ['Ski Alpin']:
-            point_str = Match.fmt_millis(point_str, digits=2)
+            if not point_str:
+                return result.comment
 
-        if result.rank != 1:
-            point_str = '+' + point_str
+            point_str = Match.fmt_millis(point_str, digits=conf.result_digits)
+
+            if result.rank != 1:
+                point_str = '+' + point_str
+
+        elif conf.result_type is ResultType.POINTS:
+            point_str = locale.format(f'%.{conf.result_digits}f', result.match_result / 100)
 
         return point_str
 
