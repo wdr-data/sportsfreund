@@ -14,3 +14,10 @@
           metadata:
             name: {{ namespace }}-{{ item }}
       items: "{{ stages }}"
+    - name: Install Kubernetes Addons
+      command: "kubectl apply -f {{ item }}"
+      items:
+        - "https://raw.githubusercontent.com/mittwald/kubernetes-secret-generator/master/deploy/secret-generator-rbac.yaml"
+        - "https://raw.githubusercontent.com/mittwald/kubernetes-secret-generator/master/deploy/secret-generator.yaml"
+      register: k8s_addon_apply
+      changed_when: "(k8s_addon_apply.stdout_lines | map('regex_search', '^.*unchanged$') | select('string') | list | length) < (k8s_addon_apply.stdout_lines | length)"
