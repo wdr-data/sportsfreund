@@ -40,6 +40,7 @@ mrq = "*"
 "m3u8" = "*"
 lxml = "*"
 pycountry = "*"
+pyyaml = "*"
 
 
 [dev-packages]
