@@ -1,0 +1,18 @@
+---
+
+- hosts: localhost
+  vars:
+    app_list:
+      - "../app"
+  tasks:
+    - name: Clear Output Directory
+      file:
+        path: ".compiled"
+        state: "{{ item }}"
+      items:
+        - absent
+        - directory
+    - include_tasks: assemble.yml
+      vars:
+        app_name: "{{ item }}"
+      items: "{{ app_list }}"

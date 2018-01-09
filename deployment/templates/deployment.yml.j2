@@ -1,0 +1,40 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ app.name }}
+  labels:
+    unit: {{ app.name }}
+spec:
+  replicas: {{ app.replicas | default(2) }}
+  selector:
+    matchLabels:
+      unit: {{ app.name }}
+  template:
+    metadata:
+      labels:
+        unit: {{ app.name }}
+    spec:
+      containers:
+      - name: {{ app.name }}
+        image: "{{ app.image }}"
+        ports:
+          - containerPort: {{ app.port | default(80) }}
+        env:
+{% for key, val in app.get('env', {}).iteritems() %}
+          - name: "{{ key }}"
+            value: "{{ val }}"
+{% endfor %}
+{% for key, val in app.get('env_from_config', {}).iteritems() %}
+          - name: "{{ key }}"
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ val[0] }}"
+                key: "{{ val[1] }}"
+{% endfor %}
+{% for key, val in app.get('env_from_secret', {}).iteritems() %}
+          - name: "{{ key }}"
+            valueFrom:
+              secretKeyRef:
+                name: "{{ val[0] }}"
+                key: "{{ val[1] }}"
+{% endfor %}

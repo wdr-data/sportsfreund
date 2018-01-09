@@ -1,0 +1,19 @@
+name: django
+image: wdrdata/sportsfreund-app
+env_from_config:
+  S3_BUCKET: ['s3bucket-media', 'name']
+env_from_secret:
+  SECRET_KEY: ['app-secret', 'key']
+  DATABASE_URL: ['postgres', 'url']
+  MONGODB_URI: ['mongodb', 'url']
+  REDIS_URL: ['redis', 'url']
+  S3_ACCESS_KEY: ['s3creds', 'access_key_id']
+  S3_ACCESS_SECRET: ['s3creds', 'secret_access_key']
+
+resources:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: app-secret
+      annotations:
+        secret-generator.v1.mittwald.de/autogenerate: key

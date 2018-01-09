@@ -1,0 +1,23 @@
+---
+
+- name: Get App Config
+  include_vars:
+    file: "{{ app_name }}/deploy.yml"
+    name: app
+- name: Prepare Deployments
+  template:
+    src: templates/deployment.yml.j2
+    dest: .compiled/{{ app.name }}.deployment.yml
+- name: Prepare Services
+  template:
+    src: templates/service.yml.j2
+    dest: .compiled/{{ app.name }}.service.yml
+  when: app.hidden is not defined
+- name: Create additional resources
+  copy:
+    content: "{{ resource | to_nice_yaml }}"
+    dest: ".compiled/{{ app.name }}.{{ resource | hash('sha1') }}.yml"
+  items: "{{ app.resources }}"
+  when: app.resources is defined
+  loop_control:
+    loop_var: resource
