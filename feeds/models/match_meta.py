@@ -1,10 +1,10 @@
-from time import time as time
 from datetime import datetime
+from time import time as time
 
-from .. import api
+from feeds.config import DISCIPLINE_ALIASES
 from lib.mongodb import db
 from .model import FeedModel
-from .disciplines_alias import DISCIPLINE_ALIASES
+from .. import api
 
 
 class MatchMeta(FeedModel):
