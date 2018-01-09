@@ -56,7 +56,7 @@
   article: das
   disciplines:
     - name: Skispringen
-      cometition_type: SINGLE
+      competition_type: SINGLE
       article: das
     - name: Skifliegen
       competition_type: SINGLE
