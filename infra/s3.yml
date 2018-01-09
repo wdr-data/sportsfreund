@@ -58,7 +58,7 @@
           apiVersion: v1
           kind: ConfigMap
           metadata:
-            name: s3bucket
+            name: s3bucket-media
             namespace: {{ namespace }}-{{ item.item }}
           data:
             name: {{ item.name }}
