@@ -176,10 +176,10 @@ def result_change(event, payload, **kwargs):
 
     if not filter:
         if len(subs) > 1:
-            if target == Subscription.Target.SPORT:
+            if target == 'sport':
                 filter_list = [Subscription.describe_filter(sub.filter)
                      for sub in subs if sub.target is Subscription.Target.SPORT]
-            elif  target == Subscription.Target.ATHLETE:
+            elif  target == 'athlete':
                 filter_list = [Subscription.describe_filter(sub.filter)
                      for sub in subs if sub.target is Subscription.Target.ATHLETE]
 
