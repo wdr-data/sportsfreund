@@ -23,6 +23,7 @@ def api_next(event, parameters, **kwargs):
     p_date = parameters.get('date')
     period = parameters.get('date-period')
     country = parameters.get('country')
+    gender = parameters.get('gender')
 
     if period:
         from_date, until_date = period_to_dates(period)
@@ -37,7 +38,7 @@ def api_next(event, parameters, **kwargs):
 
         match_meta = MatchMeta.search_range(
             from_date=from_date, until_date=until_date, discipline=discipline, sport=sport,
-            town=town, country=country)
+            town=town, country=country, gender=gender)
 
         if not match_meta:
             match_meta = MatchMeta.search_range(
@@ -60,7 +61,8 @@ def api_next(event, parameters, **kwargs):
         else:
             event.send_text('Gucken wir mal was da so los sein wird.')
             match_meta = MatchMeta.search_date(date=d_date, discipline=discipline,
-                                               sport=sport, town=town, country=country)
+                                               sport=sport, town=town, country=country,
+                                               gender=gender)
             if not match_meta:
                 match_meta = MatchMeta.search_date(date=d_date)
                 if match_meta and (discipline or sport or town or country):
@@ -80,10 +82,11 @@ def api_next(event, parameters, **kwargs):
     if town or country:
         today = date.today()
         match_meta = MatchMeta.search_range(from_date=today, discipline=discipline,
-                                            sport=sport, town=town, country=country)
+                                            sport=sport, town=town, country=country, gender=gender)
         if not match_meta:
             match_meta = MatchMeta.search_range(until_date=today, discipline=discipline,
-                                                sport=sport, town=town, country=country)
+                                                sport=sport, town=town, country=country,
+                                                gender=gender)
             if not match_meta:
                 event.send_text('Leider kein Event in {place}.'.format(place=town if town else country))
             else:
