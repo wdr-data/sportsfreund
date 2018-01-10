@@ -3,12 +3,13 @@ from datetime import datetime, date, timedelta
 from calendar import day_name
 from time import sleep
 from pycountry import countries
-from random import randint
+import random
 
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.config import supported_sports
 from lib.flag import flag
+from .result import api_podium
 
 logger = logging.Logger(__name__)
 
@@ -39,15 +40,15 @@ def api_next(event, parameters, **kwargs):
             town=town, country=country)
 
         if not match_meta:
-            if discipline or sport or town or country:
-                match_meta = MatchMeta.search_range(
-                    from_date=from_date, until_date=until_date)
-                if match_meta:
-                    event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
-                                    'aber vielleicht interessiert dich ja folgendes:')
-                    multiple_entry(event, match_meta)
-                else:
-                    event.send_text('In dem Zeitraum {from_da}-{till} ist mein Kalender leer.')
+            match_meta = MatchMeta.search_range(
+                from_date=from_date, until_date=until_date)
+
+            if match_meta and (discipline or sport or town or country):
+                event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
+                                'aber vielleicht interessiert dich ja folgendes:')
+                multiple_entry(event, match_meta)
+            else:
+                event.send_text('In dem Zeitraum {from_da}-{till} ist mein Kalender leer.')
         else:
             multiple_entry(event, match_meta)
         return
@@ -55,25 +56,24 @@ def api_next(event, parameters, **kwargs):
     if p_date:
         d_date = datetime.strptime(p_date, '%Y-%m-%d').date()
         if d_date < date.today():
-            event.send_text("Du informierst dich gerade darüber was in der Vergangenheit passieren wird. "
-                            f"Frag mich nochmal nach den Ergebnissen vom {date.strftime(d_date, '%d.%m.%Y')}.")
+            api_podium(event, parameters, **kwargs)
         else:
             event.send_text('Gucken wir mal was da so los sein wird.')
             match_meta = MatchMeta.search_date(date=d_date, discipline=discipline,
                                                sport=sport, town=town, country=country)
             if not match_meta:
-                if discipline or sport or town or country:
-                    match_meta = MatchMeta.search_date(date=d_date)
-                    if match_meta:
-                        event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
-                                        'aber vielleicht interessiert dich ja folgendes Event:')
+                match_meta = MatchMeta.search_date(date=d_date)
+                if match_meta and (discipline or sport or town or country):
+                    event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
+                                    'aber vielleicht interessiert dich ja folgendes Event:')
 
                 else:
-                    emoji = ['⛷','🏂']
+                    emoji = ['⛷', '🏂']
                     event.send_text('Heute findet kein Wintersport-Event statt. '
-                                    f'Ich geh ne Runde {emoji[randint(0,1)]}!')
-                    return
-            multiple_entry(event, match_meta)
+                                    f'Ich geh ne Runde {random.choice(emoji)}!')
+
+            else:
+                multiple_entry(event, match_meta)
 
         return
 
