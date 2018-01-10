@@ -204,18 +204,17 @@ def result_change(event, payload, **kwargs):
                                buttons=[button_postback('Abmelden', ['unsubscribe'])])
             return
     else:
-        sub_id = [sub._id for sub in subs
-                  if Subscription.describe_filter(sub.filter) is filter_arg]
-        unsubscribe(event,
-                    {'unsubscribe': str(sub_id[0])})
-        event.send_text(f'Okidoki. Du bekommst keine '
-                        f'{Subscription.describe_filter(subs[0].filter)}-Ergebnisse mehr. ')
+        for sub in subs:
+            if Subscription.describe_filter(sub.filter) == filter_arg:
+                unsubscribe(event, {'unsubscribe': str(sub._id)})
+                event.send_text(f'Okidoki. Du bekommst keine {filter_arg}-Ergebnisse mehr.')
 
 
 def unsubscribe(event, payload):
     sub_id = payload['unsubscribe']
 
     Subscription.delete(_id=ObjectId(sub_id))
+    send_subscriptions(event)
 
 
 def subscribe_menu(event, payload):
