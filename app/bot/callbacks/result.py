@@ -94,7 +94,7 @@ def api_winner(event, parameters, **kwargs):
                           date='am ' + meta.datetime.date().strftime('%d.%m.%Y')
                           if dtdate.today() != meta.datetime.date() else '',
                           today='heute' if dtdate.today() == meta.datetime.date() else ''),
-                          buttons=match.btn_podium
+                          buttons=[match.btn_podium]
                                 )
         else:
             event.send_text('Das Event {sport} {discipline} wurde noch nicht beendet. '
