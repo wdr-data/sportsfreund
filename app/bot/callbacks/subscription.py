@@ -138,12 +138,12 @@ def result_subscriptions(event, payload, **kwargs):
             sport_subtitle = sport_subtitle[:77] + '...'
         sport_emoji = '✔'
         sport_button = button_postback('🔧 Ändern',
-                                       {'target': 'sport', 'filter': None, 'state': 'option'})
+                                       {'target': 'sport', 'filter': None, 'option': None})
     else:
         sport_subtitle = 'Nicht angemeldet'
         sport_emoji = '❌'
         sport_button = button_postback('✍🏻 Anmelden',
-                                       {'target': 'sport', 'filter': None, 'state': 'subscribe'})
+                                       {'target': 'sport', 'filter': None, 'option': 'subscribe'})
 
     if any(sub.target is Subscription.Target.ATHLETE for sub in subs):
         athlete_subtitle = ', '.join(
@@ -154,12 +154,12 @@ def result_subscriptions(event, payload, **kwargs):
             athlete_subtitle = athlete_subtitle[:77] + '...'
         athlete_emoji = '✔'
         athlete_button = button_postback('🔧 Ändern',
-                                         {'target': 'sport', 'filter': None, 'state': 'option'})
+                                         {'target': 'sport', 'filter': None, 'option': None})
     else:
         athlete_subtitle = 'Nicht angemeldet'
         athlete_emoji = '❌'
         athlete_button = button_postback('📝 Anmelden',
-                                         {'target': 'sport', 'filter': None, 'state': 'subscribe'})
+                                         {'target': 'sport', 'filter': None, 'option': 'subscribe'})
 
     elements = [
         list_element(
@@ -177,23 +177,23 @@ def result_subscriptions(event, payload, **kwargs):
 
 def result_change(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    state = payload['state']
+    option = payload['option']
     target = payload['target']
     filter_arg = payload['filter']
     subs = Subscription.query(type=Subscription.Type.RESULT,
                               psid=sender_id)
 
-    if state == 'option':
+    if not option:
         event.send_buttons('Was möchtest du machen?',
                            buttons=[
                                button_postback(
                                    'Anmelden',
-                                   {'target': 'sport', 'filter': None, 'state': 'subscribe'}),
+                                   {'target': 'sport', 'filter': None, 'option': 'subscribe'}),
                                button_postback(
                                    'Abmelden',
-                                   {'target': 'sport', 'filter': None, 'state': 'unsubscribe'})])
+                                   {'target': 'sport', 'filter': None, 'option': 'unsubscribe'})])
 
-    if state == 'abmeden':
+    elif option == 'abmeden':
         if not filter_arg:
             if len(subs) > 1:
                 if target == 'sport':
@@ -204,7 +204,7 @@ def result_change(event, payload, **kwargs):
                          for sub in subs if sub.target is Subscription.Target.ATHLETE]
 
                 quickreplies = [quick_reply(filter,
-                                            {'target': target, 'filter': filter, 'state': 'unsubscribe'})
+                                            {'target': target, 'filter': filter, 'option': 'unsubscribe'})
                                 for filter in filter_list[:11]]
                 event.send_text(
                     'Für welchen Dienst möchtest du dich abmelden?',
@@ -222,11 +222,11 @@ def result_change(event, payload, **kwargs):
                     unsubscribe(event, {'unsubscribe': str(sub._id)})
                     event.send_text(f'Okidoki. Du bekommst keine {filter_arg}-Ergebnisse mehr.')
 
-    if state == 'anmelden':
+    if option == 'anmelden':
         if not filter_arg:
             if target == 'sport':
                 quickreplies = [quick_reply(sport,
-                                            {'target': target, 'filter': sport, 'state': 'subscribe'})
+                                            {'target': target, 'filter': sport, 'option': 'subscribe'})
                                 for sport in supported_sports[:11]]
                 event.send_text(f'Für welche Sportart soll ich dir die Ergebnisse schicken? ',
                                 quickreplies)
