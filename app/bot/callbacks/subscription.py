@@ -63,6 +63,10 @@ def unsubscribe_flow(event):
     send_subscriptions(event)
 
 
+def pld_subscriptions(event, payload, **kwargs):
+    send_subscriptions(event)
+
+
 def send_subscriptions(event, **kwargs):
     sender_id = event['sender']['id']
     subs = Subscription.query(psid=sender_id)
@@ -92,7 +96,7 @@ def send_subscriptions(event, **kwargs):
     elements = [
         list_element(
             'Highlights des Tages ' + highlight_emoji,
-            'Tägliche Zusammenfassung für Olympia',
+            'Tägliche Zusammenfassungen für Olympia',
             buttons=[highlight_button]),
         list_element(
             'Ergebnisdienst ' + result_emoji,
@@ -223,5 +227,6 @@ handlers = [
     PayloadHandler(result_subscriptions, ['type']),
     PayloadHandler(result_change, ['target', 'filter']),
     PayloadHandler(unsubscribe, ['unsubscribe']),
-    PayloadHandler(subscribe_menu, ['subscribe_menu'])
+    PayloadHandler(subscribe_menu, ['subscribe_menu']),
+    PayloadHandler(pld_subscriptions, ['send_subscriptions']),
 ]

@@ -1,6 +1,7 @@
 
 import datetime
 import logging
+from time import sleep
 
 from backend.models import FacebookUser, Wiki, Push, Report, Info, Story
 from django.utils import timezone
@@ -56,19 +57,27 @@ def korea_standard_time(event, **kwargs):
     event.send_text(reply)
 
 def get_started(event, **kwargs):
-    reply = ("Hallo, ich bin der Wintersport Dienst der Sportschau. Im Moment kenne ich nur Ski-Alpin und Biathlon"
-             "Ergebnisse, da ich noch entwickelt werde. Was möchtest Du:")
-    next_state = 'step_one'
-
-    event.send_buttons(reply,
-                 buttons=[
-                    button_postback('Nachrichten bekommen',
-                                    ['subscribe']
-                                    ),
-                    button_postback('Mich etwas fragen',
-                                    {'start_message': next_state}
-                                    ),
-                 ])
+    event.send_text('Hallo, ich bin der Wintersport-Dienst der Sportschau und ich '
+                    'trainiere für Olympia. ⛷')
+    sleep(2)
+    event.send_text(f'Im Moment liefere ich Infos zu diesen Sportarten: \n- Ski Alpin'
+                    f'- Biathlon\n- Skispringen\n'
+                    f'Mehr zu mir und meinen Funktionen bekommst du jederzeit, '
+                    f'wenn du unten auf das Menü klickst.')
+    sleep(3)
+    event.send_text(f'Schreib mir eine Nachricht und mein Code versucht, eine möglichst passende '
+                    f'Antwort darauf zu finden. Das klappt natürlich nicht bei allen Themen, '
+                    f'ich kenne mich eben nur mit Wintersport aus und kann ein bisschen quatschen. '
+                    f'Schreib zum Beispiel: \n- Wann ist der nächste Ski-Wettkampf\n'
+                    f'- Ergebnisse Biathlon\n- Ski Alpin Video')
+    sleep(3)
+    event.send_buttons(
+        f'Ich kann mich auch automatisch bei dir melden, wenn es etwas Neues gibt. '
+        f'Hier kannst du dich anmelden:',
+        buttons=[
+            button_postback('Nachrichten erhalten',
+                            ['send_subscriptions'])]
+    )
 
 
 def start_message(event, payload, **kwargs):
