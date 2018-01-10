@@ -110,7 +110,7 @@ def make_event_handler():
             nlp = json.loads(response.read().decode())
 
             for context in nlp['result']['contexts']:
-                for k, v in context['parameters']:
+                for k, v in context['parameters'][0]:
                     nlp['result']['parameters'][k] = v
 
             nlp['result']['parameters'] = {
