@@ -113,12 +113,14 @@ def highlight_subscriptions(event, payload, **kwargs):
         filter_arg['highlight'] = 'Highlight'
         type_arg = Subscription.Type.HIGHLIGHT
         Subscription.create(sender_id, target, filter_arg, type_arg)
-        event.send_text('Vielen Dank, ich habe dich für die Highlights angemeldet. Du erhältst nun '
-                        'täglich eine Nachricht von mir, in der ich dich über das Geschehen '
-                        'rund um die Olympiade informiere.')
+        event.send_text('Läuft! Ich melde mich während der Olympischen Spiele jeden Morgen mit den '
+                        'Highlights aus PyeonChang bei dir.\n Kann ich sonst nochwas liefern?')
+        send_subscriptions(event)
     elif state == 'unsubscribe':
         for sub in subs:
             if sub.target is Subscription.Target.HIGHLIGHT:
+                event.send_text('Du bist nun von den Highlights abgemeldet. Du kannst das '
+                                'jederzeit wieder ändern.')
                 unsubscribe(event, {'unsubscribe': str(sub._id)})
 
 def result_subscriptions(event, payload, **kwargs):
@@ -167,11 +169,11 @@ def result_subscriptions(event, payload, **kwargs):
 def result_change(event, payload, **kwargs):
     sender_id = event['sender']['id']
     target = payload['target']
-    filter = payload['filter']
+    filter_arg = payload['filter']
     subs = Subscription.query(type=Subscription.Type.RESULT,
                               psid=sender_id)
 
-    if not filter:
+    if not filter_arg:
         if len(subs) > 1:
             if target == 'sport':
                 filter_list = [Subscription.describe_filter(sub.filter)
@@ -202,19 +204,18 @@ def result_change(event, payload, **kwargs):
                                buttons=[button_postback('Abmelden', ['unsubscribe'])])
             return
     else:
-        sub_id = [
-            sub._id
-            for sub in subs
-            if sub.target is Subscription.Target.SPORT
-               and Subscription.describe_filter(sub.filter) is filter]
-        unsubscribe(event, {'unsubscribe': str(sub_id)})
+        sub_id = [sub._id for sub in subs
+                  if Subscription.describe_filter(sub.filter) is filter_arg]
+        unsubscribe(event,
+                    {'unsubscribe': str(sub_id[0])})
+        event.send_text(f'Okidoki. Du bekommst keine '
+                        f'{Subscription.describe_filter(subs[0].filter)}-Ergebnisse mehr. ')
 
 
 def unsubscribe(event, payload):
     sub_id = payload['unsubscribe']
 
     Subscription.delete(_id=ObjectId(sub_id))
-    event.send_text('Ich hab dich vom Service abgemeldet. \nKann ich sonst noch was für dich tun? ')
 
 
 def subscribe_menu(event, payload):
