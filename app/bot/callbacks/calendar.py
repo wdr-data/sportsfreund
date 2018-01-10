@@ -2,7 +2,6 @@ import logging
 from datetime import datetime, date, timedelta
 from calendar import day_name
 from time import sleep
-from pycountry import countries
 import random
 
 from feeds.models.match import Match
@@ -150,11 +149,6 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
     gender = 'der Damen ' if match_meta.gender == 'female' \
         else ('der Herren' if match_meta.gender == 'male'  else '')
 
-    try:
-        country = countries.get(alpha_3=match_meta.venue.country.code)
-    except KeyError:
-        country = None
-
     if match_meta.match_incident:
         event.send_text(f"Ich habe gehört, der Wettkampf {match_meta.discipline} {gender} in {match_meta.town}, "
                         f"welcher am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} "
@@ -162,7 +156,7 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
     else:
         event.send_text(f"Am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} um "
                         f"{match_meta.match_time} Uhr: {match_meta.discipline} {gender} in {match_meta.town} "
-                        f"{flag(country.alpha_2) if country else '🏳️‍🌈'} {match_meta.venue.country.code}")
+                        f"{flag(match_meta.venue.country.iso)} {match_meta.venue.country.code}")
 
 
 def period_to_dates(period):
