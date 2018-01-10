@@ -21,7 +21,7 @@ class ExpectedReply:
         self.replyable = replyable
         self.calls = deque(replyable.mock_calls)
 
-    def assert_text(self, text, quick_replies=None):
+    def expect_text(self, text, quick_replies=None):
 
         name, args, kwargs = self._get_next_call()
 

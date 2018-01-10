@@ -8,4 +8,4 @@ def test_api_discipline(event):
     discipline = str(random())
 
     api_discipline(event, {'discipline': discipline})
-    ExpectedReply(event).assert_text(f'Infos zum {discipline}')
+    ExpectedReply(event).expect_text(f'Infos zum {discipline}')

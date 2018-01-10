@@ -76,9 +76,9 @@ class TestApiNext:
 
         timestr = the_date.strftime('%A, %d.%m.%Y um %H:%M')
 
-        ExpectedReply(event).assert_text(
+        ExpectedReply(event).expect_text(
             'Gucken wir mal was da so los sein wird.'
-        ).assert_text(
+        ).expect_text(
             f'Am {timestr} Uhr: Sprint der Herren in Bremen 🇸🇪 SWE'
         )
 
@@ -98,9 +98,9 @@ class TestApiNext:
 
         api_next(event, parameters)
 
-        ExpectedReply(event).assert_text(
+        ExpectedReply(event).expect_text(
             'Gucken wir mal was da so los sein wird.'
-        ).assert_text(
+        ).expect_text(
             [f'Heute findet kein Wintersport-Event statt. Ich geh ne Runde {emoji}!'
              for emoji in ('⛷', '🏂')]
         )
