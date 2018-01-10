@@ -8,7 +8,7 @@ from ..handlers.payloadhandler import PayloadHandler
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.team import Team
-from feeds.config import supported_sports
+from feeds.config import supported_sports, sport_by_name
 from lib.flag import flag
 from lib.response import button_postback, quick_reply
 
@@ -82,7 +82,7 @@ def api_winner(event, parameters, **kwargs):
             results = match.match_result
             winner_team = Team.by_id(results[0].team_id)
 
-            event.send_buttons('{winner} hat {today} das {sport} Rennen in der Disziplin '
+            event.send_buttons('{winner} hat {today} das {sport} {competition_term} in der Disziplin '
                                '{discipline} in {town}, {country} {date} gewonnen.'.format(
                 winner=' '.join([winner_team.name,
                                            flag(winner_team.country.iso),
@@ -93,6 +93,7 @@ def api_winner(event, parameters, **kwargs):
                           country=meta.country,
                           date='am ' + meta.datetime.date().strftime('%d.%m.%Y')
                           if dtdate.today() != meta.datetime.date() else '',
+                          competition_term=sport_by_name[sport].competition_term,
                           today='heute' if dtdate.today() == meta.datetime.date() else ''),
                           buttons=[match.btn_podium]
                                 )
@@ -248,7 +249,8 @@ def result_by_country(event, payload):
         results.append(r)
         
     if not results:
-        event.send_text(f'Es hat kein Athlet aus {flag(country.iso)} {country.code} das Rennen beendet.')
+        event.send_text(f'Es hat kein Athlet aus {flag(country.iso)} {country.code}'
+                        f' das {sport_by_name[sport].competition_term} beendet.')
         return
 
     teams = [Team.by_id(result.team_id) for result in results]

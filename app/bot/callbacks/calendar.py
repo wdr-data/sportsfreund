@@ -7,7 +7,7 @@ import random
 
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
-from feeds.config import supported_sports
+from feeds.config import supported_sports, sport_by_name
 from lib.flag import flag
 from .result import api_podium
 
@@ -129,7 +129,8 @@ def api_next(event, parameters, **kwargs):
     else:
         event.send_text('Moment, Ich schau kurz in meinen Kalender...')
         sleep(3)
-        event.send_text(f'Ah! Hier hab ich ja das nächste {match_meta.sport} Rennen:')
+        event.send_text(f'Ah! Hier hab ich ja das nächste {match_meta.sport} '
+                        f'{sport_by_name[match_meta.sport].competition_term}:')
         pl_entry_by_matchmeta(event, {'calendar.entry_by_matchmeta': match_meta})
 
 
