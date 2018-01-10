@@ -1,7 +1,7 @@
 from bson.objectid import ObjectId
 
 from feeds.models.subscription import Subscription
-from lib.response import list_element, button_postback
+from lib.response import list_element, button_postback, quick_reply
 from ..handlers.apiaihandler import ApiAiHandler
 from ..handlers.payloadhandler import PayloadHandler
 
@@ -156,49 +156,51 @@ def result_subscriptions(event, payload, **kwargs):
         list_element(
             'Sportart ' + sport_emoji,
             sport_subtitle,
-            buttons=[button_postback('🔧 Ändern', {'target': 'sport'})]),
+            buttons=[button_postback('🔧 Ändern', {'target': 'sport', 'filter': None})]),
         list_element(
             'Sportler ' + athlete_emoji,
             athlete_subtitle,
-            buttons=[button_postback('🔧 Ändern', {'target': 'athlete'})]),
+            buttons=[button_postback('🔧 Ändern', {'target': 'athlete', 'filter': None})]),
     ]
 
     event.send_list(elements)
 
-def change_subscriptions(event, payload, **kwargs):
+
+def result_change(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    type = payload['type']
+    target = payload.target
+    filter = payload.filter
     offset = payload.get('offset', 0)
-    subs = Subscription.query(psid=sender_id, type=type)
+    subs = Subscription.query(type=Subscription.Type.RESULT,
+                              psid=sender_id)
 
-    if len(subs) == 0:
-        event.send_text('Du bist noch für keinen Nachrichten Dienst angemeldet.')
-        return
-    elif len(subs) == 1:
-        event.send_buttons(f'Du bist für den Nachrichten Dienst {type} zum Thema '
-                     f'{Subscription.describe_filter(subs[0].filter)} angemeldet. '
-                     f'Möchtest du dich abmelden?',
-                     buttons=[button_postback('Abmelden', ['unsubscribe'])])
-        return
+    if not filter:
+        if len(subs) > 1:
+            if target == Subscription.Target.SPORT:
+                filter_list = [Subscription.describe_filter(sub.filter)
+                     for sub in subs if sub.target is Subscription.Target.SPORT]
+            if  target == Subscription.Target.ATHLETE:
+                filter_list = [Subscription.describe_filter(sub.filter)
+                     for sub in subs if sub.target is Subscription.Target.ATHLETE]
 
-    num_subs = 4
-    if len(subs) - (offset + num_subs) == 1:
-        num_subs = 3
+            quickreplies = [quick_reply(filter,
+                                      {'target': target, 'filter': filter})
+                          for filter in filter_list[:11]]
+            event.send_text(
+                'Für welchen Dienst möchtest du dich abmelden?',
+                quickreplies
+            )
 
-    elements = [
-        list_element(Subscription.describe_filter(sub.filter),
-                     buttons=[button_postback('Abmelden', {'unsubscribe': str(sub._id)})])
-        for sub in subs[offset:offset + num_subs]
-    ]
+        if len(subs) == 0:
+            event.send_text('Du bist noch für keinen Nachrichten Dienst angemeldet.')
+            return
 
-    if len(subs) - offset > num_subs:
-        new_payload = payload.copy()
-        new_payload['offset'] = offset + num_subs
-        button = button_postback('Mehr anzeigen', new_payload)
-    else:
-        button = None
-
-    event.send_list(elements, button=button)
+        elif len(subs) == 1:
+            event.send_buttons(f'Du bist für den Ergebnis Dienst zum Thema '
+                         f'{Subscription.describe_filter(subs[0].filter)} angemeldet. '
+                         f'Möchtest du dich abmelden?',
+                         buttons=[button_postback('Abmelden', ['unsubscribe'])])
+            return
 
 
 def unsubscribe(event, payload):
@@ -219,7 +221,7 @@ handlers = [
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe'),
     PayloadHandler(highlight_subscriptions, ['target', 'state']),
     PayloadHandler(result_subscriptions, ['type']),
-    PayloadHandler(change_subscriptions, ['target']),
+    PayloadHandler(result_change, ['target', 'filter']),
     PayloadHandler(unsubscribe, ['unsubscribe']),
     PayloadHandler(subscribe_menu, ['subscribe_menu'])
 ]
