@@ -81,16 +81,10 @@ def send_subscriptions(event, **kwargs):
                                                                   'state': 'subscribe'})
 
     if any(sub.type is Subscription.Type.RESULT for sub in subs):
-        result_subtitle = ', '.join(
-            [Subscription.describe_filter(sub.filter)
-             for sub in subs if sub.type is Subscription.Type.RESULT])
-
-        if len(result_subtitle) > 80:
-            result_subtitle = result_subtitle[:77] + '...'
-
+        result_button = button_postback('Ändern', {'type': 'result'})
         result_emoji = '✔'
     else:
-        result_subtitle = 'Nicht angemeldet'
+        result_button = button_postback('Anmelden', {'type': 'result'})
         result_emoji = '❌'
 
     elements = [
@@ -101,7 +95,7 @@ def send_subscriptions(event, **kwargs):
         list_element(
             'Ergebnisdienst ' + result_emoji,
             'Sportart/ Sportler/ Medaillen',
-            buttons=[button_postback('🔧 Ändern', {'type': 'result'})])
+            buttons=[result_button]),
     ]
 
     event.send_list(elements)

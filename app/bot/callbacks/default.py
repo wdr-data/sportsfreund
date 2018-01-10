@@ -59,18 +59,18 @@ def korea_standard_time(event, **kwargs):
 def get_started(event, **kwargs):
     event.send_text('Hallo, ich bin der Wintersport-Dienst der Sportschau und ich '
                     'trainiere für Olympia. ⛷')
-    sleep(2)
-    event.send_text(f'Im Moment liefere ich Infos zu diesen Sportarten: \n- Ski Alpin'
+    sleep(4)
+    event.send_text(f'Im Moment liefere ich Infos zu diesen Sportarten: \n- Ski Alpin\n'
                     f'- Biathlon\n- Skispringen\n'
                     f'Mehr zu mir und meinen Funktionen bekommst du jederzeit, '
                     f'wenn du unten auf das Menü klickst.')
-    sleep(3)
+    sleep(6)
     event.send_text(f'Schreib mir eine Nachricht und mein Code versucht, eine möglichst passende '
-                    f'Antwort darauf zu finden. Das klappt natürlich nicht bei allen Themen, '
-                    f'ich kenne mich eben nur mit Wintersport aus und kann ein bisschen quatschen. '
-                    f'Schreib zum Beispiel: \n- Wann ist der nächste Ski-Wettkampf\n'
+                    f'Antwort darauf zu finden. Aber ich kenne mich nur mit Wintersport aus und '
+                    f'kann ein bisschen quatschen. '
+                    f'Schreib zum Beispiel: \n- Wann ist das nächste Skispringen?\n'
                     f'- Ergebnisse Biathlon\n- Ski Alpin Video')
-    sleep(3)
+    sleep(10)
     event.send_buttons(
         f'Ich kann mich auch automatisch bei dir melden, wenn es etwas Neues gibt. '
         f'Hier kannst du dich anmelden:',
