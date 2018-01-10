@@ -9,7 +9,6 @@ from lib.response import Replyable, SenderTypes
 
 @fixture
 def event():
-    event = Replyable({}, type=SenderTypes.TEST)
 
     with patch('lib.response.Replyable') as Event:
         yield Event({}, type=SenderTypes.TEST)
