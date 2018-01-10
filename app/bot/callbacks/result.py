@@ -111,11 +111,13 @@ def api_podium(event, parameters, **kwargs):
     period = parameters.get('date-period')
     town = parameters.get('town')
     country = parameters.get('country')
+    gender = parameters.get('gender')
 
     if date and not period:
         date = datetime.strptime(date, '%Y-%m-%d').date()
         match_meta = MatchMeta.search_date(
-            date=date, discipline=discipline, sport=sport, town=town, country=country)
+            date=date, discipline=discipline, sport=sport, town=town,
+            country=country, gender=gender)
     elif period and not date:
         from_date = period.split('/')[0]
         from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
@@ -123,13 +125,13 @@ def api_podium(event, parameters, **kwargs):
         until_date = datetime.strptime(until_date, '%Y-%m-%d').date()
         match_meta = MatchMeta.search_range(
             from_date=from_date, until_date=until_date, discipline=discipline,
-            sport=sport, town=town, country=country)
+            sport=sport, town=town, country=country, gender=gender)
     elif town or country:
         match_meta = MatchMeta.search_range(
-                discipline=discipline, sport=sport, town=town, country=country)
+                discipline=discipline, sport=sport, town=town, country=country, gender=gender)
     else:
         match_meta = [MatchMeta.search_last(
-            discipline=discipline, sport=sport, town=town, country=country)]
+            discipline=discipline, sport=sport, town=town, country=country, gender=gender)]
 
     match_ids = [match.id for match in match_meta if match]
 
@@ -143,7 +145,7 @@ def api_podium(event, parameters, **kwargs):
 def result_podium(event, payload):
     # payload is list of match_ids
     match_ids = payload['result_podium']
-    match_meta = [MatchMeta.by_id(match_id) for match_id in match_ids]
+    match_meta = [MatchMeta.by_match_id(match_id) for match_id in match_ids]
     asked_matches = [Match.by_id(id) for id in match_ids]
 
     discipline = [match.discipline for match in match_meta]
