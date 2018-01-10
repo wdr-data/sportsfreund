@@ -8,6 +8,7 @@ from ..handlers.payloadhandler import PayloadHandler
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.team import Team
+from feeds.config import supported_sports
 from lib.flag import flag
 from lib.response import button_postback, quick_reply
 
@@ -24,7 +25,15 @@ def api_winner(event, parameters, **kwargs):
     country = parameters.get('country')
 
     if not discipline and not sport:
-        event.send_text('Meinst du im Biathlon oder Ski Alpin?')
+        event.send_text('Meine Datenbank ist voll mit Ergebnissen.'
+                        ' Welche Sportart interessiert dich?')
+        sports_to_choose = ''
+        for i, sportname in enumerate(supported_sports):
+            if i == len(supported_sports) - 1:
+                sports_to_choose += f'oder {sportname}.'
+            else:
+                sports_to_choose += f'{sportname}, '
+        event.send_text(sports_to_choose)
         return
 
     if date and not period:

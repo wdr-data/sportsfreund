@@ -3,9 +3,11 @@ from datetime import datetime, date, timedelta
 from calendar import day_name
 from time import sleep
 from pycountry import countries
+from random import randint
 
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
+from feeds.config import supported_sports
 from lib.flag import flag
 
 logger = logging.Logger(__name__)
@@ -67,8 +69,9 @@ def api_next(event, parameters, **kwargs):
                                         'aber vielleicht interessiert dich ja folgendes Event:')
 
                 else:
-                    event.send_text('Kein Biathlon und auch kein Ski Alpin. '
-                                    'Zeit also um einen ☃ zu bauen!')
+                    emoji = ['⛷','🏂']
+                    event.send_text('Heute findet kein Wintersport-Event statt. '
+                                    f'Ich geh ne Runde {emoji[randint(0,1)]}!')
                     return
             multiple_entry(event, match_meta)
 
@@ -94,7 +97,14 @@ def api_next(event, parameters, **kwargs):
         return
 
     if not discipline and not sport:
-        event.send_text('Suchst du nach einem Rennen im Biathlon oder Ski Alpin?')
+        event.send_text('Mein Kalender ist voll mit Terminen. Welche Sportart interessiert dich?')
+        sports_to_choose = ''
+        for i, sport in enumerate(supported_sports):
+            if i == len(supported_sports) - 1:
+                sports_to_choose += f'oder {sport}.'
+            else:
+                sports_to_choose += f'{sport}, '
+        event.send_text(sports_to_choose)
         return
 
     # get_match_id_by_parameter
