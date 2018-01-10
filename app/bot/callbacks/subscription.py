@@ -222,7 +222,7 @@ def result_change(event, payload, **kwargs):
                     unsubscribe(event, {'unsubscribe': str(sub._id)})
                     event.send_text(f'Okidoki. Du bekommst keine {filter_arg}-Ergebnisse mehr.')
 
-    if option == 'anmelden':
+    elif option == 'anmelden':
         if not filter_arg:
             if target == 'sport':
                 quickreplies = [quick_reply(sport,
