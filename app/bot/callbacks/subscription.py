@@ -168,8 +168,8 @@ def result_subscriptions(event, payload, **kwargs):
 
 def result_change(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    target = payload.target
-    filter = payload.filter
+    target = payload['target']
+    filter = payload['filter']
     offset = payload.get('offset', 0)
     subs = Subscription.query(type=Subscription.Type.RESULT,
                               psid=sender_id)
