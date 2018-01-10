@@ -183,17 +183,7 @@ def result_change(event, payload, **kwargs):
     subs = Subscription.query(type=Subscription.Type.RESULT,
                               psid=sender_id)
 
-    if not option:
-        event.send_buttons('Was möchtest du machen?',
-                           buttons=[
-                               button_postback(
-                                   'Anmelden',
-                                   {'target': 'sport', 'filter': None, 'option': 'subscribe'}),
-                               button_postback(
-                                   'Abmelden',
-                                   {'target': 'sport', 'filter': None, 'option': 'unsubscribe'})])
-
-    elif option == 'abmeden':
+    if option == 'abmeden':
         if not filter_arg:
             if len(subs) > 1:
                 if target == 'sport':
@@ -221,7 +211,6 @@ def result_change(event, payload, **kwargs):
                 if Subscription.describe_filter(sub.filter) == filter_arg:
                     unsubscribe(event, {'unsubscribe': str(sub._id)})
                     event.send_text(f'Okidoki. Du bekommst keine {filter_arg}-Ergebnisse mehr.')
-
     elif option == 'anmelden':
         if not filter_arg:
             if target == 'sport':
@@ -250,7 +239,15 @@ def result_change(event, payload, **kwargs):
             Subscription.create(sender_id, sub_target, sub_filter, sub_type)
             event.send_text(reply + '\nMöchtest du dich noch für andere Nachrichten anmelden?')
             send_subscriptions(event)
-
+    else:
+        event.send_buttons('Was möchtest du machen?',
+                           buttons=[
+                               button_postback(
+                                   'Anmelden',
+                                   {'target': 'sport', 'filter': None, 'option': 'subscribe'}),
+                               button_postback(
+                                   'Abmelden',
+                                   {'target': 'sport', 'filter': None, 'option': 'unsubscribe'})])
 
 def unsubscribe(event, payload):
     sub_id = payload['unsubscribe']
