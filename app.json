@@ -9,10 +9,10 @@
         "test": "./test"
       },
       "env": {
-        "FB_PAGE_TOKEN": "",
-        "FB_HUB_VERIFY_TOKEN": "",
-        "DIALOGFLOW_TOKEN": "",
-        "FEED_URL": ""
+        "FB_PAGE_TOKEN": "mock",
+        "FB_HUB_VERIFY_TOKEN": "mock",
+        "DIALOGFLOW_TOKEN": "mock",
+        "FEED_URL": "mock"
       }
     }
   },
