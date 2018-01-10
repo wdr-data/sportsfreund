@@ -117,7 +117,7 @@ class MatchMeta(FeedModel):
         return True
 
     @classmethod
-    def _search(cls, base_filter, sport, discipline, town, country):
+    def _search(cls, base_filter, sport, discipline, town, country, gender):
 
         if sport is not None:
             id = sport_by_name[sport].topic_id
@@ -139,10 +139,13 @@ class MatchMeta(FeedModel):
         if country is not None:
             filter['venue.country.name'] = country
 
+        if gender is not None:
+            filter['gender'] = gender
+
         return cls.collection.find(filter)
 
     @classmethod
-    def search_last(cls, *, sport=None, discipline=None, town=None, country=None):
+    def search_last(cls, *, sport=None, discipline=None, town=None, country=None, gender=None):
         """
         Searches the last match and returns details about it
 
@@ -150,6 +153,7 @@ class MatchMeta(FeedModel):
         :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
         :param town: Filter by the name of the town (eg. "Gangneung")
         :param country: Filter by the name of the country (eg. "Südkorea")
+        :param gender: Filter by gender (eg: male, female, mixed)
         :return: A `MatchMeta` object of the corresponding match, or `None` if no match was found
         """
 
@@ -160,7 +164,7 @@ class MatchMeta(FeedModel):
         }
 
         cursor = cls._search(
-            filter, sport, discipline, town, country).sort([("datetime", -1)]).limit(1)
+            filter, sport, discipline, town, country, gender).sort([("datetime", -1)]).limit(1)
 
         if cursor and cursor.count():
             result = cursor.next()
@@ -168,7 +172,7 @@ class MatchMeta(FeedModel):
             return cls(**result)
 
     @classmethod
-    def search_next(cls, *, sport=None, discipline=None, town=None, country=None):
+    def search_next(cls, *, sport=None, discipline=None, town=None, country=None, gender=None):
         """
         Searches the next match and returns details about it
 
@@ -176,6 +180,7 @@ class MatchMeta(FeedModel):
         :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
         :param town: Filter by the name of the town (eg. "Gangneung")
         :param country: Filter by the name of the country (eg. "Südkorea")
+        :param gender: Filter by gender (eg: male, female, mixed)
         :return: A `MatchMeta` object of the corresponding match, or `None` if no match was found
         """
 
@@ -186,7 +191,7 @@ class MatchMeta(FeedModel):
         }
 
         cursor = cls._search(
-            filter, sport, discipline, town, country).sort([("datetime", 1)]).limit(1)
+            filter, sport, discipline, town, country, gender).sort([("datetime", 1)]).limit(1)
 
         if cursor and cursor.count():
             result = cursor.next()
@@ -194,7 +199,8 @@ class MatchMeta(FeedModel):
             return cls(**result)
 
     @classmethod
-    def search_date(cls, date, *, sport=None, discipline=None, town=None, country=None):
+    def search_date(cls, date, *, sport=None, discipline=None, town=None,
+                    country=None, gender=None):
         """
         Searches for matches on a specific day and returns details about them
 
@@ -203,6 +209,7 @@ class MatchMeta(FeedModel):
         :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
         :param town: Filter by the name of the town (eg. "Gangneung")
         :param country: Filter by the name of the country (eg. "Südkorea")
+        :param gender: Filter by gender (eg: male, female, mixed)
         :return: A list of `MatchMeta` objects
         """
 
@@ -210,13 +217,14 @@ class MatchMeta(FeedModel):
             'match_date': date.isoformat(),
         }
 
-        cursor = cls._search(filter, sport, discipline, town, country).sort([("datetime", 1)])
+        cursor = cls._search(filter, sport, discipline, town,
+                             country, gender).sort([("datetime", 1)])
 
         return [cls(**result) for result in cursor]
 
     @classmethod
     def search_range(cls, *, from_date=None, until_date=None, sport=None, discipline=None,
-                     town=None, country=None):
+                     town=None, country=None, gender=None):
         """
         Searches for matches on a specific day and returns details about them
 
@@ -228,6 +236,7 @@ class MatchMeta(FeedModel):
         :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
         :param town: Filter by the name of the town (eg. "Gangneung")
         :param country: Filter by the name of the country (eg. "Südkorea")
+        :param gender: Filter by gender (eg: male, female, mixed)
         :return: A list of `MatchMeta` objects
         """
 
@@ -249,6 +258,7 @@ class MatchMeta(FeedModel):
         if not filter['datetime']:
             del filter['datetime']
 
-        cursor = cls._search(filter, sport, discipline, town, country).sort([("datetime", 1)])
+        cursor = cls._search(filter, sport, discipline,
+                             town, country, gender).sort([("datetime", 1)])
 
         return [cls(**result) for result in cursor]
