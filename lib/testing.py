@@ -25,10 +25,15 @@ class ExpectedReply:
         name, args, kwargs = self._get_next_call()
 
         texts = text if isinstance(text, list) else [text]
+        quick_replieses = (
+            quick_replies
+            if quick_replies and isinstance(quick_replies[0], list)
+            else [quick_replies]
+        )
 
         assert name == 'send_text'
         assert kwargs['text'] in texts
-        assert kwargs.get('quick_replies') == quick_replies
+        assert kwargs.get('quick_replies') in quick_replieses
 
         return self
 
