@@ -7,6 +7,12 @@
     "test": {
       "scripts": {
         "test": "./test"
+      },
+      "env": {
+        "FB_PAGE_TOKEN": "",
+        "FB_HUB_VERIFY_TOKEN": "",
+        "DIALOGFLOW_TOKEN": "",
+        "FEED_URL": ""
       }
     }
   },
