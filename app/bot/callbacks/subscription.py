@@ -92,11 +92,11 @@ def send_subscriptions(event, **kwargs):
     elements = [
         list_element(
             'Highlights des Tages ' + highlight_emoji,
-            'TODO: Text festlegen',
+            'Tägliche Zusammenfassung für Olympia',
             buttons=[highlight_button]),
         list_element(
             'Ergebnisdienst ' + result_emoji,
-            result_subtitle,
+            'Sportart/ Sportler/ Medaillen',
             buttons=[button_postback('🔧 Ändern', {'type': 'result'})])
     ]
 
@@ -122,6 +122,48 @@ def highlight_subscriptions(event, payload, **kwargs):
         for sub in subs:
             if sub.target is Subscription.Target.HIGHLIGHT:
                 unsubscribe(event, {'unsubscribe': str(sub._id)})
+
+def result_subscriptions(event, payload, **kwargs):
+    sender_id = event['sender']['id']
+    subs = Subscription.query(type=Subscription.Type.RESULT,
+                              psid=sender_id)
+
+    if any(sub.target is Subscription.Target.SPORT for sub in subs):
+        sport_subtitle = ', '.join(
+            [Subscription.describe_filter(sub.filter)
+             for sub in subs if sub.target is Subscription.Target.SPORT])
+
+        if len(sport_subtitle) > 80:
+            sport_subtitle = sport_subtitle[:77] + '...'
+        sport_emoji = '✔'
+    else:
+        sport_subtitle = 'Nicht angemeldet'
+        sport_emoji = '❌'
+
+    if any(sub.target is Subscription.Target.ATHLETE for sub in subs):
+        athlete_subtitle = ', '.join(
+            [Subscription.describe_filter(sub.filter)
+             for sub in subs if sub.target is Subscription.Target.ATHLETE])
+
+        if len(athlete_subtitle) > 80:
+            athlete_subtitle = athlete_subtitle[:77] + '...'
+        athlete_emoji = '✔'
+    else:
+        athlete_subtitle = 'Nicht angemeldet'
+        athlete_emoji = '❌'
+
+    elements = [
+        list_element(
+            'Sportart ' + sport_emoji,
+            sport_subtitle,
+            buttons=[button_postback('🔧 Ändern', {'target': 'sport'})]),
+        list_element(
+            'Sportler ' + athlete_emoji,
+            athlete_subtitle,
+            buttons=[button_postback('🔧 Ändern', {'target': 'athlete'})]),
+    ]
+
+    event.send_list(elements)
 
 def change_subscriptions(event, payload, **kwargs):
     sender_id = event['sender']['id']
@@ -176,7 +218,8 @@ handlers = [
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe', follow_up=True),
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe'),
     PayloadHandler(highlight_subscriptions, ['target', 'state']),
-    PayloadHandler(change_subscriptions, ['type']),
+    PayloadHandler(result_subscriptions, ['type']),
+    PayloadHandler(change_subscriptions, ['target']),
     PayloadHandler(unsubscribe, ['unsubscribe']),
     PayloadHandler(subscribe_menu, ['subscribe_menu'])
 ]
