@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 class SenderTypes(Enum):
     FACEBOOK = 'facebook'
+    TEST = 'test'
 
 
 class Replyable(dict):

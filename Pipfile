@@ -45,3 +45,5 @@ pyyaml = "*"
 
 [dev-packages]
 
+pytest = "*"
+mongomock = "*"
