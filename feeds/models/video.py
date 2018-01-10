@@ -63,6 +63,11 @@ class Video(Model):
         else:
             keywords = [kw.lower().split() for kw in keywords]
             keywords = [item for sublist in keywords for item in sublist]  # Flatten list
+        for word in keywords:
+            if word == 'herren':
+                keywords.append('male')
+            elif word == 'damen':
+                keywords.append('female')
 
         filter = {
             'keywords': {'$all': keywords},
