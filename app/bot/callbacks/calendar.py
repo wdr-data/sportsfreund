@@ -42,7 +42,7 @@ def api_next(event, parameters, **kwargs):
 
         if not match_meta:
             match_meta = MatchMeta.search_range(
-                from_date=from_date, until_date=until_date)
+                from_date=from_date, until_date=until_date, gender=gender)
 
             if match_meta and (discipline or sport or town or country):
                 event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
@@ -64,7 +64,7 @@ def api_next(event, parameters, **kwargs):
                                                sport=sport, town=town, country=country,
                                                gender=gender)
             if not match_meta:
-                match_meta = MatchMeta.search_date(date=d_date)
+                match_meta = MatchMeta.search_date(date=d_date, gender=gender)
                 if match_meta and (discipline or sport or town or country):
                     event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
                                     'aber vielleicht interessiert dich ja folgendes Event:')
@@ -111,7 +111,8 @@ def api_next(event, parameters, **kwargs):
         return
 
     # get_match_id_by_parameter
-    match_meta = MatchMeta.search_next(discipline=discipline or None, sport=sport or None)
+    match_meta = MatchMeta.search_next(discipline=discipline, sport=sport,
+                                       gender=gender)
 
     if not match_meta:
         if sport and discipline:
