@@ -179,7 +179,7 @@ def result_change(event, payload, **kwargs):
             if target == Subscription.Target.SPORT:
                 filter_list = [Subscription.describe_filter(sub.filter)
                      for sub in subs if sub.target is Subscription.Target.SPORT]
-            if  target == Subscription.Target.ATHLETE:
+            elif  target == Subscription.Target.ATHLETE:
                 filter_list = [Subscription.describe_filter(sub.filter)
                      for sub in subs if sub.target is Subscription.Target.ATHLETE]
 
