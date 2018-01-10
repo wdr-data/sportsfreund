@@ -37,6 +37,19 @@ class ExpectedReply:
 
         return self
 
+    def expect_buttons(self, text, buttons):
+
+        name, args, kwargs = self._get_next_call()
+
+        texts = text if isinstance(text, list) else [text]
+        buttonses = buttons if buttons and isinstance(buttons[0], list) else [buttons]
+
+        assert name == 'send_text'
+        assert kwargs['text'] in texts
+        assert kwargs['buttons'] in buttonses
+
+        return self
+
     def _get_next_call(self):
         actual = self.calls.popleft()
         name, args, kwargs = actual
