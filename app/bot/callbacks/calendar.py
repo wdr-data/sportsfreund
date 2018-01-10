@@ -9,6 +9,7 @@ from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.config import supported_sports
 from lib.flag import flag
+from .result import api_podium
 
 logger = logging.Logger(__name__)
 
@@ -55,8 +56,7 @@ def api_next(event, parameters, **kwargs):
     if p_date:
         d_date = datetime.strptime(p_date, '%Y-%m-%d').date()
         if d_date < date.today():
-            event.send_text("Du informierst dich gerade darüber was in der Vergangenheit passieren wird. "
-                            f"Frag mich nochmal nach den Ergebnissen vom {date.strftime(d_date, '%d.%m.%Y')}.")
+            api_podium(event, parameters, **kwargs)
         else:
             event.send_text('Gucken wir mal was da so los sein wird.')
             match_meta = MatchMeta.search_date(date=d_date, discipline=discipline,
