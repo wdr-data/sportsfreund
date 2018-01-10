@@ -191,23 +191,49 @@ def result_change(event, payload, **kwargs):
             )
 
         elif len(subs) == 0:
-            event.send_text('Du bist noch für keinen Nachrichten Dienst angemeldet. Wenn du dich '
-                            'für einen Dienst anmelden möchtest, dann schreibe mir zum Beispiel:\n'
-                            '- Für Viktoria Rebensburg anmelden.\n'
-                            '- Für Biathlon anmelden.')
+            if target == 'sport':
+                reply = f'Für welche Sportart soll ich dir die Ergebnisse schicken? ' \
+                        f'Schreibe mir zum Beispiel "Anmelden Skispringen" ' \
+                        f'- die Sportart alleine reicht leider nicht.\n' \
+                        f'Wenn du wissen möchtest, welche Sportarten bei der Winterolympiade ' \
+                        f'teilnehmen, frage mich danach.'
+            else:
+                reply = 'Über wen soll ich dich informieren? Schreibe mir zum Beispiel ' \
+                      '"Anmelden Viktoria Rebensburg" - der Name alleine reicht leider nicht.'
+            event.send_text('Noch bist du für keinen Ergebnis-Dienst angemeldet.\n' + reply)
             return
 
         elif len(subs) == 1:
             event.send_buttons(f'Du bist für den Ergebnis Dienst zum Thema '
                                f'{Subscription.describe_filter(subs[0].filter)} angemeldet. '
                                f'Möchtest du dich abmelden?',
-                               buttons=[button_postback('Abmelden', ['unsubscribe'])])
+                               buttons=[button_postback('Abmelden',
+                                                        {'unsubscribe': str(subs[0]._id)})])
             return
+
     else:
         for sub in subs:
             if Subscription.describe_filter(sub.filter) == filter_arg:
                 unsubscribe(event, {'unsubscribe': str(sub._id)})
                 event.send_text(f'Okidoki. Du bekommst keine {filter_arg}-Ergebnisse mehr.')
+            else:
+                sub_target = Subscription.Target.SPORT if target == 'sport' else Subscription.Target.ATHLETE
+
+                sub_filter = {}
+                if target == 'sport':
+                    sub_filter['sport'] = filter_arg
+                    reply = f'Ok. In der Übersicht siehst du für welche Ergebnisse ' \
+                            f'du angemeldet bist. \n'
+                else:
+                    sub_filter['athlete'] = filter_arg
+                    reply = f'Top. Ich melde mich, wenn es etwas Neues von ' \
+                            f'{filter_arg} gibt.\n'
+
+                sub_type = Subscription.Type.RESULT
+
+                Subscription.create(sender_id, sub_target, sub_filter, sub_type)
+                event.send_text(reply + 'Möchtest du dich noch für andere Nachrichten anmelden?')
+                send_subscriptions(event)
 
 
 def unsubscribe(event, payload):
