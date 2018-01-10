@@ -39,15 +39,15 @@ def api_next(event, parameters, **kwargs):
             town=town, country=country)
 
         if not match_meta:
-            if discipline or sport or town or country:
-                match_meta = MatchMeta.search_range(
-                    from_date=from_date, until_date=until_date)
-                if match_meta:
-                    event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
-                                    'aber vielleicht interessiert dich ja folgendes:')
-                    multiple_entry(event, match_meta)
-                else:
-                    event.send_text('In dem Zeitraum {from_da}-{till} ist mein Kalender leer.')
+            match_meta = MatchMeta.search_range(
+                from_date=from_date, until_date=until_date)
+
+            if match_meta and (discipline or sport or town or country):
+                event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
+                                'aber vielleicht interessiert dich ja folgendes:')
+                multiple_entry(event, match_meta)
+            else:
+                event.send_text('In dem Zeitraum {from_da}-{till} ist mein Kalender leer.')
         else:
             multiple_entry(event, match_meta)
         return
@@ -62,18 +62,18 @@ def api_next(event, parameters, **kwargs):
             match_meta = MatchMeta.search_date(date=d_date, discipline=discipline,
                                                sport=sport, town=town, country=country)
             if not match_meta:
-                if discipline or sport or town or country:
-                    match_meta = MatchMeta.search_date(date=d_date)
-                    if match_meta:
-                        event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
-                                        'aber vielleicht interessiert dich ja folgendes Event:')
+                match_meta = MatchMeta.search_date(date=d_date)
+                if match_meta and (discipline or sport or town or country):
+                    event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
+                                    'aber vielleicht interessiert dich ja folgendes Event:')
 
                 else:
                     emoji = ['⛷','🏂']
                     event.send_text('Heute findet kein Wintersport-Event statt. '
                                     f'Ich geh ne Runde {emoji[randint(0,1)]}!')
-                    return
-            multiple_entry(event, match_meta)
+
+            else:
+                multiple_entry(event, match_meta)
 
         return
 
