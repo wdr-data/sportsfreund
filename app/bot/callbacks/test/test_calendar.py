@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta
 from time import time
 
-from random import random
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from pytest import fixture
 from mongomock import MongoClient
@@ -10,16 +9,8 @@ from mongomock import MongoClient
 patch('pymongo.MongoClient', new=MongoClient)
 
 from feeds.models.match_meta import MatchMeta
-from lib.response import Replyable, SenderTypes
 from ..calendar import api_next
-
-
-@fixture
-def event():
-    event = Replyable({}, type=SenderTypes.TEST)
-
-    with patch.object(event, 'send_text'):
-        yield event
+from lib.testing import ExpectedReply, event
 
 
 @fixture
@@ -83,10 +74,12 @@ class TestApiNext:
         api_next(event, parameters)
 
         timestr = the_date.strftime('%A, %d.%m.%Y um %H:%M')
-        assert event.send_text.call_args_list == [
-            (('Gucken wir mal was da so los sein wird.', ), ),
-            ((f'Am {timestr} Uhr: Sprint der Herren in Bremen 🇸🇪 SWE', ), ),
-        ]
+
+        ExpectedReply(event).assert_text(
+            'Gucken wir mal was da so los sein wird.'
+        ).assert_text(
+            f'Am {timestr} Uhr: Sprint der Herren in Bremen 🇸🇪 SWE'
+        )
 
     def test_future_not_found(self, event, collection):
         gen_match(datetime.now() - timedelta(days=1), collection)
@@ -104,15 +97,9 @@ class TestApiNext:
 
         api_next(event, parameters)
 
-        expected_list = [
-            (('Gucken wir mal was da so los sein wird.', ), ),
-            [((f'Heute findet kein Wintersport-Event statt. Ich geh ne Runde {emoji}!', ), )
-             for emoji in ('⛷', '🏂')],
-        ]
-
-        for actual, expected in zip(event.send_text.call_args_list, expected_list):
-            if isinstance(expected, list):
-                assert any(actual == exp for exp in expected), (f'Actual: {actual}, '
-                                                                f'Expected: {expected}')
-            else:
-                assert actual == expected
+        ExpectedReply(event).assert_text(
+            'Gucken wir mal was da so los sein wird.'
+        ).assert_text(
+            [f'Heute findet kein Wintersport-Event statt. Ich geh ne Runde {emoji}!'
+             for emoji in ('⛷', '🏂')]
+        )
