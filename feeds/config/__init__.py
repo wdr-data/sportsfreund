@@ -36,3 +36,7 @@ sport_by_name = {
     sport.name: sport
     for sport in SPORTS_CONFIG
 }
+
+supported_sports = [
+    sport.name for sport in SPORTS_CONFIG
+]
