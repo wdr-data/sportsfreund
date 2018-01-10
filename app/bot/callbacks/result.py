@@ -73,7 +73,7 @@ def api_winner(event, parameters, **kwargs):
             results = match.match_result
             winner_team = Team.by_id(results[0].team_id)
 
-            event.send_text('{winner} hat {today} das {sport} Rennen in der Disziplin {discipline} '
+            event.send_buttons('{winner} hat {today} das {sport} Rennen in der Disziplin {discipline} '
                             'in {town}, {country} {date} gewonnen.'.format(
                           winner=' '.join([winner_team.name,
                                            flag(winner_team.country.iso),
@@ -84,9 +84,9 @@ def api_winner(event, parameters, **kwargs):
                           country=meta.country,
                           date='am ' + meta.datetime.date().strftime('%d.%m.%Y')
                           if dtdate.today() != meta.datetime.date() else '',
-                          today='heute' if dtdate.today() == meta.datetime.date() else ''
-
-                      ))
+                          today='heute' if dtdate.today() == meta.datetime.date() else ''),
+                          button=match.btn_podium
+                                )
         else:
             event.send_text('Das Event {sport} {discipline} wurde noch nicht beendet. '
                       'Frage später erneut.'.format(
