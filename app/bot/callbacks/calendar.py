@@ -3,7 +3,7 @@ from datetime import datetime, date, timedelta
 from calendar import day_name
 from time import sleep
 from pycountry import countries
-from random import randint
+import random
 
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
@@ -68,9 +68,9 @@ def api_next(event, parameters, **kwargs):
                                     'aber vielleicht interessiert dich ja folgendes Event:')
 
                 else:
-                    emoji = ['⛷','🏂']
+                    emoji = ['⛷', '🏂']
                     event.send_text('Heute findet kein Wintersport-Event statt. '
-                                    f'Ich geh ne Runde {emoji[randint(0,1)]}!')
+                                    f'Ich geh ne Runde {random.choice(emoji)}!')
 
             else:
                 multiple_entry(event, match_meta)
