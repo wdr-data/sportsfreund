@@ -109,6 +109,10 @@ def make_event_handler():
             response = request.getresponse()
             nlp = json.loads(response.read().decode())
 
+            for context in nlp['result']['contexts']:
+                for k, v in context['parameters']:
+                    nlp['result']['parameters'][k] = v
+
             nlp['result']['parameters'] = {
                 k: v or None for k, v in nlp['result']['parameters'].items()}
 
