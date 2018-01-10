@@ -116,7 +116,6 @@ def api_podium(event, parameters, **kwargs):
         date = datetime.strptime(date, '%Y-%m-%d').date()
         match_meta = MatchMeta.search_date(
             date=date, discipline=discipline, sport=sport, town=town, country=country)
-        match_ids = [match.id for match in match_meta]
     elif period and not date:
         from_date = period.split('/')[0]
         from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
@@ -125,29 +124,31 @@ def api_podium(event, parameters, **kwargs):
         match_meta = MatchMeta.search_range(
             from_date=from_date, until_date=until_date, discipline=discipline,
             sport=sport, town=town, country=country)
-        match_ids = [match.id for match in match_meta]
+    elif town or country:
+        match_meta = MatchMeta.search_range(
+                discipline=discipline, sport=sport, town=town, country=country)
     else:
         match_meta = [MatchMeta.search_last(
             discipline=discipline, sport=sport, town=town, country=country)]
-        match_ids = [match.id for match in match_meta if match]
-    asked_matches = [Match.by_id(id) for id in match_ids]
 
-    if not asked_matches:
-        event.send_text('In dem angefragten Zeitraum hat kein Wettkampf'
-                  f'{(" in der Disziplin " + discipline) if discipline else ""} stattgefunden.')
+    match_ids = [match.id for match in match_meta if match]
+
+    if not match_ids:
+        event.send_text('In dem angefragten Zeitraum hat kein Event stattgefunden.')
         return
 
-    if not discipline:
-        discipline = [match.discipline for match in match_meta]
+    result_podium(event, {'result_podium': match_ids})
 
-    if not sport:
-        sport = [match.sport for match in match_meta]
 
-    if not isinstance(sport, list):
-        sport = [sport] * len(asked_matches)
+def result_podium(event, payload):
+    # payload is list of match_ids
+    match_ids = payload['result_podium']
+    match_meta = [MatchMeta.by_id(match_id) for match_id in match_ids]
+    asked_matches = [Match.by_id(id) for id in match_ids]
 
-    if not isinstance(discipline, list):
-        discipline = [discipline] * len(asked_matches)
+    discipline = [match.discipline for match in match_meta]
+
+    sport = [match.sport for match in match_meta]
 
     if len(asked_matches)>1:
         event.send_text('Folgende Wintersport-Ergebnisse hab ich für dich:')
@@ -159,15 +160,10 @@ def api_podium(event, parameters, **kwargs):
                             f"geplant war, sei {meta.match_incident.name}.")
         elif match.finished:
 
-            reply = '{sport} {discipline} in {town} {country} am {day}, {date}:\n'\
-                .format(
-                    sport='⛷' if sport == 'Ski Alpin' else sport,
-                    discipline=discipline,
-                    town=meta.town,
-                    country=f" {flag(match.venue.country.iso)} {match.venue.country.code}",
-                    day=day_name[meta.datetime.weekday()],
-                    date=meta.datetime.date().strftime('%d.%m.%Y'),
-                )
+            reply = f'{"⛷" if sport == "Ski Alpin" else sport} {discipline} in {meta.town}' \
+                    f'{flag(match.venue.country.iso)} {match.venue.country.code} am ' \
+                    f'{day_name[meta.datetime.weekday()]},' \
+                    f'{meta.datetime.date().strftime("%d.%m.%Y")}:\n'
 
             event.send_text(reply)
 
@@ -178,11 +174,10 @@ def api_podium(event, parameters, **kwargs):
             )
 
         else:
-            event.send_text('Das Event {sport} {discipline} wurde noch nicht beendet. '
-                      'Frage später erneut.'.format(
-                          sport=sport,
-                          discipline=discipline
-                      ))
+            event.send_text(f'Das Event {sport} {discipline} in '
+                            f'{meta.town} wurde noch nicht beendet. '
+                            'Frage später erneut.'
+                            )
 
 
 def result_details(event, payload):
