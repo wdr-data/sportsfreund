@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-
+import os
 import pytest
 
-pytest.main()
+args = ['--tap-stream'] if os.environ.get('CI') else []
+
+pytest.main(args)

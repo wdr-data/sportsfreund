@@ -47,3 +47,4 @@ pyyaml = "*"
 
 pytest = "*"
 mongomock = "*"
+pytest-tap = "*"

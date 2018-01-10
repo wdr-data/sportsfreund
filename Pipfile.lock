@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "055d56f51d3025bc633dad1676930e42f51b4c33655e89a50f14f5eb99ffdfaa"
+            "sha256": "41b06013a808aa06af685f02cdfbabf95e02764e65bb15781df968e855f9c3d6"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -9,12 +9,12 @@
             "os_name": "posix",
             "platform_machine": "x86_64",
             "platform_python_implementation": "CPython",
-            "platform_release": "4.14.11-200.fc26.x86_64",
-            "platform_system": "Linux",
-            "platform_version": "#1 SMP Wed Jan 3 13:58:53 UTC 2018",
+            "platform_release": "17.3.0",
+            "platform_system": "Darwin",
+            "platform_version": "Darwin Kernel Version 17.3.0: Thu Nov  9 18:09:22 PST 2017; root:xnu-4570.31.3~1/RELEASE_X86_64",
             "python_full_version": "3.6.3",
             "python_version": "3.6",
-            "sys_platform": "linux"
+            "sys_platform": "darwin"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -669,6 +669,13 @@
             ],
             "version": "==3.3.2"
         },
+        "pytest-tap": {
+            "hashes": [
+                "sha256:06ff3ca882b69814f20e36533157394372479c91c21233964dab52c071faf8d3",
+                "sha256:ea621f3ab77c12dc662ad6daeeb0152cfab522e2ef968d90500cf4c0a59dc965"
+            ],
+            "version": "==2.2"
+        },
         "sentinels": {
             "hashes": [
                 "sha256:7be0704d7fe1925e397e92d18669ace2f619c92b5d4eb21a89f31e026f9ff4b1"
@@ -681,6 +688,13 @@
                 "sha256:70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9"
             ],
             "version": "==1.11.0"
+        },
+        "tap.py": {
+            "hashes": [
+                "sha256:af320cef616d27922e0d3db3d729edecc93fdcb17c2fdc26b3e3d3dafe4d72c7",
+                "sha256:34e067d41988ce6d015c71d67f0b3025917f9a37dbc9b47aba5717a64a72b0f2"
+            ],
+            "version": "==2.2"
         }
     }
 }

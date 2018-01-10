@@ -3,6 +3,13 @@
   "description": "A chatty bot for information on the winter olympics. Made by WDR/MDR.",
   "repository": "https://github.com/wdr-data/sportsfreund",
   "addons": ["heroku-postgresql:hobby-dev", "mongolab:sandbox"],
+  "environments": {
+    "test": {
+      "scripts": {
+        "test": "./test"
+      }
+    }
+  },
   "env": {
     "WEB_CONCURRENCY": "4",
     "SECRET_KEY": {
