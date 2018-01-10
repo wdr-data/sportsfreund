@@ -58,6 +58,7 @@ def gen_match(the_date, collection):
 
 class TestApiNext:
     def test_future_found(self, event, collection):
+        """Finds a single future match according to the query and sends it as a message"""
         the_date = datetime.now() + timedelta(days=1)
 
         gen_match(the_date, collection)
