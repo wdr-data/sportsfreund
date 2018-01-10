@@ -140,6 +140,8 @@ def make_event_handler():
         for event in events:
             message = event.get('message')
 
+            event = Replyable(event, type)
+
             if message:
                 nlp = query_api_ai(event)
 
@@ -148,7 +150,6 @@ def make_event_handler():
 
                 api_ai_story_hook(event, nlp)
 
-            event = Replyable(event, type)
 
             for handler in handlers:
                 try:
