@@ -168,7 +168,6 @@ def result_change(event, payload, **kwargs):
     sender_id = event['sender']['id']
     target = payload['target']
     filter = payload['filter']
-    offset = payload.get('offset', 0)
     subs = Subscription.query(type=Subscription.Type.RESULT,
                               psid=sender_id)
 
@@ -177,35 +176,45 @@ def result_change(event, payload, **kwargs):
             if target == 'sport':
                 filter_list = [Subscription.describe_filter(sub.filter)
                      for sub in subs if sub.target is Subscription.Target.SPORT]
-            elif  target == 'athlete':
+            elif target == 'athlete':
                 filter_list = [Subscription.describe_filter(sub.filter)
                      for sub in subs if sub.target is Subscription.Target.ATHLETE]
 
             quickreplies = [quick_reply(filter,
-                                      {'target': target, 'filter': filter})
-                          for filter in filter_list[:11]]
+                                        {'target': target, 'filter': filter})
+                            for filter in filter_list[:11]]
             event.send_text(
                 'Für welchen Dienst möchtest du dich abmelden?',
                 quickreplies
             )
 
-        if len(subs) == 0:
-            event.send_text('Du bist noch für keinen Nachrichten Dienst angemeldet.')
+        elif len(subs) == 0:
+            event.send_text('Du bist noch für keinen Nachrichten Dienst angemeldet. Wenn du dich '
+                            'für einen Dienst anmelden möchtest, dann schreibe mir zum Beispiel:\n'
+                            '- Für Viktoria Rebensburg anmelden.\n'
+                            '- Für Biathlon anmelden.')
             return
 
         elif len(subs) == 1:
             event.send_buttons(f'Du bist für den Ergebnis Dienst zum Thema '
-                         f'{Subscription.describe_filter(subs[0].filter)} angemeldet. '
-                         f'Möchtest du dich abmelden?',
-                         buttons=[button_postback('Abmelden', ['unsubscribe'])])
+                               f'{Subscription.describe_filter(subs[0].filter)} angemeldet. '
+                               f'Möchtest du dich abmelden?',
+                               buttons=[button_postback('Abmelden', ['unsubscribe'])])
             return
+    else:
+        sub_id = [
+            sub._id
+            for sub in subs
+            if sub.target is Subscription.Target.SPORT
+               and Subscription.describe_filter(sub.filter) is filter]
+        unsubscribe(event, {'unsubscribe': str(sub_id)})
 
 
 def unsubscribe(event, payload):
     sub_id = payload['unsubscribe']
 
     Subscription.delete(_id=ObjectId(sub_id))
-    event.send_text('Ich hab dich vom Service abgemeldet')
+    event.send_text('Ich hab dich vom Service abgemeldet. \nKann ich sonst noch was für dich tun? ')
 
 
 def subscribe_menu(event, payload):
