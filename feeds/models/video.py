@@ -64,6 +64,13 @@ class Video(Model):
             keywords = [kw.lower().split() for kw in keywords]
             keywords = [item for sublist in keywords for item in sublist]  # Flatten list
 
+        mapping = {
+            'male': 'herren',
+            'female': 'damen',
+        }
+
+        keywords = [mapping.get(word, word) for word in keywords]
+
         filter = {
             'keywords': {'$all': keywords},
             'duration': {'$lte': max_duration},
