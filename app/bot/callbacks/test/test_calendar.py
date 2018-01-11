@@ -18,7 +18,8 @@ def collection():
     collection = MongoClient().db.collection
 
     with patch.object(MatchMeta, 'collection', new=collection), \
-         patch.object(MatchMeta, 'load_feed'):
+         patch.object(MatchMeta, 'load_feed'), \
+         patch.object(MatchMeta, 'load_olympia_feed'):
         yield collection
 
 
