@@ -57,7 +57,7 @@ def api_winner(event, parameters, **kwargs):
     asked_matches = [Match.by_id(id) for id in match_ids]
 
     if not asked_matches:
-        event.send_text('In dem angefragten Zeitraum haben keine Wettkämpfe stattgefunden.')
+        event.send_text('In diesem Zeitraum haben keine Wettkämpfe stattgefunden.')
         return
 
     if not discipline:
@@ -72,12 +72,11 @@ def api_winner(event, parameters, **kwargs):
     if not isinstance(discipline, list):
         discipline = [discipline] * len(asked_matches)
 
-    event.send_text('Folgende Wintersport-Ergebnisse hab ich für dich:')
+    event.send_text('Folgende Wintersport-Ergebnisse habe ich für dich:')
     for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
         if match.match_incident:
-            event.send_text(f"Ich habe gehört, der Wettkampf {discipline} in {meta.town}, "
-                            f"welcher am {meta.datetime.date().strftime('%d.%m.%Y')} "
-                            f"geplant war, sei {meta.match_incident.name}.")
+            event.send_text(f"""{meta.match_incident.name}: 
+{discipline} in {meta.town} am {meta.datetime.date().strftime('%d.%m.%Y')}""")
         elif asked_matches[0].finished:
             results = match.match_result
             winner_team = results[0].team
