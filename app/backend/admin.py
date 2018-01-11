@@ -196,7 +196,7 @@ class StoryAdmin(admin.ModelAdmin):
             try:
                 obj.update_attachment()
             except UploadFailedError:
-                messages.error(request, UPLOAD_FAILED_MSG % obj.media)
+                messages.error(request, UPLOAD_FAILED_MSG % obj.media.url)
 
         super().save_model(request, obj, form, change)
 
@@ -206,7 +206,7 @@ class StoryAdmin(admin.ModelAdmin):
                 try:
                     form_.instance.update_attachment()
                 except UploadFailedError:
-                    messages.error(request, UPLOAD_FAILED_MSG % form_.instance.media)
+                    messages.error(request, UPLOAD_FAILED_MSG % form_.instance.media.url)
 
         super().save_formset(request, form, formset, change)
 
