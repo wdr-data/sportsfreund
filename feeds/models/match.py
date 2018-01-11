@@ -31,10 +31,16 @@ class Match(FeedModel):
     def transform(cls, match):
         """Make the inner 'match' object the new outer object and move 'match_result_at' in it"""
 
-        match['match']['match_result_at'] = match['match_result_at']
-        match = match['match']
+        match_result_at = match['match_result_at']
+        round_mode = match['competition'][0]['season'][0]['round'][0]['round_mode']
+        match = match['competition'][0]['season'][0]['round'][0]['match'][0]
+        match['match_result_at'] = match_result_at
+        match['round_mode'] = round_mode
+
         match['finished'] = match['finished'] == 'yes'
         match['match_incident'] = match.get('match_incident')
+
+        del match['liveticker']
 
         if match['match_time'] == 'unknown':
             match['match_time'] = 'unbekannt'
@@ -58,7 +64,7 @@ class Match(FeedModel):
         :returns:
         """
 
-        yield from (r for r in self.results if Team.by_id(r.team_id).country.name == country)
+        yield from (r for r in self.results if r.team.country.name == country)
 
     def results_by_team(self, team: str) -> Iterable[FeedModel]:
         """
@@ -67,7 +73,7 @@ class Match(FeedModel):
         :returns:
         """
 
-        yield from (r for r in self.results if Team.by_id(r.team_id).name == team)
+        yield from (r for r in self.results if r.team.name == team)
 
     @property
     def results(self) -> List[FeedModel]:
@@ -94,7 +100,7 @@ class Match(FeedModel):
     @property
     def lst_podium(self):
         winner_results = self.results[:3]
-        winner_teams = [Team.by_id(winner.team_id) for winner in winner_results]
+        winner_teams = [winner.team for winner in winner_results]
 
         for r in winner_results:
             r.match_result = int(r.match_result)
@@ -147,7 +153,7 @@ class Match(FeedModel):
     @property
     def txt_podium(self):
         winner_results = self.results[:3]
-        winner_teams = [Team.by_id(winner.team_id) for winner in winner_results]
+        winner_teams = [winner.team for winner in winner_results]
 
         return '\n'.join(
             '{i} {winner}'.format(

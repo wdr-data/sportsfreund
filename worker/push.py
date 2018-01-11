@@ -79,7 +79,7 @@ class UpdateMatch(Task):
         """
         meta = MatchMeta.by_match_id(match.id)
         results = match.results
-        teams = [Team.by_id(result.team_id).name for result in results]
+        teams = [result.team.name for result in results]
 
         result_subs = Subscription.query(type=Subscription.Type.RESULT,
                                          filter={'sport': meta.sport})

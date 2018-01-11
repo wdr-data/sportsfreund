@@ -80,7 +80,7 @@ def api_winner(event, parameters, **kwargs):
                             f"geplant war, sei {meta.match_incident.name}.")
         elif asked_matches[0].finished:
             results = match.match_result
-            winner_team = Team.by_id(results[0].team_id)
+            winner_team = results[0].team
 
             event.send_buttons('{winner} hat {today} das {sport} {competition_term} in der Disziplin '
                                '{discipline} in {town}, {country} {date} gewonnen.'.format(
@@ -210,7 +210,7 @@ def result_total(event, payload):
         button = None
         result_kind = 'restlichen Ergebnisse'
 
-    teams = [Team.by_id(result.team_id) for result in results]
+    teams = [result.team for result in results]
 
     top_ten = '\n'.join(
         f'{r.rank}. {t.name} {flag(t.country.iso)} {t.country.code} {match.txt_points(r)}'
@@ -231,7 +231,7 @@ def result_by_country(event, payload):
 
     if not country_name:
         match = Match.by_id(match_id)
-        countries_all = [Team.by_id(result.team_id).country for result in match.results]
+        countries_all = [result.team.country for result in match.results]
         countries = [ii for n, ii in enumerate(countries_all) if ii not in countries_all[:n]]
 
         quick = [quick_reply(f'{flag(c.iso)} {c.code}',
@@ -253,7 +253,7 @@ def result_by_country(event, payload):
                         f' das {sport_by_name[sport].competition_term} beendet.')
         return
 
-    teams = [Team.by_id(result.team_id) for result in results]
+    teams = [result.team for result in results]
     country = teams[0].country
 
     athletes_by_country = '\n'.join(
