@@ -40,7 +40,8 @@ class Match(FeedModel):
         match['finished'] = match['finished'] == 'yes'
         match['match_incident'] = match.get('match_incident')
 
-        del match['liveticker']
+        if 'liveticker' in match:
+            del match['liveticker']
 
         if match['match_time'] == 'unknown':
             match['match_time'] = 'unbekannt'
