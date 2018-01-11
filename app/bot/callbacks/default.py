@@ -112,6 +112,22 @@ def share_bot(event, **kwargs):
     event.send_generic(elements=[message])
 
 
+def privacy(event, **kwargs):
+    event.send_text('Die Datenschutz Bestimmungen werden zukünftig hier zu finden sein.')
+
+
+def how_to(event, **kwargs):
+    event.send_text('Hier erfährst du demnächst, wie der Bot funktioniert.')
+
+
+def about_bot(event, **kwargs):
+    event.send_text('Wer ist eigentlich dieser Sportsfreund? Du erfährst es hier - bald...')
+
+
+def company_details(event, **kwargs):
+    event.send_text('Und wer ist überhaupt verantwortlich? Gute Frage!')
+
+
 def push(event, parameters, **kwargs):
     date = parameters and parameters.get('date')
 

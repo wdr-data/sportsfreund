@@ -13,7 +13,7 @@ from .callbacks import testing
 from .callbacks.default import (
     get_started, start_message, greetings, push, push_step, subscribe, unsubscribe, share_bot,
     apiai_fulfillment, wiki, countdown, korea_standard_time, story, story_payload, report,
-    report_step)
+    report_step, how_to, privacy, about_bot, company_details)
 from .handlers.apiaihandler import ApiAiHandler
 from .handlers.payloadhandler import PayloadHandler
 from .handlers.texthandler import TextHandler
@@ -50,6 +50,11 @@ def make_event_handler():
         ApiAiHandler(unsubscribe, 'abmelden'),
         PayloadHandler(unsubscribe, ['unsubscribe']),
 
+        # menu handler
+        PayloadHandler(privacy, ['privacy']),
+        PayloadHandler(company_details, ['company_details']),
+        PayloadHandler(about_bot, ['about']),
+        PayloadHandler(how_to, ['how_to']),
         PayloadHandler(share_bot, ['share_bot']),
         ApiAiHandler(share_bot, 'share_bot'),
 
