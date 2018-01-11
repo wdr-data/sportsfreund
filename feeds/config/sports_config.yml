@@ -64,4 +64,26 @@
     - name: Skifliegen
       competition_type: SINGLE
       article: das
+
+- name: Skeleton
+  topic_id: None
+  result_type: TIME
+  result_digits: 2
+  competition_term: Rennen
+  article: das
+  disciplines:
+    - name: Skeleton
+      competition_type: SINGLE
+      article: das
+
+- name: Ski Freestyle
+  topic_id: None
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Freestyle
+  article: das
+  disciplines:
+    - name: Aerials
+      competition_type: SINGLE
+      article: das
 ...
