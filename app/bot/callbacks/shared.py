@@ -6,6 +6,7 @@ import re
 from backend.models import Push, Report, FacebookUser
 from django.utils import timezone
 
+from feeds.models.subscription import Subscription
 from lib.facebook import guess_attachment_type
 from lib.response import (quick_reply, button_postback)
 
@@ -206,9 +207,10 @@ def send_push(event, push, report_nr, state):
             event.send_text(r)
 
     if next_state is None:
-        try:
-            FacebookUser.objects.get(uid=user_id)
-        except FacebookUser.DoesNotExist:
+        user_subs = Subscription.query(type=Subscription.Type.HIGHLIGHT,
+                                       target=Subscription.Target.HIGHLIGHT,
+                                       psid=user_id)
+        if not user_subs:
             event.send_buttons('Du bist noch nicht für die täglichen Nachrichten angemeldet. '
                                'Möchtest du das jetzt nachholen?',
                                buttons=[button_postback('Ja, bitte!', ['subscribe'])])

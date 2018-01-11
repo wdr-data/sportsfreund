@@ -1,9 +1,12 @@
 from datetime import datetime
 
 from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.text import slugify
 
+from lib import queue
 from lib.facebook import upload_attachment
 
 
@@ -11,6 +14,9 @@ def default_pub_date():
     now = timezone.now()
     default = datetime(now.year, now.month, now.day, hour=18, minute=00)
     return default
+
+
+HIGHLIGHT_CHECK_INTERVAL = 60
 
 
 class Push(models.Model):
@@ -56,6 +62,28 @@ class Push(models.Model):
             pushes = pushes.order_by('-id')
 
         return pushes[offset:count]
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            queue.remove_scheduled("push.SendHighlight",
+                                   {'push_id': self.pk},
+                                   interval=HIGHLIGHT_CHECK_INTERVAL)
+
+        super().save(*args, **kwargs)
+
+        if self.published and not self.delivered:
+            queue.add_scheduled("push.SendHighlight",
+                                {'push_id': self.pk},
+                                start_at=self.pub_date,
+                                interval=HIGHLIGHT_CHECK_INTERVAL)
+
+
+@receiver(pre_delete, sender=Push)
+def push_delete_handler(sender, **kwargs):
+    id = kwargs['instance'].pk
+    queue.remove_scheduled("push.SendHighlight",
+                           {'push_id': id},
+                           interval=HIGHLIGHT_CHECK_INTERVAL)
 
 
 class Report(models.Model):

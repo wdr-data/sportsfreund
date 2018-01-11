@@ -34,11 +34,18 @@ services:
       dockerfile: worker/Dockerfile
     volumes:
       - ./worker:/worker:ro
+      - ./lib:/pythonpkg/lib:ro
+      - ./feeds:/pythonpkg/feeds:ro
+      - ./app/backend:/pythonpkg/backend:ro
+      - ./app/bot:/pythonpkg/bot:ro
+      - ./app/main:/pythonpkg/main:ro
     env_file: .env
     environment:
+      DATABASE_URL: "postgres://postgres:hackme@db:5432/postgres"
       MONGODB_URI: "mongodb://mongo:27017/main"
       REDIS_URL: "redis://redis:6379"
     depends_on:
+      - db
       - mongo
       - redis
   web-migrate:

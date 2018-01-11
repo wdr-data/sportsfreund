@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 
 from mrq.task import Task
 
+from backend.models import HIGHLIGHT_CHECK_INTERVAL, Push as PushModel
+from bot.callbacks.shared import send_push
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.subscription import Subscription
@@ -102,3 +104,22 @@ class UpdateMatch(Task):
             event.send_text(f'Gerade wurde {meta.sport} {meta.discipline} in {meta.town} beendet.'
                             ' Hier die Ergebnisse frisch aus dem Nadeldrucker:')
             event.send_list(match.lst_podium, top_element_style='large', button=match.btn_podium)
+
+
+class SendHighlight(Task):
+
+    def run(self, params):
+
+        queue.remove_scheduled('push.SendHighlight', params, interval=HIGHLIGHT_CHECK_INTERVAL)
+
+        push = PushModel.objects.get(pk=params['push_id'])
+
+        subs = Subscription.query(type=Subscription.Type.HIGHLIGHT,
+                                  target=Subscription.Target.HIGHLIGHT)
+        for sub in subs:
+            event = Replyable({'sender': {'id': sub.psid}}, type=SenderTypes.FACEBOOK)
+
+            send_push(event, push, report_nr=None, state='Intro')
+
+        push.delivered = True
+        push.save()
