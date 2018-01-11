@@ -162,13 +162,6 @@ def result_podium(event, payload):
 {discipline} in {meta.town} am {meta.datetime.date().strftime('%d.%m.%Y')}""")
         elif match.finished:
 
-            reply = f'{"⛷" if sport == "Ski Alpin" else sport} {discipline} in {meta.town}' \
-                    f'{flag(match.venue.country.iso)} {match.venue.country.code} am ' \
-                    f'{day_name[meta.datetime.weekday()]},' \
-                    f'{meta.datetime.date().strftime("%d.%m.%Y")}:\n'
-
-            event.send_text(reply)
-
             event.send_list(
                 match.lst_podium,
                 top_element_style='large',
