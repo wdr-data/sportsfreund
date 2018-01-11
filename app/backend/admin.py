@@ -192,6 +192,8 @@ class StoryAdmin(admin.ModelAdmin):
     inlines = (StoryFragmentAdminInline, )
 
     def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+
         if 'media' in form.changed_data:
             try:
                 obj.update_attachment()
@@ -201,6 +203,8 @@ class StoryAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
     def save_formset(self, request, form, formset, change):
+        super().save_formset(request, form, formset, change)
+
         for form_ in formset.forms:
             if 'media' in form_.changed_data:
                 try:
