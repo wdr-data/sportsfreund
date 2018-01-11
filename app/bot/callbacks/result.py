@@ -30,7 +30,7 @@ def api_winner(event, parameters, **kwargs):
         sports_to_choose = ''
         for i, sportname in enumerate(supported_sports):
             if i == len(supported_sports) - 1:
-                sports_to_choose += f'oder {sportname}.'
+                sports_to_choose += f'oder {sportname}?'
             else:
                 sports_to_choose += f'{sportname}, '
         event.send_text(sports_to_choose)
@@ -74,6 +74,7 @@ def api_winner(event, parameters, **kwargs):
 
     event.send_text('Folgende Wintersport-Ergebnisse habe ich für dich:')
     for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
+      ## Event postponed oder cancelled: 
         if match.match_incident:
             event.send_text(f"""{meta.match_incident.name}: 
 {discipline} in {meta.town} am {meta.datetime.date().strftime('%d.%m.%Y')}""")
@@ -81,7 +82,7 @@ def api_winner(event, parameters, **kwargs):
             results = match.match_result
             winner_team = results[0].team
 
-            event.send_buttons('{winner} hat {today} das {sport} {competition_term} in der Disziplin '
+            event.send_buttons('{sport} {competition_term} in der Disziplin '
                                '{discipline} in {town}, {country} {date} gewonnen.'.format(
                 winner=' '.join([winner_team.name,
                                            flag(winner_team.country.iso),
