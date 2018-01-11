@@ -82,7 +82,7 @@ def api_winner(event, parameters, **kwargs):
             results = match.match_result
             winner_team = results[0].team
 
-            event.send_buttons('{sport} {competition_term} in der Disziplin '
+            event.send_buttons('{winner} hat {today} das {sport} {competition_term} in der Disziplin '
                                '{discipline} in {town}, {country} {date} gewonnen.'.format(
                 winner=' '.join([winner_team.name,
                                            flag(winner_team.country.iso),
@@ -98,8 +98,8 @@ def api_winner(event, parameters, **kwargs):
                           buttons=[match.btn_podium]
                                 )
         else:
-            event.send_text('Das Event {sport} {discipline} wurde noch nicht beendet. '
-                      'Frage später erneut.'.format(
+            event.send_text('Das Event {sport} {discipline} ist noch nicht beendet. '
+                      'Frag bitte später noch mal. Wenn Du mir "Für {sport} anmelden" schreibst, melde ich mich, wenn ich das Ergebnis habe'.format(
                           sport=sport,
                           discipline=discipline
                       ))
@@ -137,7 +137,7 @@ def api_podium(event, parameters, **kwargs):
     match_ids = [match.id for match in match_meta if match]
 
     if not match_ids:
-        event.send_text('In dem angefragten Zeitraum hat kein Event stattgefunden.')
+        event.send_text('In diesem Zeitraum hat kein Event stattgefunden.')
         return
 
     result_podium(event, {'result_podium': match_ids})
@@ -154,13 +154,12 @@ def result_podium(event, payload):
     sport = [match.sport for match in match_meta]
 
     if len(asked_matches)>1:
-        event.send_text('Folgende Wintersport-Ergebnisse hab ich für dich:')
+        event.send_text('Bitteschön:')
 
     for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
         if match.match_incident:
-            event.send_text(f"Ich habe gehört, der Wettkampf {discipline} in {meta.town}, "
-                            f"welcher am {meta.datetime.date().strftime('%d.%m.%Y')} "
-                            f"geplant war, sei {meta.match_incident.name}.")
+            event.send_text(f"""{meta.match_incident.name}: 
+{discipline} in {meta.town} am {meta.datetime.date().strftime('%d.%m.%Y')}""")
         elif match.finished:
 
             reply = f'{"⛷" if sport == "Ski Alpin" else sport} {discipline} in {meta.town}' \
@@ -179,7 +178,7 @@ def result_podium(event, payload):
         else:
             event.send_text(f'Das Event {sport} {discipline} in '
                             f'{meta.town} wurde noch nicht beendet. '
-                            'Frage später erneut.'
+                            'Frag bitte später noch mal. Wenn Du mir "Für {sport} anmelden" schreibst, melde ich mich, wenn ich das Ergebnis habe'
                             )
 
 
@@ -208,7 +207,7 @@ def result_total(event, payload):
     else:
         results = match.results[11:]
         button = None
-        result_kind = 'restlichen Ergebnisse'
+        result_kind = 'restliche Ergebnisse'
 
     teams = [result.team for result in results]
 
@@ -238,7 +237,7 @@ def result_by_country(event, payload):
                              {'result_by_country' : c.name, 'match_id': match_id})
                  for c in countries[:11]]
 
-        event.send_text('Von welchem Land darf ich dir die platzierten Athleten zeigen?',
+        event.send_text('Welches Land möchtest du?',
                         quick_replies=quick)
         return
 
@@ -249,8 +248,8 @@ def result_by_country(event, payload):
         results.append(r)
         
     if not results:
-        event.send_text(f'Es hat kein Athlet aus {flag(country.iso)} {country.code}'
-                        f' das {sport_by_name[sport].competition_term} beendet.')
+        event.send_text(f'Kein Athlet aus {flag(country.iso)} {country.code}'
+                        f' hat das {sport_by_name[sport].competition_term} beendet.')
         return
 
     teams = [result.team for result in results]
@@ -260,7 +259,7 @@ def result_by_country(event, payload):
         f'{r.rank}. {t.name} {match.txt_points(r)}'
         for r, t in zip(results, teams))
 
-    event.send_text(f'Hier die Ergebnisse der Athleten aus {flag(country.iso)} '
+    event.send_text(f'Hier die Ergebnisse aus {flag(country.iso) {country.code}} '
                     f'in {match.meta.town}: \n\n{athletes_by_country}')
 
 
