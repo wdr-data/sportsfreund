@@ -84,12 +84,16 @@ class UpdateMatch(Task):
         result_subs = Subscription.query(type=Subscription.Type.RESULT,
                                          filter={'sport': meta.sport})
 
-        athlete_subs = [
+        podium_athlete_subs = [
             Subscription(obj) for obj in
             Subscription.collection.find({'filter.athlete': {'$exists': True, '$in': teams},
                                           'type': Subscription.Type.RESULT.value})]
+        athlete_subs = [
+            Subscription(obj) for obj in
+            Subscription.collection.find({'filter.athlete': {'$exists': True, '$in': teams[3:]},
+                                          'type': Subscription.Type.RESULT.value})]
 
-        result_subs.extend(athlete_subs)
+        result_subs.extend(podium_athlete_subs)
 
         user_ids = {s.psid for s in result_subs}
 
