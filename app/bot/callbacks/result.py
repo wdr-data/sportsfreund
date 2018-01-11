@@ -252,7 +252,7 @@ def result_by_country(event, payload):
         f'{r.rank}. {t.name} {match.txt_points(r)}'
         for r, t in zip(results, teams))
 
-    event.send_text(f'Hier die Ergebnisse aus {flag(country.iso) {country.code}} '
+    event.send_text(f'Hier die Ergebnisse aus {flag(country.iso)} {country.code} '
                     f'in {match.meta.town}: \n\n{athletes_by_country}')
 
 
