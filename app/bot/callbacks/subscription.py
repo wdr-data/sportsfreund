@@ -268,7 +268,7 @@ handlers = [
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe'),
     PayloadHandler(highlight_subscriptions, ['target', 'state']),
     PayloadHandler(result_subscriptions, ['type']),
-    PayloadHandler(result_change, ['target', 'filter', 'state']),
+    PayloadHandler(result_change, ['target', 'filter', 'option']),
     PayloadHandler(unsubscribe, ['unsubscribe']),
     PayloadHandler(subscribe_menu, ['subscribe_menu']),
     PayloadHandler(pld_subscriptions, ['send_subscriptions']),
