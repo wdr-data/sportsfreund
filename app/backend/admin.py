@@ -58,23 +58,29 @@ class ReportAdmin(admin.ModelAdmin):
     inlines = (ReportFragmentAdminInline, )
 
     def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+
         if 'media' in form.changed_data:
             try:
                 obj.update_attachment()
+                form.changed_data = ['attachment_id']
+                super().save_model(request, obj, form, change)
+
             except UploadFailedError:
                 messages.error(request, UPLOAD_FAILED_MSG % obj.media)
 
-        super().save_model(request, obj, form, change)
-
     def save_formset(self, request, form, formset, change):
+        super().save_formset(request, form, formset, change)
+
         for form_ in formset.forms:
             if 'media' in form_.changed_data:
                 try:
                     form_.instance.update_attachment()
+                    form.changed_data = ['attachment_id']
+                    super().save_formset(request, form, formset, change)
+
                 except UploadFailedError:
                     messages.error(request, UPLOAD_FAILED_MSG % form_.instance.media)
-
-        super().save_formset(request, form, formset, change)
 
 
 class PushModelForm(forms.ModelForm):
@@ -113,13 +119,16 @@ class WikiAdmin(admin.ModelAdmin):
     search_fields = ['input']
 
     def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+
         if 'media' in form.changed_data:
             try:
                 obj.update_attachment()
+                form.changed_data = ['attachment_id']
+                super().save_model(request, obj, form, change)
+
             except UploadFailedError:
                 messages.error(request, UPLOAD_FAILED_MSG % obj.media)
-
-        super().save_model(request, obj, form, change)
 
 
 class InfoModelForm(forms.ModelForm):
@@ -136,13 +145,16 @@ class InfoAdmin(admin.ModelAdmin):
     search_fields = ['title']
 
     def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+
         if 'media' in form.changed_data:
             try:
                 obj.update_attachment()
+                form.changed_data = ['attachment_id']
+                super().save_model(request, obj, form, change)
+
             except UploadFailedError:
                 messages.error(request, UPLOAD_FAILED_MSG % obj.media)
-
-        super().save_model(request, obj, form, change)
 
 
 class StoryFragmentModelForm(forms.ModelForm):
@@ -197,10 +209,11 @@ class StoryAdmin(admin.ModelAdmin):
         if 'media' in form.changed_data:
             try:
                 obj.update_attachment()
-            except UploadFailedError:
-                messages.error(request, UPLOAD_FAILED_MSG % obj.media.url)
+                form.changed_data = ['attachment_id']
+                super().save_model(request, obj, form, change)
 
-        super().save_model(request, obj, form, change)
+            except UploadFailedError:
+                messages.error(request, UPLOAD_FAILED_MSG % obj.media)
 
     def save_formset(self, request, form, formset, change):
         super().save_formset(request, form, formset, change)
@@ -209,10 +222,11 @@ class StoryAdmin(admin.ModelAdmin):
             if 'media' in form_.changed_data:
                 try:
                     form_.instance.update_attachment()
-                except UploadFailedError:
-                    messages.error(request, UPLOAD_FAILED_MSG % form_.instance.media.url)
+                    form.changed_data = ['attachment_id']
+                    super().save_formset(request, form, formset, change)
 
-        super().save_formset(request, form, formset, change)
+                except UploadFailedError:
+                    messages.error(request, UPLOAD_FAILED_MSG % form_.instance.media)
 
 
 # Register your models here.
