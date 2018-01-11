@@ -183,7 +183,7 @@ def result_change(event, payload, **kwargs):
     subs = Subscription.query(type=Subscription.Type.RESULT,
                               psid=sender_id)
 
-    if option == 'abmeden':
+    if option == 'unsubscribe':
         if not filter_arg:
             if len(subs) > 1:
                 if target == 'sport':
@@ -211,7 +211,7 @@ def result_change(event, payload, **kwargs):
                 if Subscription.describe_filter(sub.filter) == filter_arg:
                     unsubscribe(event, {'unsubscribe': str(sub._id)})
                     event.send_text(f'Okidoki. Du bekommst keine {filter_arg}-Ergebnisse mehr.')
-    elif option == 'anmelden':
+    elif option == 'subscribe':
         if not filter_arg:
             if target == 'sport':
                 quickreplies = [quick_reply(sport,
@@ -248,6 +248,7 @@ def result_change(event, payload, **kwargs):
                                button_postback(
                                    'Abmelden',
                                    {'target': 'sport', 'filter': None, 'option': 'unsubscribe'})])
+
 
 def unsubscribe(event, payload):
     sub_id = payload['unsubscribe']
