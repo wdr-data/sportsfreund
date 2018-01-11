@@ -73,19 +73,19 @@ def send_subscriptions(event, **kwargs):
     subs = Subscription.query(psid=sender_id)
 
     if any(sub.target is Subscription.Target.HIGHLIGHT for sub in subs):
-        highlight_emoji, highlight_button = '✔', button_postback('Abmelden',
+        highlight_emoji, highlight_button = '✔', button_postback('📝 Abmelden',
                                                                  {'target': 'highlight',
                                                                   'state': 'unsubscribe'})
     else:
-        highlight_emoji, highlight_button = '❌', button_postback('Anmelden',
+        highlight_emoji, highlight_button = '❌', button_postback('📝 Anmelden',
                                                                  {'target': 'highlight',
                                                                   'state': 'subscribe'})
 
     if any(sub.type is Subscription.Type.RESULT for sub in subs):
-        result_button = button_postback('Ändern', {'type': 'result'})
+        result_button = button_postback('🔧 Ändern', {'type': 'result'})
         result_emoji = '✔'
     else:
-        result_button = button_postback('Anmelden', {'type': 'result'})
+        result_button = button_postback('📝 Anmelden', {'type': 'result'})
         result_emoji = '❌'
 
     elements = [
@@ -114,7 +114,7 @@ def highlight_subscriptions(event, payload, **kwargs):
         filter_arg['highlight'] = 'Highlight'
         type_arg = Subscription.Type.HIGHLIGHT
         Subscription.create(sender_id, target, filter_arg, type_arg)
-        event.send_text('Läuft! Ich melde mich während der Olympischen Spiele jeden Morgen mit den '
+        event.send_text('#läuft\n Ich melde mich während der Olympischen Spiele jeden Morgen mit den '
                         'Highlights aus PyeonChang bei dir.\n Kann ich sonst nochwas liefern?')
         send_subscriptions(event)
     elif state == 'unsubscribe':
@@ -142,7 +142,7 @@ def result_subscriptions(event, payload, **kwargs):
     else:
         sport_subtitle = 'Nicht angemeldet'
         sport_emoji = '❌'
-        sport_button = button_postback('✍🏻 Anmelden',
+        sport_button = button_postback('📝 Anmelden',
                                        {'target': 'sport', 'filter': None, 'option': 'subscribe'})
 
     if any(sub.target is Subscription.Target.ATHLETE for sub in subs):
@@ -154,12 +154,12 @@ def result_subscriptions(event, payload, **kwargs):
             athlete_subtitle = athlete_subtitle[:77] + '...'
         athlete_emoji = '✔'
         athlete_button = button_postback('🔧 Ändern',
-                                         {'target': 'sport', 'filter': None, 'option': None})
+                                         {'target': 'athlete', 'filter': None, 'option': None})
     else:
         athlete_subtitle = 'Nicht angemeldet'
         athlete_emoji = '❌'
         athlete_button = button_postback('📝 Anmelden',
-                                         {'target': 'sport', 'filter': None, 'option': 'subscribe'})
+                                         {'target': 'athlete', 'filter': None, 'option': 'subscribe'})
 
     elements = [
         list_element(
@@ -214,22 +214,29 @@ def result_change(event, payload, **kwargs):
     elif option == 'subscribe':
         if not filter_arg:
             if target == 'sport':
-                quickreplies = [quick_reply(sport,
-                                            {'target': target, 'filter': sport, 'option': 'subscribe'})
-                                for sport in supported_sports[:11]]
+                filter_list = [Subscription.describe_filter(sub.filter)
+                               for sub in subs if sub.target is Subscription.Target.SPORT]
+                sports = [sport for sport in supported_sports if sport not in filter_list]
+                quickreplies = [quick_reply(sport, {'target': target,
+                                                    'filter': sport,
+                                                    'option': 'subscribe'})
+                                for sport in sports[:11]]
                 event.send_text(f'Für welche Sportart soll ich dir die Ergebnisse schicken? ',
                                 quickreplies)
             else:
-                event.send_text('Über wen soll ich dich informieren? Schreibe mir zum Beispiel ' \
-                      '"Anmelden Viktoria Rebensburg" - der Name alleine reicht leider nicht.')
+                event.send_text(f'Über wen soll ich dich informieren? Schreibe mir zum Beispiel '
+                                f'"Viktoria Rebensburg" - bitte nenne immer den Vor- und Nachnamen,'
+                                f' damit es keine Missverständnisse gibt.')
 
         else:
-            sub_target = Subscription.Target.SPORT if target == 'sport' else Subscription.Target.ATHLETE
+            sub_target = Subscription.Target.SPORT if target == 'sport' \
+                else Subscription.Target.ATHLETE
 
             sub_filter = {}
             if target == 'sport':
                 sub_filter['sport'] = filter_arg
-                reply = f'Ok. In der Übersicht siehst du für welche Ergebnisse du angemeldet bist.'
+                reply = f'Ok. In der Übersicht siehst du für welche Ergebniss-Dienste du ' \
+                        f'angemeldet bist.'
             else:
                 sub_filter['athlete'] = filter_arg
                 reply = f'Top. Ich melde mich, wenn es etwas Neues von {filter_arg} gibt.'
@@ -244,10 +251,10 @@ def result_change(event, payload, **kwargs):
                            buttons=[
                                button_postback(
                                    'Anmelden',
-                                   {'target': 'sport', 'filter': None, 'option': 'subscribe'}),
+                                   {'target': target, 'filter': None, 'option': 'subscribe'}),
                                button_postback(
                                    'Abmelden',
-                                   {'target': 'sport', 'filter': None, 'option': 'unsubscribe'})])
+                                   {'target': target, 'filter': None, 'option': 'unsubscribe'})])
 
 
 def unsubscribe(event, payload):
