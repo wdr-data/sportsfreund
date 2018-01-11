@@ -4,22 +4,26 @@ from mrq import context, config
 import mrq.job
 from mrq.scheduler import _hash_task
 
-if not context.get_current_config():
-    config_locations = ["../worker/mrq-config.py", "./worker/mrq-config.py", "/mrq-config.py"]
-    file_path = None
 
-    for path in config_locations:
-        if os.path.isfile(path):
-            file_path = path
+def configure_maybe():
+    if not context.get_current_config():
+        config_locations = ["../worker/mrq-config.py", "./worker/mrq-config.py", "/mrq-config.py"]
+        file_path = None
 
-    if file_path is None:
-        raise RuntimeError("MRQ Config not found!")
+        for path in config_locations:
+            if os.path.isfile(path):
+                file_path = path
 
-    cfg = config.get_config(file_path=file_path)
-    context.set_current_config(cfg)
+        if file_path is None:
+            raise RuntimeError("MRQ Config not found!")
 
-# exported for usage with autoconfiguration
-queue_job = mrq.job.queue_job
+        cfg = config.get_config(file_path=file_path)
+        context.set_current_config(cfg)
+
+
+def queue_job(*args, **kwargs):
+    configure_maybe()
+    mrq.job.queue_job(*args, **kwargs)
 
 
 def _assemble_task_data(main_task_path, params, interval, queue=None):
@@ -41,6 +45,7 @@ def _assemble_task_data(main_task_path, params, interval, queue=None):
 
 
 def add_scheduled(main_task_path, params, interval, start_at=None, queue=None):
+    configure_maybe()
     task_data = _assemble_task_data(main_task_path, params, interval, queue)
     task_data['hash'] = _hash_task(task_data)
 
@@ -57,10 +62,12 @@ def add_scheduled(main_task_path, params, interval, start_at=None, queue=None):
 
 
 def get_scheduled(main_task_path=None, params=None, interval=None, queue=None):
+    configure_maybe()
     query = _assemble_task_data(main_task_path, params, interval, queue)
     return context.connections.mongodb_jobs.mrq_scheduled_jobs.find(query)
 
 
 def remove_scheduled(main_task_path, params, interval, queue=None):
+    configure_maybe()
     hash = _hash_task(_assemble_task_data(main_task_path, params, interval, queue))
     context.connections.mongodb_jobs.mrq_scheduled_jobs.delete_one({'hash': hash})
