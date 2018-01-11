@@ -286,7 +286,7 @@ def story(event, slug, fragment_nr):
     link_story = None
 
     story = Story.objects.get(slug=slug)
-    fragments = story.fragments.all()
+    fragments = story.fragments.order_by('id')
 
     next_fragment_nr = None
 
