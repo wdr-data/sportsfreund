@@ -205,6 +205,7 @@ class MatchMeta(FeedModel):
             cls.logger.warning('TODO check feeds with only discipline')
 
         cls.load_olympia_feed(1757)
+        cls.load_olympia_feed(548)
 
         filter = base_filter.copy()
 
