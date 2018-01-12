@@ -8,7 +8,7 @@ from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.subscription import Subscription
 from feeds.models.team import Team
-from feeds.config import sport_by_name, CompetitionType
+from feeds.config import sport_by_name, CompetitionType, ResultType
 from lib.push import Push
 from lib.response import Replyable, SenderTypes
 from lib import queue
@@ -88,7 +88,7 @@ class UpdateMatch(Task):
 
         podium_athlete_subs = [
             Subscription(obj) for obj in
-            Subscription.collection.find({'filter.athlete': {'$exists': True, '$in': teams},
+            Subscription.collection.find({'filter.athlete': {'$exists': True, '$in': teams[:3]},
                                           'type': Subscription.Type.RESULT.value})]
         athlete_subs = [
             Subscription(obj) for obj in
@@ -97,13 +97,26 @@ class UpdateMatch(Task):
 
         result_subs.extend(podium_athlete_subs)
 
-        user_ids = {s.psid for s in result_subs}
+        podium_ids = {s.psid for s in result_subs}
+        athlete_ids = {s.psid for s in athlete_subs}
 
-        for uid in user_ids:
+        for uid in podium_ids:
             event = Replyable({'sender': {'id': uid}}, type=SenderTypes.FACEBOOK)
             event.send_text(f'Gerade wurde {meta.sport} {meta.discipline} in {meta.town} beendet.'
                             ' Hier die Ergebnisse frisch aus dem Nadeldrucker:')
             event.send_list(match.lst_podium, top_element_style='large', button=match.btn_podium)
+
+        for uid, sub in zip(athlete_ids, athlete_subs):
+            event = Replyable({'sender': {'id': uid}}, type=SenderTypes.FACEBOOK)
+            athlete = Subscription.describe_filter(sub.filter)
+            athlete_result = match.results_by_team(athlete_subs)
+            result = f'einer Zeit von {match.txt_points(athlete_result)}.' if \
+                sport_by_name[meta.sport].result_type == ResultType.TIME else \
+                f'{match.txt_points(athlete_result)} Punkten'
+
+            event.send_text(f'{meta.sport} {meta.discipline} in {meta.town} wurde soeben beendet. '
+                       f'Wollen wir mal sehen, wie {athlete} abgeschnitten hat...')
+            event.send_text(f'{athlete} belegt Platz {str(athlete_result.rank)} mit {result}.')
 
 
 class SendHighlight(Task):
