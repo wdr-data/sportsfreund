@@ -18,8 +18,11 @@ def api_subscribe(event, parameters, **kwargs):
         athlete = ' '.join([first_name, last_name])
 
     if not sport and not first_name and not last_name:
-        event.send_text('Wofür möchtest du dich anmelden? Nenne mir einen Athleten oder '
-                        'eine Sportart. Ich habe Infos zu Ski Alpin oder Biathlon.')
+        subs = Subscription.query(psid=event['sender']['id'])
+        add = 'Du bist noch für keinen Nachrichten-Service angemeldet. ' if not subs \
+            else 'Dies ist die Übersicht deiner angemeldeten Services. '
+        event.send_text(f'{add}Du kannst diese jederzeit ändern.')
+        send_subscriptions(event)
         return
     elif (last_name and not first_name) or (first_name and not last_name):
         event.send_text('Wenn du dich für die Ergebnisse eines Athleten anmelden möchtest, '
