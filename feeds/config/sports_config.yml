@@ -58,10 +58,22 @@
   competition_term: Springen
   article: das
   disciplines:
-    - name: Skispringen
+    - name: Großschanze
       competition_type: SINGLE
       article: das
-    - name: Skifliegen
+    - name: Normalschanze
+      competition_type: SINGLE
+      article: das
+    - name: Flugschanze
+      competition_type: SINGLE
+      article: das
+    - name: Team Normalschanze
+      competition_type: SINGLE
+      article: das
+    - name: Team Großschanze
+      competition_type: SINGLE
+      article: das
+    - name: Team Normalschanze
       competition_type: SINGLE
       article: das
 
@@ -80,7 +92,177 @@
   topic_id: None
   result_type: POINTS
   result_digits: 1
-  competition_term: Freestyle
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Aerials
+      competition_type: SINGLE
+      article: das
+    - name: Buckelpiste
+      competition_type: SINGLE
+      article: die
+    - name: Slopestyle
+      competition_type: SINGLE
+
+
+- name: Eishockey
+  topic_id: None
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Olympia
+      competition_type: TOURNAMENT
+      article: das
+
+- name: Bob
+  topic_id: None
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Zweierbob
+      competition_type: SINGLE
+      article: das
+    - name: Viererbob
+      competition_type: SINGLE
+      article: das
+
+- name: Curling
+  topic_id: None
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Olympia
+      competition_type: TOURNAMENT
+      article: das
+
+- name: Eishockey
+  topic_id: None
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Olympia
+      competition_type: TOURNAMENT
+      article: das
+
+- name: Eiskunstlauf
+  topic_id: None
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Aerials
+      competition_type: SINGLE
+      article: das
+
+- name: Eisschnelllauf
+  topic_id: None
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Aerials
+      competition_type: SINGLE
+      article: das
+
+- name: Nordische Kombination
+  topic_id: None
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Aerials
+      competition_type: SINGLE
+      article: das
+
+
+- name: Rodeln
+  topic_id: None
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Einsitzer
+      competition_type: SINGLE
+      article: der
+    - name: Doppelsitzer
+      competition_type: SINGLE
+      article: der
+    - name: Teamwettbewerb
+      competition_type: SINGLE
+      article: der
+
+- name: Shorttrack
+  topic_id: None
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Aerials
+      competition_type: SINGLE
+      article: das
+
+- name: Skeleton
+  topic_id: None
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Skeleton
+      competition_type: SINGLE
+      article: das
+
+- name: Ski Freestyle
+  topic_id: None
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Aerials
+      competition_type: SINGLE
+      article: das
+
+- name: Ski Langlauf
+  topic_id: None
+  result_type: Time
+  result_digits: 1
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Aerials
+      competition_type: SINGLE
+      article: das
+
+- name: Skispringen
+  topic_id: None
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Aerials
+      competition_type: SINGLE
+      article: das
+
+- name: Snowboard
+  topic_id: None
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Event
   article: das
   disciplines:
     - name: Aerials
