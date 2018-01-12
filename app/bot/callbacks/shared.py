@@ -107,7 +107,7 @@ def send_push(event, push, report_nr, state):
     button_title = ''
 
     if report_nr is not None:
-        reports = push.reports.all()
+        reports = push.reports.order_by('id')
         report = reports[report_nr]
     else:
         reports = None
