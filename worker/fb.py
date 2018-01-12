@@ -1,12 +1,15 @@
 import os
 import json
 import logging
+
+import gevent
 import requests
 from mrq.task import Task
 
 from lib.attachment import Attachment
 from lib.facebook import upload_attachment, guess_attachment_type
 from lib.response import Replyable, SenderTypes
+from lib.sent_tracking import UserSentTracking
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +21,15 @@ class Send(Task):
     def run(self, params):
         """Sends a payload via the graph API"""
         payload = params['payload']
+        id = params['sending_id']
+        for i in range(10):
+            tracking = UserSentTracking.by_id(payload['recipient']['id'])
+            if not ('last_sent' in tracking):
+                break
+            if tracking.last_sent + 1 == id:
+                break
+            gevent.sleep(0.5)
+
         logger.debug("JSON Payload: " + json.dumps(payload))
 
         headers = {'Content-Type': 'application/json'}
@@ -31,6 +43,8 @@ class Send(Task):
         error = json.loads(response).get('error')
         if error:
             raise Exception(error)
+        else:
+            UserSentTracking.set_sent(payload['recipient']['id'], id)
 
 
 class SendAttachment(Task):

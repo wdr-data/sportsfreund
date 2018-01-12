@@ -3,6 +3,7 @@ import logging
 from enum import Enum
 
 from lib.queue import queue_job
+from lib.sent_tracking import UserSentTracking
 
 logger = logging.getLogger(__name__)
 
@@ -182,12 +183,13 @@ class Replyable(dict):
         """Queues a payload on the correct worker queue"""
         logger.debug("JSON Payload: " + json.dumps(payload))
 
+        sending_id = UserSentTracking.inc_queued(self['sender']['id'])
         if self.type == SenderTypes.FACEBOOK:
             payload['recipient'] = {
                 'id': self['sender']['id'],
             }
 
-            queue_job('fb.Send', {'payload': payload})
+            queue_job('fb.Send', {'payload': payload, 'sending_id': sending_id})
 
 
 def list_element(title, subtitle=None, image_url=None, buttons=None, default_action=None):
