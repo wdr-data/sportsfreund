@@ -1,46 +1,7 @@
-import os
-import json
 import csv
 from collections import defaultdict
 
-import requests
-
-TOKEN = os.environ['DIALOGFLOW_DEV_TOKEN']
-
-GET, POST, PUT = range(3)
-
-
-def api_call(endpoint, id='', params=None, data=None, method=GET):
-
-    if not params:
-        params = {}
-
-    params['v'] = '20150910'
-    params['lang'] = 'de'
-
-    params_url = '&'.join(f'{k}={v}' for k, v in params.items())
-    url = f'https://api.dialogflow.com/v1/{endpoint}/{id}?{params_url}'
-
-    headers = {
-        'Authorization': f'Bearer {TOKEN}',
-        'Content-Type': 'application/json',
-    }
-
-    methods = {
-        GET: requests.get,
-        POST: requests.post,
-        PUT: requests.put,
-    }
-
-    the_method = methods[method]
-
-    r = the_method(url, headers=headers, data=data)
-
-    if r.status_code == 200:
-        return r.json()
-
-    else:
-        raise ValueError(f'Loading URL {url} failed with code {r.status_code}')
+from lib.dialogflow_api import api_call, simple_intent, parse_intent, POST, PUT
 
 
 def load_all_existing_intents():
@@ -53,9 +14,7 @@ def load_all_existing_intents():
 
 
 def load_existing_intent(id):
-    resp = api_call('intents', id)
-
-    return resp
+    return api_call('intents', id=id)
 
 
 def load_csv():
@@ -81,43 +40,6 @@ def load_csv():
     return intents
 
 
-def make_response(intent_name, questions, answers):
-    resp = {
-        'name': intent_name,
-        'contexts': [],
-        'events': [],
-        'fallbackIntent': False,
-        'followUpIntents': [],
-        'priority': 500000,
-        'responses': [{
-            'messages': [{'speech': answers, 'type': 0}],
-            'parameters': [],
-            'resetContexts': False,
-            'action': intent_name,
-            'affectedContexts': [],
-            'defaultResponsePlatforms': {},
-        }],
-        'templates': [],
-        'userSays': [
-            {
-                'count': 0,
-                'data': [{'text': question}],
-            } for question in questions
-        ],
-        'webhookForSlotFilling': False,
-        'webhookUsed': False,
-    }
-
-    return resp
-
-
-def parse_intent(data):
-    name = data['name']
-    questions = [obj['data'][0]['text'] for obj in data['userSays']]
-    answers = data['responses'][0]['messages'][0]['speech']
-    return name, questions, answers
-
-
 def main():
     intent_ids = load_all_existing_intents()
     new_intents = load_csv()
@@ -136,7 +58,7 @@ def main():
             api_call(
                 'intents',
                 id=intent_ids[name],
-                data=json.dumps(make_response(name, all_questions, all_answers)),
+                data=simple_intent(name, all_questions, all_answers),
                 method=PUT
             )
 
@@ -145,7 +67,7 @@ def main():
             print(name, questions, answers)
             api_call(
                 'intents',
-                data=json.dumps(make_response(name, questions, answers)),
+                data=simple_intent(name, questions, answers),
                 method=POST
             )
 
