@@ -87,7 +87,9 @@ class MatchMeta(FeedModel):
                         ma['competition_id'] = co['id']
                         ma['gender'] = co['gender']
                         ma['discipline'] = ro['name']
-                        ma['discipline_short'] = DISCIPLINE_ALIASES.get(ro['name'], ro['name'])
+                        discipline_clean = ro['name'].split('(')[0].rstrip()
+                        ma['discipline_short'] = DISCIPLINE_ALIASES.get(discipline_clean,
+                                                                        discipline_clean)
                         ma['_cached_at'] = now
                         ma['match_incident'] = ma.get('match_incident')
 
@@ -162,7 +164,8 @@ class MatchMeta(FeedModel):
                             ma['competition_id'] = ro['id']
                             ma['gender'] = co['gender']
                             ma['discipline'] = co['name']
-                            ma['discipline_short'] = co['shortname']
+                            ma['discipline_short'] = DISCIPLINE_ALIASES.get(co['shortname'],
+                                                                            co['shortname'])
                             ma['_cached_at'] = now
                             ma['match_incident'] = ma.get('match_incident')
 
@@ -205,6 +208,7 @@ class MatchMeta(FeedModel):
             cls.logger.warning('TODO check feeds with only discipline')
 
         cls.load_olympia_feed(1757)
+        cls.load_olympia_feed(548)
 
         filter = base_filter.copy()
 

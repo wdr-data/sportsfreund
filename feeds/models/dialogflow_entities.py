@@ -9,7 +9,7 @@ docker-compose run web python
 from feeds.models.match_meta import MatchMeta
 import re
 
-s = MatchMeta.search_range()
+s = MatchMeta.search_range(sport='Skispringen')
 t = str(s)
 
 item_list = list(sorted(set(re.findall(r'"discipline_short": "(.*?)"', t.replace("'",'"'), re.DOTALL))))
@@ -23,4 +23,3 @@ for item in item_list:
         "value": item,
         "synonyms": [item]
     })
-
