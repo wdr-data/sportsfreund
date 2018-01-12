@@ -12,12 +12,17 @@ def api_subscribe(event, parameters, **kwargs):
     discipline = parameters.get('discipline')
     first_name = parameters.get('first_name')
     last_name = parameters.get('last_name')
+    highlight = parameters.get('highlight')
     athlete = None
 
     if last_name and first_name:
         athlete = ' '.join([first_name, last_name])
 
-    if not sport and not first_name and not last_name:
+    if highlight:
+        payload = {'target': 'highlight', 'state': 'subscribe'}
+        highlight_subscriptions(event, payload)
+        return
+    elif not sport and not first_name and not last_name and not highlight:
         subs = Subscription.query(psid=event['sender']['id'])
         add = 'Du bist noch für keinen Nachrichten-Service angemeldet. ' if not subs \
             else 'Dies ist die Übersicht deiner angemeldeten Services. '
@@ -28,6 +33,7 @@ def api_subscribe(event, parameters, **kwargs):
         event.send_text('Wenn du dich für die Ergebnisse eines Athleten anmelden möchtest, '
                         'schicke mir den Vor- und Nachnamen. Nur um Verwechslungen zu vermeiden ;)')
         return
+
 
     subscribe_flow(event, sport, discipline, athlete)
 
@@ -112,7 +118,6 @@ def send_subscriptions(event, **kwargs):
 def highlight_subscriptions(event, payload, **kwargs):
     sender_id = event['sender']['id']
     state = payload['state']
-    target = payload['target']
     subs = Subscription.query(psid=sender_id)
 
     if state == 'subscribe':
