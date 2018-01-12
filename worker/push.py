@@ -112,7 +112,7 @@ class UpdateMatch(Task):
             athlete_result = match.results_by_team(athlete_subs)
             result = f'einer Zeit von {match.txt_points(athlete_result)}.' if \
                 sport_by_name[meta.sport].result_type == ResultType.TIME else \
-                f'{match.txt_points(athlete_result)} Punkten'
+                f'{match.txt_points(next(athlete_result))} Punkten'
 
             event.send_text(f'{meta.sport} {meta.discipline} in {meta.town} wurde soeben beendet. '
                        f'Wollen wir mal sehen, wie {athlete} abgeschnitten hat...')

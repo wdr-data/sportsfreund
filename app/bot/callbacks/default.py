@@ -121,7 +121,9 @@ def how_to(event, **kwargs):
 
 
 def about_bot(event, **kwargs):
-    event.send_text('Wer ist eigentlich dieser Sportsfreund? Du erfährst es hier - bald...')
+    story(event, slug='sportsfreund', fragment_nr=None)
+    event.send_text('Wer ist eigentlich dieser'
+                    ' Sportsfreund? Du erfährst es hier - bald...')
 
 
 def company_details(event, **kwargs):
