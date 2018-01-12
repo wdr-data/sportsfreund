@@ -61,9 +61,13 @@ def api_unsubscribe(event, parameters, **kwargs):
 
 
 def unsubscribe_flow(event):
-    event.send_text('Du möchtest dich von automatischen Nachrichten abmelden - OK. '
-              'In der Liste siehst du alle deine Anmeldungen. '
-              'Du kannst Sie jederzeit über die Buttons ändern.')
+    subs = Subscription.query(psid=event['sender']['id'])
+    reply = f'Du bist noch für keinen Nachrichten-Service angemeldet. Falls du dich anmelden ' \
+          f'möchtest, kannst du das hier tun.' if not subs \
+        else f'Du möchtest dich von automatischen Nachrichten abmelden - OK. ' \
+             f'In der Liste siehst du alle deine Anmeldungen. ' \
+             f'Du kannst Sie jederzeit über die Buttons ändern.'
+    event.send_text(reply)
     send_subscriptions(event)
 
 
@@ -276,6 +280,7 @@ def subscribe_menu(event, payload):
 handlers = [
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe', follow_up=True),
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe'),
+    ApiAiHandler(api_subscribe, 'push.subscription.unsubscribe'),
     PayloadHandler(highlight_subscriptions, ['target', 'state']),
     PayloadHandler(result_subscriptions, ['type']),
     PayloadHandler(result_change, ['target', 'filter', 'option']),
