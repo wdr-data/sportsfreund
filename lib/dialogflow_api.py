@@ -49,7 +49,10 @@ def api_call(endpoint, *, id='', attribute=None, params=None, data=None, method=
 
     the_method = methods[method]
 
-    r = the_method(url, headers=headers, data=json.dumps(data))
+    if data is not None:
+        data = json.dumps(data)
+
+    r = the_method(url, headers=headers, data=data)
 
     if r.status_code == 200:
         return r.json()
