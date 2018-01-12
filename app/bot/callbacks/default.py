@@ -113,21 +113,19 @@ def share_bot(event, **kwargs):
 
 
 def privacy(event, **kwargs):
-    event.send_text('Die Datenschutz Bestimmungen werden zukünftig hier zu finden sein.')
+    story(event, slug='datenschutz', fragment_nr=None)
 
 
 def how_to(event, **kwargs):
-    event.send_text('Hier erfährst du demnächst, wie der Bot funktioniert.')
+    story(event, slug='wie-funktionierst-du', fragment_nr=None)
 
 
 def about_bot(event, **kwargs):
     story(event, slug='sportsfreund', fragment_nr=None)
-    event.send_text('Wer ist eigentlich dieser'
-                    ' Sportsfreund? Du erfährst es hier - bald...')
 
 
 def company_details(event, **kwargs):
-    event.send_text('Und wer ist überhaupt verantwortlich? Gute Frage!')
+    story(event, slug='impressum', fragment_nr=None)
 
 
 def push(event, parameters, **kwargs):
