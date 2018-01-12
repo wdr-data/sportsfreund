@@ -109,10 +109,11 @@ class UpdateMatch(Task):
         for uid, sub in zip(athlete_ids, athlete_subs):
             event = Replyable({'sender': {'id': uid}}, type=SenderTypes.FACEBOOK)
             athlete = Subscription.describe_filter(sub.filter)
-            athlete_result = match.results_by_team(athlete_subs)
-            result = f'einer Zeit von {match.txt_points(athlete_result)}.' if \
-                sport_by_name[meta.sport].result_type == ResultType.TIME else \
-                f'{match.txt_points(next(athlete_result))} Punkten'
+            athlete_result = next(match.results_by_team(athlete))
+            points = match.txt_points(athlete_result)
+            result = f'einer Zeit von {points}.' if \
+                sport_by_name[match.meta.sport].result_type == ResultType.TIME else \
+                f'{points} Punkten'
 
             event.send_text(f'{meta.sport} {meta.discipline} in {meta.town} wurde soeben beendet. '
                        f'Wollen wir mal sehen, wie {athlete} abgeschnitten hat...')
