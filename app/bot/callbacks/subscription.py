@@ -138,7 +138,7 @@ def result_subscriptions(event, payload, **kwargs):
 
     if any(sub.target is Subscription.Target.SPORT for sub in subs):
         sport_subtitle = ', '.join(
-            [Subscription.describe_filter(sub.filter)
+            [str(Subscription.describe_filter(sub.filter))
              for sub in subs if sub.target is Subscription.Target.SPORT])
 
         if len(sport_subtitle) > 80:
@@ -154,7 +154,7 @@ def result_subscriptions(event, payload, **kwargs):
 
     if any(sub.target is Subscription.Target.ATHLETE for sub in subs):
         athlete_subtitle = ', '.join(
-            [Subscription.describe_filter(sub.filter)
+            [str(Subscription.describe_filter(sub.filter))
              for sub in subs if sub.target is Subscription.Target.ATHLETE])
 
         if len(athlete_subtitle) > 80:
@@ -224,12 +224,17 @@ def result_change(event, payload, **kwargs):
                 filter_list = [Subscription.describe_filter(sub.filter)
                                for sub in subs if sub.target is Subscription.Target.SPORT]
                 sports = [sport for sport in supported_sports if sport not in filter_list]
-                quickreplies = [quick_reply(sport, {'target': target,
-                                                    'filter': sport,
-                                                    'option': 'subscribe'})
-                                for sport in sports[:11]]
-                event.send_text(f'Für welche Sportart soll ich dir die Ergebnisse schicken? ',
-                                quickreplies)
+                if not sports:
+                    event.send_text(f'Du bist bereits für alle möglichen Sportarten '
+                                               f'angemeldet. Du scheinst ja genau so ein '
+                                               f'Wintersport Nerd zu sein wie ich 🤓')
+                else:
+                    quickreplies = [quick_reply(sport, {'target': target,
+                                                        'filter': sport,
+                                                        'option': 'subscribe'})
+                                    for sport in sports[:11]]
+                    event.send_text(f'Für welche Sportart soll ich dir die Ergebnisse schicken? ',
+                                    quickreplies)
             else:
                 event.send_text(f'Über wen soll ich dich informieren? Schreibe mir zum Beispiel '
                                 f'"Viktoria Rebensburg" - bitte nenne immer den Vor- und Nachnamen,'
