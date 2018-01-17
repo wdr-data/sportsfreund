@@ -126,8 +126,8 @@ def highlight_subscriptions(event, payload, **kwargs):
         filter_arg['highlight'] = 'Highlight'
         type_arg = Subscription.Type.HIGHLIGHT
         Subscription.create(sender_id, target, filter_arg, type_arg)
-        event.send_text('#läuft\n Ich melde mich während der Olympischen Spiele jeden Morgen mit den '
-                        'Highlights aus PyeonChang bei dir.\n Kann ich sonst nochwas liefern?')
+        event.send_text('#läuft\nIch melde mich während der Olympischen Spiele zweimal täglich mit den '
+                        'Highlights aus PyeonChang bei dir.\nKann ich sonst nochwas liefern?')
         send_subscriptions(event)
     elif state == 'unsubscribe':
         for sub in subs:
