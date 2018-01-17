@@ -158,7 +158,7 @@ def result_podium(event, payload):
 
     for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
         if match.match_incident:
-            event.send_text(f'{meta.match_incident.name}: {discipline}, {meta.gender_name}'
+            event.send_text(f'{match.match_incident.name}: {discipline}, {meta.gender_name}'
                             f'in {meta.town}')
         elif match.finished:
 
