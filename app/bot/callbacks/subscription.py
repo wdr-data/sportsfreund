@@ -95,7 +95,7 @@ def send_subscriptions(event, **kwargs):
                                                                   'state': 'subscribe'})
 
     if any(sub.type is Subscription.Type.RESULT for sub in subs):
-        result_button = button_postback('🔧 Ändern', {'type': 'result'})
+        result_button = button_postback('🔧 An-/Abmelden', {'type': 'result'})
         result_emoji = '✔'
     else:
         result_button = button_postback('📝 Anmelden', {'type': 'result'})
@@ -149,7 +149,7 @@ def result_subscriptions(event, payload, **kwargs):
         if len(sport_subtitle) > 80:
             sport_subtitle = sport_subtitle[:77] + '...'
         sport_emoji = '✔'
-        sport_button = button_postback('🔧 Ändern',
+        sport_button = button_postback('🔧 An-/Abmelden',
                                        {'target': 'sport', 'filter': None, 'option': None})
     else:
         sport_subtitle = 'Nicht angemeldet'
@@ -165,7 +165,7 @@ def result_subscriptions(event, payload, **kwargs):
         if len(athlete_subtitle) > 80:
             athlete_subtitle = athlete_subtitle[:77] + '...'
         athlete_emoji = '✔'
-        athlete_button = button_postback('🔧 Ändern',
+        athlete_button = button_postback('🔧 An-/Abmelden',
                                          {'target': 'athlete', 'filter': None, 'option': None})
     else:
         athlete_subtitle = 'Nicht angemeldet'
