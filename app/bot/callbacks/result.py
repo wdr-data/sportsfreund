@@ -158,8 +158,8 @@ def result_podium(event, payload):
 
     for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
         if match.match_incident:
-            event.send_text(f"""{meta.match_incident.name}: 
-{discipline} in {meta.town} am {meta.datetime.date().strftime('%d.%m.%Y')}""")
+            event.send_text(f'{meta.match_incident.name}: {discipline}, {meta.gender_name}'
+                            f'in {meta.town}')
         elif match.finished:
 
             event.send_list(
@@ -171,7 +171,8 @@ def result_podium(event, payload):
         else:
             event.send_text(f'Das Event {sport} {discipline} in '
                             f'{meta.town} wurde noch nicht beendet. '
-                            'Frag bitte später noch mal. Wenn Du mir "Für {sport} anmelden" schreibst, melde ich mich, wenn ich das Ergebnis habe'
+                            f'Frag bitte später noch mal. Wenn Du mir "Für {sport} anmelden"'
+                            f' schreibst, melde ich mich, wenn ich das Ergebnis habe'
                             )
 
 
