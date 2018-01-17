@@ -110,7 +110,8 @@ class Match(FeedModel):
         date = datetime.strptime(self.match_date, '%Y-%m-%d')
 
         header = [list_element(
-            f'{self.meta.sport}, {self.meta.discipline} in {self.venue.town.name}, {self.venue.country.name}',
+            f'{self.meta.sport}, {self.meta.discipline_short}, {self.meta.gender_name}'
+            f' in {self.venue.town.name}',
             f'{day_name[date.weekday()]}, {date.strftime("%d.%m.%Y")} um {self.match_time} Uhr',
             image_url='https://i.imgur.com/DnWwUM5.jpg' if self.meta.sport == 'Ski Alpin'
             else 'https://i.imgur.com/Bu05xF6.jpg'
