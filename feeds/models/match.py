@@ -129,10 +129,7 @@ class Match(FeedModel):
     def txt_points(self, result):
         conf = sport_by_name[self.meta.sport]
 
-        if not result.match_result:
-            return ''
-
-        if conf.result_type is ResultType.TIME:
+        if conf.result_type is ResultType.TIME and result.match_result:
             if result.rank == 1:
                 point_str = result.match_result
             else:
@@ -146,9 +143,13 @@ class Match(FeedModel):
             if result.rank != 1:
                 point_str = '+' + point_str
 
-        elif conf.result_type is ResultType.POINTS:
-            point_str = locale.format(f'%.{conf.result_digits}f', result.match_result / 100)
-
+        elif conf.result_type is ResultType.POINTS and result.match_result:
+            point_str = locale.format(f'%.{conf.result_digits}f', result.match_result / 100) \
+                        + ' Punkte'
+        else:
+            # TODO TOURNAMENT or empty result.match_result
+            point_str = ''
+        
         return point_str
 
     @property
