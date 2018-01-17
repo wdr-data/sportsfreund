@@ -141,17 +141,6 @@
       competition_type: TOURNAMENT
       article: das
 
-- name: Eishockey
-  topic_id: None
-  result_type: POINTS
-  result_digits: 1
-  competition_term: Event
-  article: das
-  disciplines:
-    - name: Olympia
-      competition_type: TOURNAMENT
-      article: das
-
 - name: Eiskunstlauf
   topic_id: None
   result_type: POINTS
@@ -188,8 +177,8 @@
 
 - name: Rodeln
   topic_id: None
-  result_type: POINTS
-  result_digits: 1
+  result_type: TIME
+  result_digits: 2
   competition_term: Event
   article: das
   disciplines:
@@ -205,13 +194,13 @@
 
 - name: Shorttrack
   topic_id: None
-  result_type: POINTS
+  result_type: TIME
   result_digits: 1
   competition_term: Event
   article: das
   disciplines:
     - name: Aerials
-      competition_type: SINGLE
+      competition_type: TOURNAMENT
       article: das
 
 - name: Skeleton
@@ -239,17 +228,6 @@
 - name: Ski Langlauf
   topic_id: None
   result_type: Time
-  result_digits: 1
-  competition_term: Event
-  article: das
-  disciplines:
-    - name: Aerials
-      competition_type: SINGLE
-      article: das
-
-- name: Skispringen
-  topic_id: None
-  result_type: POINTS
   result_digits: 1
   competition_term: Event
   article: das

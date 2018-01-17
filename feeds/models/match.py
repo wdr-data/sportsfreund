@@ -129,6 +129,9 @@ class Match(FeedModel):
     def txt_points(self, result):
         conf = sport_by_name[self.meta.sport]
 
+        if not result.match_result:
+            return ''
+
         if conf.result_type is ResultType.TIME:
             if result.rank == 1:
                 point_str = result.match_result
