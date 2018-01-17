@@ -48,7 +48,7 @@
       competition_type: SINGLE
       article: die
     - name: Parallel
-      competition_type: SINGLE
+      competition_type: TOURNAMENT
       article:
 
 - name: Skispringen
