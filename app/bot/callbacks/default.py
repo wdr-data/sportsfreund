@@ -57,8 +57,7 @@ def korea_standard_time(event, **kwargs):
     event.send_text(reply)
 
 def get_started(event, **kwargs):
-    event.send_text('Hallo, ich bin der Wintersport-Dienst der Sportschau und ich '
-                    'trainiere für Olympia. ⛷')
+    event.send_text('Hallo, ich bin der Wintersport-Dienst der Sportschau. ⛷')
     sleep(4)
     event.send_text(f'Im Moment liefere ich Infos zu diesen Sportarten: \n- Ski Alpin\n'
                     f'- Biathlon\n- Skispringen\n'
