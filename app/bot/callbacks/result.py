@@ -1,6 +1,6 @@
 import logging
 from datetime import date as dtdate
-from datetime import datetime
+from datetime import datetime, timedelta
 from calendar import day_name
 
 from lib.model import Model
@@ -114,8 +114,14 @@ def api_podium(event, parameters, **kwargs):
     country = parameters.get('country')
     gender = parameters.get('gender')
 
-    if date and not period:
+    if date:
         date = datetime.strptime(date, '%Y-%m-%d').date()
+        if date > dtdate.today():
+            date = date.replace(date.year - 1)
+            if date.day == 29 and date.month == 2 and date.year % 4 != 0:
+                event.send_text('Nice try, aber wir befinden und nicht in einem Schaltjahr. 😎')
+                return
+
         match_meta = MatchMeta.search_date(
             date=date, discipline=discipline, sport=sport, town=town,
             country=country, gender=gender)
@@ -129,7 +135,8 @@ def api_podium(event, parameters, **kwargs):
             sport=sport, town=town, country=country, gender=gender)
     elif town or country:
         match_meta = MatchMeta.search_range(
-                discipline=discipline, sport=sport, town=town, country=country, gender=gender)
+            until_date=dtdate.today(), discipline=discipline, sport=sport,
+            town=town, country=country, gender=gender)
     else:
         match_meta = [MatchMeta.search_last(
             discipline=discipline, sport=sport, town=town, country=country, gender=gender)]
