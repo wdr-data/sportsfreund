@@ -29,6 +29,11 @@ class MatchMeta(FeedModel):
     def country(self):
         return self.venue.country.name
 
+    @property
+    def gender_name(self):
+        return 'Herren' if self.gender == 'male' else \
+            ('Damen' if self.gender == 'female' else 'Mixed')
+
     @classmethod
     def by_id(cls, id, clear_cache=False):
         raise NotImplementedError
