@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import random
 
 from mrq.task import Task
 
@@ -15,6 +16,14 @@ from lib import queue
 
 MATCH_CHECK_INTERVAL = 60
 
+RESULT_PUSH_INTRO = [
+    'Und wieder ging ein Event zu Ende. Hier die Ergebnisse:',
+    "Ein Wettkampf wurde beendet und ich sag dir wer gewonnen hat:",
+    'Schau an. Es wurden mal wieder Höchstleistungen vollbracht:',
+    'Hier deine bestellten Ergebnisse.',
+    'Es war mal wieder Aktion angesagt. Hier die Ergebnisse vom letzten Wettstreit:',
+    'Nicht erschrecken. Es wurde nur mal wieder ein Wettkampf beendet.',
+]
 
 class UpdateSchedule(Task):
 
@@ -102,8 +111,7 @@ class UpdateMatch(Task):
 
         for uid in podium_ids:
             event = Replyable({'sender': {'id': uid}}, type=SenderTypes.FACEBOOK)
-            event.send_text(f'Gerade wurde {meta.sport} {meta.discipline} in {meta.town} beendet.'
-                            ' Hier die Ergebnisse frisch aus dem Nadeldrucker:')
+            event.send_text(random.choice(RESULT_PUSH_INTRO))
             event.send_list(match.lst_podium, top_element_style='large', button=match.btn_podium)
 
         for uid, sub in zip(athlete_ids, athlete_subs):
