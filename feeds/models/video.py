@@ -171,7 +171,12 @@ class Video(Model):
                 cls.logger.exception(f'Page {href} failed to parse')
                 continue
 
-            video_url = Video.extract_video_url(page)
+            try:
+                video_url = Video.extract_video_url(page)
+
+            except:
+                cls.logger.exception(f'Extracting video URL for {href} failed, skipping entry.')
+                continue
 
             cls.collection.replace_one(
                 {
