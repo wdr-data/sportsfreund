@@ -203,12 +203,7 @@ class Video(Model):
         cls.logger.info('%s videos in db', cls.collection.count())
 
         new_cache_marker = {'_cache_marker': True, '_cached_at': now}
-
-        if cache_marker:
-            cls.collection.replace_one({'_cache_marker': True}, new_cache_marker)
-
-        else:
-            cls.collection.insert_one(new_cache_marker)
+        cls.collection.replace_one({'_cache_marker': True}, new_cache_marker, upsert=True)
 
         return True
 
