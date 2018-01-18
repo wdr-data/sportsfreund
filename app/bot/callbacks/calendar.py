@@ -128,7 +128,7 @@ def api_next(event, parameters, **kwargs):
     else:
         event.send_text('Moment, Ich schau kurz in meinen Kalender...')
         sleep(3)
-        event.send_text(f'Ah! Hier hab ich ja das nächste {match_meta.sport} '
+        event.send_text(f'Ah! Hier hab ich ja das nächste '
                         f'{sport_by_name[match_meta.sport].competition_term}:')
         pl_entry_by_matchmeta(event, {'calendar.entry_by_matchmeta': match_meta})
 

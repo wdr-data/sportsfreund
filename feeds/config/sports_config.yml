@@ -109,7 +109,7 @@
   topic_id: None
   result_type: POINTS
   result_digits: 1
-  competition_term: Event
+  competition_term: Spiel
   article: das
   disciplines:
     - name: Olympia
@@ -120,7 +120,7 @@
   topic_id: None
   result_type: POINTS
   result_digits: 1
-  competition_term: Event
+  competition_term: Rennen
   article: das
   disciplines:
     - name: Zweierbob
@@ -134,7 +134,7 @@
   topic_id: None
   result_type: POINTS
   result_digits: 1
-  competition_term: Event
+  competition_term: Spiel
   article: das
   disciplines:
     - name: Olympia
@@ -156,7 +156,7 @@
   topic_id: None
   result_type: POINTS
   result_digits: 1
-  competition_term: Event
+  competition_term: Rennen
   article: das
   disciplines:
     - name: Aerials
@@ -167,7 +167,7 @@
   topic_id: None
   result_type: POINTS
   result_digits: 1
-  competition_term: Event
+  competition_term: Rennen
   article: das
   disciplines:
     - name: Aerials
@@ -179,7 +179,7 @@
   topic_id: None
   result_type: TIME
   result_digits: 2
-  competition_term: Event
+  competition_term: Rennen
   article: das
   disciplines:
     - name: Einsitzer
@@ -196,40 +196,18 @@
   topic_id: None
   result_type: TIME
   result_digits: 1
-  competition_term: Event
+  competition_term: Rennen
   article: das
   disciplines:
     - name: Aerials
       competition_type: TOURNAMENT
       article: das
 
-- name: Skeleton
-  topic_id: None
-  result_type: POINTS
-  result_digits: 1
-  competition_term: Event
-  article: das
-  disciplines:
-    - name: Skeleton
-      competition_type: SINGLE
-      article: das
-
-- name: Ski Freestyle
-  topic_id: None
-  result_type: POINTS
-  result_digits: 1
-  competition_term: Event
-  article: das
-  disciplines:
-    - name: Aerials
-      competition_type: SINGLE
-      article: das
-
 - name: Ski Langlauf
   topic_id: None
   result_type: Time
   result_digits: 1
-  competition_term: Event
+  competition_term: Rennen
   article: das
   disciplines:
     - name: Aerials
