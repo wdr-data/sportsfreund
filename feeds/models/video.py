@@ -123,7 +123,7 @@ class Video(Model):
 
         now = time()
 
-        r = requests.get('http://www.sportschau.de/video/videouebersicht-wintersport-100.feed')
+        r = requests.get('https://www.sportschau.de/video/videouebersicht-wintersport-100.feed')
 
         if r.status_code == 200 and r.content:
             feed = BeautifulSoup(r.content.decode(), 'xml')
@@ -216,11 +216,11 @@ class Video(Model):
         short_id = str(id)[:3]
 
         hls_links = requests.get(
-            f"http://deviceids-medp-id1.wdr.de/ondemand/{short_id}/{id}.js").text
+            f"https://deviceids-medp-id1.wdr.de/ondemand/{short_id}/{id}.js").text
         meta_url_data = json.loads(re.search(r'^[^{}]+({.*})[^{}]+$', hls_links).group(1))
         url = meta_url_data['mediaResource']['dflt']['videoURL']
 
-        hls_stream = requests.get(f"http:{url}").text
+        hls_stream = requests.get(f"https:{url}").text
         metadata = m3u8.loads(hls_stream)
 
         sorted_playlist = sorted(metadata.playlists,
@@ -233,7 +233,7 @@ class Video(Model):
 
         full_id = sizes[int(index)]
 
-        final_url = f"http://wdrmedien-a.akamaihd.net/medp/ondemand/weltweit/fsk0/" \
+        final_url = f"https://wdrmedien-a.akamaihd.net/medp/ondemand/weltweit/fsk0/" \
                     f"{short_id}/{id}/{full_id}.mp4"
 
         return final_url
