@@ -201,7 +201,6 @@ def send_push(event, push, report_nr, state):
 
     for i, r in enumerate(reply_split):
         if len(reply_split) - 1 == i:
-            quick_replies = [more_button]
             event.send_text(r, quick_replies=quick_replies)
         else:
             event.send_text(r)
