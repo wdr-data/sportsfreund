@@ -262,7 +262,7 @@ def send_report(event, report, state):
 
     for i, r in enumerate(reply_split):
         if next_state is not None and len(reply_split) - 1 == i:
-            quick_replies = [more_button]
+            quick_replies = [more_button] if next_state is not None else None
             event.send_text(r, quick_replies=quick_replies)
 
         else:
