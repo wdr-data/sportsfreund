@@ -38,6 +38,9 @@ FB_PAGE_TOKEN=        # Access-Token für die Facebook API
 FB_HUB_VERIFY_TOKEN=  # Verify Token für den Facebook Webhook
 DIALOGFLOW_TOKEN=     # API Token für Dialogflow
 FEED_URL=             # URL der Datenquellen (proprietär)
+VIDEO_FEED_URL=       # URL für den Mediathek-Feed zum Wintersport (WDR intern)
+VIDEO_PLAYLISTS_BASE= # URL zur Bestimmung der SMIL-Playlist eines Videos (WDR intern) - no trailing slash
+VIDEO_URL_BASE=       # URL-Basis zum Abruf des MP4-Videos (WDR intern) - no trailing slash
 SENTRY_URL=           # DSN für die Sentry Error Logging Plattform (optional)
 ```
 

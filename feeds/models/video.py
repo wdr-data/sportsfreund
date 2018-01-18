@@ -123,7 +123,11 @@ class Video(Model):
 
         now = time()
 
-        r = requests.get('https://www.sportschau.de/video/videouebersicht-wintersport-100.feed')
+        feed_url = os.environ.get('VIDEO_FEED_URL')
+        if not feed_url:
+            raise EnvironmentError("Video Feed URL is not configured!")
+
+        r = requests.get(feed_url)
 
         if r.status_code == 200 and r.content:
             feed = BeautifulSoup(r.content.decode(), 'xml')
@@ -216,8 +220,9 @@ class Video(Model):
 
         short_id = str(id)[:3]
 
+        playlist_base = os.environ['VIDEO_PLAYLISTS_BASE']
         hls_links = requests.get(
-            f"https://deviceids-medp-id1.wdr.de/ondemand/{short_id}/{id}.js").text
+            f"{playlist_base}/{short_id}/{id}.js").text
         meta_url_data = json.loads(re.search(r'^[^{}]+({.*})[^{}]+$', hls_links).group(1))
         url = meta_url_data['mediaResource']['dflt']['videoURL']
 
@@ -234,7 +239,7 @@ class Video(Model):
 
         full_id = sizes[int(index)]
 
-        final_url = f"https://wdrmedien-a.akamaihd.net/medp/ondemand/weltweit/fsk0/" \
-                    f"{short_id}/{id}/{full_id}.mp4"
+        video_url_base = os.environ['VIDEO_URL_BASE']
+        final_url = f"{video_url_base}/{short_id}/{id}/{full_id}.mp4"
 
         return final_url
