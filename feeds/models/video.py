@@ -173,6 +173,12 @@ class Video(Model):
 
             try:
                 video_url = Video.extract_video_url(page)
+                r = requests.head(video_url)
+
+                if r.status_code != 200:
+                    cls.logger.error(
+                        f'Extracted video URL for {href} returns {r.status_code}, skipping entry.')
+                    continue
 
             except:
                 cls.logger.exception(f'Extracting video URL for {href} failed, skipping entry.')
