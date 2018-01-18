@@ -135,29 +135,47 @@ def api_next(event, parameters, **kwargs):
 
 
 def multiple_entry(event, meta):
+    start_date = datetime.strptime("1990-1-1", '%Y-%m-%d')
+
     for match_meta in meta:
-        pl_entry_by_matchmeta(event, {'calendar.entry_by_matchmeta': match_meta})
+        match_date = datetime.strptime(match_meta.match_date, '%Y-%m-%d')
+        if start_date != match_date:
+            event.send_text(f"{day_name[match_date.weekday()]},"
+                            f" {match_date.strftime('%d.%m.%Y')}")
+            start_date = match_date
+
+        pl_entry_by_matchmeta(event, {'calendar.entry_by_matchmeta': match_meta,
+                                      'one_in_many': True})
 
 
 def pl_entry_by_matchmeta(event, payload, **kwargs):
     match_meta = payload['calendar.entry_by_matchmeta']
+    one_in_many = payload.get('one_in_many', False)
 
     if not isinstance(match_meta, MatchMeta):
         match_meta = MatchMeta.by_id(match_meta)
 
     d_date = datetime.strptime(match_meta.match_date, '%Y-%m-%d')
 
-    gender = 'der Damen ' if match_meta.gender == 'female' \
-        else ('der Herren' if match_meta.gender == 'male'  else '')
+    gender = ' der Damen' if match_meta.gender == 'female' \
+        else (' der Herren' if match_meta.gender == 'male'  else '')
 
     if match_meta.match_incident:
-        event.send_text(f"Ich habe gehört, der Wettkampf {match_meta.discipline} {gender} in {match_meta.town}, "
+        event.send_text(f"Ich habe gehört, der Wettkampf {match_meta.discipline} {gender}"
+                        f" in {match_meta.town}, "
                         f"welcher am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} "
                         f"geplant war, sei {match_meta.match_incident.name}.")
     else:
-        event.send_text(f"Am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} um "
-                        f"{match_meta.match_time} Uhr: {match_meta.discipline_short} {gender} in {match_meta.town} "
-                        f"{flag(match_meta.venue.country.iso)} {match_meta.venue.country.code}")
+        if not one_in_many:
+            reply = f"Am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} " \
+                    f"um {match_meta.match_time} Uhr:"
+        else:
+            reply = f'{match_meta.match_time} Uhr - '
+
+        event.send_text(reply+ f"{sport}, "
+                               f"{match_meta.discipline_short}{gender} in {match_meta.town} "
+                               f"{flag(match_meta.venue.country.iso)} "
+                               f"{match_meta.venue.country.code}")
 
 
 def period_to_dates(period):
