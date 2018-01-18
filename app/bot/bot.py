@@ -144,12 +144,12 @@ def make_event_handler():
     def event_handler(events, type):
         """handle all incoming messages"""
         for event in events:
+            logging.debug('Incoming message : ' + str(event))
             message = event.get('message')
 
             event = Replyable(event, type)
 
             if message:
-                logging.debug('Incoming message : ' + str(message))
                 nlp = query_api_ai(event)
 
                 if nlp:
