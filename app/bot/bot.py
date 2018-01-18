@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 DIALOGFLOW_TOKEN = os.environ.get('DIALOGFLOW_TOKEN', 'na')
 
 ADMINS = [
+1947930888581193, #Lisa
 ]
 
 
@@ -148,6 +149,7 @@ def make_event_handler():
             event = Replyable(event, type)
 
             if message:
+                logging.debug('Incoming message : ' + message)
                 nlp = query_api_ai(event)
 
                 if nlp:
