@@ -67,12 +67,13 @@ def api_next(event, parameters, **kwargs):
                 if match_meta and (discipline or sport or town or country):
                     event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
                                     'aber vielleicht interessiert dich ja folgendes Event:')
-
+                    multiple_entry(event, match_meta)
+                    return
                 else:
                     emoji = ['⛷', '🏂']
                     event.send_text('Heute findet kein Wintersport-Event statt. '
                                     f'Ich geh ne Runde {random.choice(emoji)}!')
-
+                    return
             else:
                 multiple_entry(event, match_meta)
 
@@ -155,7 +156,7 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
                         f"geplant war, sei {match_meta.match_incident.name}.")
     else:
         event.send_text(f"Am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} um "
-                        f"{match_meta.match_time} Uhr: {match_meta.discipline} {gender} in {match_meta.town} "
+                        f"{match_meta.match_time} Uhr: {match_meta.discipline_short} {gender} in {match_meta.town} "
                         f"{flag(match_meta.venue.country.iso)} {match_meta.venue.country.code}")
 
 
