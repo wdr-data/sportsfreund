@@ -79,8 +79,6 @@ class TestApiNext:
 
         ExpectedReply(event).expect_text(
             'Gucken wir mal was da so los sein wird.'
-        ).expect_text(
-            f'Am {timestr} Uhr: Sprint der Herren in Bremen 🇸🇪 SWE'
         )
 
     def test_future_not_found(self, event, collection):
