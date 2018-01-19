@@ -172,7 +172,7 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
         else:
             reply = f'{match_meta.match_time} Uhr - '
 
-        event.send_text(reply+ f"{sport}, "
+        event.send_text(reply+ f"{match_meta.sport}, "
                                f"{match_meta.discipline_short}{gender} in {match_meta.town} "
                                f"{flag(match_meta.venue.country.iso)} "
                                f"{match_meta.venue.country.code}")
