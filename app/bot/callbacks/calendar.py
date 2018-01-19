@@ -137,12 +137,16 @@ def api_next(event, parameters, **kwargs):
 def multiple_entry(event, meta):
     start_date = datetime.strptime("1990-1-1", '%Y-%m-%d')
 
-    for match_meta in meta:
+    for i, match_meta in enumerate(meta):
         match_date = datetime.strptime(match_meta.match_date, '%Y-%m-%d')
         if start_date != match_date:
             event.send_text(f"{day_name[match_date.weekday()]},"
                             f" {match_date.strftime('%d.%m.%Y')}")
             start_date = match_date
+        if i == 11:
+            event.send_text(f'Reicht das and Info? Ich hab hier noch {len(meta)-i} Events'
+                            f' in meinem Kalender. Schränk deine Suche doch ein wenig ein.')
+            return
 
         pl_entry_by_matchmeta(event, {'calendar.entry_by_matchmeta': match_meta,
                                       'one_in_many': True})
