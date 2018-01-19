@@ -136,7 +136,8 @@ def highlight_subscriptions(event, payload, **kwargs):
                                 'jederzeit wieder ändern.')
                 unsubscribe(event, {'unsubscribe': str(sub._id)})
 
-def result_subscriptions(event, payload, **kwargs):
+
+def result_subscriptions(event, **kwargs):
     sender_id = event['sender']['id']
     subs = Subscription.query(type=Subscription.Type.RESULT,
                               psid=sender_id)
