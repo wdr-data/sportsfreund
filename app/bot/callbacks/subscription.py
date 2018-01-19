@@ -59,7 +59,7 @@ def subscribe_flow(event, sport=None, discipline=None, athlete=None):
 
     event.send_text('Vielen Dank für deine Anmeldung. In folgender Liste siehst du alle Themen, '
               'über die ich dich automatisch informiere. Du kannst sie jederzeit ändern.')
-    send_subscriptions(event)
+    result_subscriptions(event)
 
 
 def api_unsubscribe(event, parameters, **kwargs):
