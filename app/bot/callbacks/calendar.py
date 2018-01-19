@@ -144,8 +144,8 @@ def multiple_entry(event, meta):
                             f" {match_date.strftime('%d.%m.%Y')}")
             start_date = match_date
         if i == 11:
-            event.send_text(f'Reicht das and Info? Ich hab hier noch {len(meta)-i} Events'
-                            f' in meinem Kalender. Schränk deine Suche doch ein wenig ein.')
+            event.send_text(f'Hier höre ich mal auf, denn in meinem Kalender sind noch {len(meta)-i} Events. '
+                            f"Schränk' deine Suche doch ein wenig ein.")
             return
 
         pl_entry_by_matchmeta(event, {'calendar.entry_by_matchmeta': match_meta,
