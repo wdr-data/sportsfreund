@@ -165,7 +165,8 @@ def result_podium(event, payload):
 
     for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
         if match.match_incident:
-            event.send_text(f'{match.match_incident.name}: {discipline}, {meta.gender_name}'
+            event.send_text(f'{match.match_incident.name}: '
+                            f'{meta.discipline_short}, {meta.gender_name}'
                             f'in {meta.town}')
         elif match.finished:
 
@@ -176,7 +177,7 @@ def result_podium(event, payload):
             )
 
         else:
-            event.send_text(f'Das Event {sport} {discipline} in '
+            event.send_text(f'Das Event {sport} {meta.discipline_short} in '
                             f'{meta.town} wurde noch nicht beendet. '
                             f'Frag bitte später noch mal. Wenn Du mir "Für {sport} anmelden"'
                             f' schreibst, melde ich mich, wenn ich das Ergebnis habe'
@@ -217,11 +218,13 @@ def result_total(event, payload):
         for r, t in zip(results, teams))
 
     if button:
-        event.send_buttons(f'Hier die {result_kind} zu {match.meta.sport} {match.meta.discipline} '
+        event.send_buttons(f'Hier die {result_kind} zu {match.meta.sport}'
+                           f' {match.meta.discipline_short} '
                            f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}',
                            buttons=[button])
     else:
-        event.send_text(f'Hier die {result_kind} zu {match.meta.sport} {match.meta.discipline} '
+        event.send_text(f'Hier die {result_kind} zu {match.meta.sport} '
+                        f'{match.meta.discipline_short} '
                         f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}')
 
 
