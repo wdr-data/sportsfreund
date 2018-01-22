@@ -32,15 +32,17 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'backend.apps.BackendConfig',
-    'bot.apps.BotConfig',
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.admin',
     'storages',
+    'sortedm2m',
+    'sortedm2m_filter_horizontal_widget',
+    'backend.apps.BackendConfig',
+    'bot.apps.BotConfig',
 ]
 
 MIDDLEWARE = [

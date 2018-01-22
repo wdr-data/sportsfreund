@@ -5,6 +5,7 @@ from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.text import slugify
+from sortedm2m.fields import SortedManyToManyField
 
 from lib import queue
 from lib.facebook import upload_attachment
@@ -31,6 +32,8 @@ class Push(models.Model):
 
     headline = models.CharField('Titel', max_length=200, null=False)
     text = models.CharField('Intro-Text', max_length=640, null=False)
+
+    reports = SortedManyToManyField('Report', related_name='pushes', verbose_name='Meldungen')
 
     pub_date = models.DateTimeField(
         'Versenden am',
@@ -106,10 +109,6 @@ class Report(models.Model):
     attachment_id = models.CharField(
         'Facebook Attachment ID', max_length=64, null=True, blank=True,
         help_text="Wird automatisch ausgefüllt")
-
-    push = models.ForeignKey('Push', on_delete=models.SET_NULL,
-                             related_name='reports', related_query_name='report',
-                             null=True, blank=True)
 
     created = models.DateTimeField(
         'Erstellt',

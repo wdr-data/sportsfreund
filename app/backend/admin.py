@@ -3,6 +3,7 @@ from django import forms
 
 from .models import Push, Report, ReportFragment, FacebookUser, Wiki, Info, Story, StoryFragment
 from lib.facebook import UploadFailedError
+from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 
 UPLOAD_FAILED_MSG = 'Die Datei "%s" konnte nicht zu Facebook hochgeladen werden. ' \
                     'Bitte versuche es erneut.'
@@ -92,7 +93,7 @@ class PushModelForm(forms.ModelForm):
         required=False)
 
     class Meta:
-        model = Report
+        model = Push
         fields = '__all__'
 
 
@@ -102,6 +103,17 @@ class PushAdmin(admin.ModelAdmin):
     list_filter = ['published']
     search_fields = ['headline']
     list_display = ('headline', 'pub_date', 'published', 'delivered')
+    # filter_horizontal = ('reports', )
+
+    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
+        if db_field.name in ('reports', ):
+            kwargs['widget'] = SortedFilteredSelectMultiple()
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
+    class Media:
+        js = (
+            'backend/js/script.js',
+        )
 
 
 class WikiModelForm(forms.ModelForm):
