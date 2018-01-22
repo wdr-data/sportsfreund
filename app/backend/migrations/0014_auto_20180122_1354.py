@@ -7,7 +7,8 @@ def save_reports(apps, schema_editor):
     Report = apps.get_model('backend', 'Report')
 
     for report in Report.objects.all():
-        report.push.reports.add(report)
+        if report.push:
+            report.push.reports.add(report)
 
 
 class Migration(migrations.Migration):
