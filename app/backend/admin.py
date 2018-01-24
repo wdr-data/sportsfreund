@@ -85,6 +85,11 @@ class ReportAdmin(admin.ModelAdmin):
 
 
 class PushModelForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['reports'].queryset = Report.objects.order_by('-created')
+
     text = forms.CharField(
         required=True, label="Intro-Text", widget=forms.Textarea, max_length=640)
 
