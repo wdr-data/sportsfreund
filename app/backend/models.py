@@ -100,6 +100,7 @@ class Report(models.Model):
     class Meta:
         verbose_name = 'Meldung'
         verbose_name_plural = 'Meldungen'
+        ordering = ['-created']
 
     headline = models.CharField('Überschrift', max_length=200, null=False)
     sport = models.CharField('Sportart', max_length=200, null=True, blank=True)
