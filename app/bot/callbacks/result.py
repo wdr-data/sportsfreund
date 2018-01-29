@@ -88,7 +88,7 @@ def api_winner(event, parameters, **kwargs):
                                            flag(winner_team.country.iso),
                                            winner_team.country.code]),
                           sport=sport,
-                          discipline=discipline,
+                          discipline=meta.discipline_short,
                           town=meta.town,
                           country=meta.country,
                           date='am ' + meta.datetime.date().strftime('%d.%m.%Y')
