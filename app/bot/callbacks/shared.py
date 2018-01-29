@@ -13,9 +13,7 @@ from lib.response import (quick_reply, button_postback)
 logger = logging.getLogger(__name__)
 
 FIRST_REPORT_BTN = [
-    'Dann erzähl mal',
     "Los geht's",
-    'Lass hören',
 ]
 
 NEXT_REPORT_BTN = [
@@ -116,6 +114,12 @@ def send_push(event, push, report_nr, state):
             # button_title = push.reports.all()[0].headline
             button_title = random.choice(FIRST_REPORT_BTN)
             next_report_nr = 0
+            intro_button = button_postback(button_title,
+                                           {'push': push.id, 'report': next_report_nr,
+                                            'next_state': next_state}
+                                           )
+            event.send_buttons(reply, buttons=[intro_button])
+            return
         else:
             show_skip = False
 
