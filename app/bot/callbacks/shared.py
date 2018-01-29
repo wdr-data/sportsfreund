@@ -197,6 +197,9 @@ def send_push(event, push, report_nr, state):
         else:
             event.send_text(r)
 
+    if not quick_replies:
+        event.send_text(push.outro)
+
     if next_state is None:
         user_subs = Subscription.query(type=Subscription.Type.HIGHLIGHT,
                                        target=Subscription.Target.HIGHLIGHT,
