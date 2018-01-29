@@ -10,6 +10,15 @@ Contains callbacks and handlers for testing functionality or previewing content 
 
 def push(event, **kwargs):
     pushes = Push.last(count=4, only_published=False, delivered=True, by_date=False)
+    if pushes.count() == 1:
+        [event.send_buttons(
+            'Es gibt derzeit nur einen Push.',
+            buttons=[button_postback('Los geht`s',
+                                    {'push': p.id, 'report': None, 'next_state': 'intro'})]
+            )
+        for p in pushes]
+    elif pushes.count() == 0:
+        event.send_text('Es gibt derzeit keinen Push.')
 
     event.send_list([
         list_element(
