@@ -4,7 +4,8 @@ import random
 from mrq.task import Task
 
 from backend.models import HIGHLIGHT_CHECK_INTERVAL, Push as PushModel
-from bot.callbacks.shared import send_push
+from backend.models import Report
+from bot.callbacks.shared import send_push, send_report
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.subscription import Subscription
@@ -136,3 +137,22 @@ class SendHighlight(Task):
 
         push.delivered = True
         push.save()
+
+
+class SendReport(Task):
+
+    def run(self, params):
+
+        queue.remove_scheduled('push.SendReport', params, interval=HIGHLIGHT_CHECK_INTERVAL)
+
+        report = Report.objects.get(pk=params['report_id'])
+
+        subs = Subscription.query(type=Subscription.Type.RESULT,
+                                         filter={'sport': meta.sport})
+        for sub in subs:
+            event = Replyable({'sender': {'id': sub.psid}}, type=SenderTypes.FACEBOOK)
+
+            send_report(event, report, 'intro')
+
+        report.delivered = True
+        report.save()
