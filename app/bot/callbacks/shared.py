@@ -16,12 +16,6 @@ FIRST_REPORT_BTN = [
     "Los geht's",
 ]
 
-NEXT_REPORT_BTN = [
-    'Und sonst so?',
-    'Hast du noch was?',
-    'War noch was?',
-]
-
 
 def get_pushes_by_date(date):
     logger.debug('date: ' + str(date) + ' type of date: ' + str(type(date)))
@@ -133,7 +127,7 @@ def send_push(event, push, report_nr, state):
             next_state = 0
             button_title = report.fragments.order_by('id')[0].question
         else:
-            button_title = random.choice(NEXT_REPORT_BTN)
+            button_title = 'Nächstes Thema'
             next_state = 'intro'
             next_report_nr = report_nr + 1
             show_skip = False
@@ -160,7 +154,7 @@ def send_push(event, push, report_nr, state):
             next_state = 'intro'
             next_report_nr = report_nr + 1
             # button_title = reports[next_report_nr].headline
-            button_title = random.choice(NEXT_REPORT_BTN)
+            button_title = 'Nächstes Thema'
             show_skip = False
 
         if fragment.attachment_id:
