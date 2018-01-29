@@ -115,11 +115,6 @@ class PushAdmin(admin.ModelAdmin):
             kwargs['widget'] = SortedFilteredSelectMultiple()
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
-    class Media:
-        js = (
-            'backend/js/script.js',
-        )
-
 
 class WikiModelForm(forms.ModelForm):
     output = forms.CharField(

@@ -41,8 +41,8 @@ mrq = "*"
 lxml = "*"
 pycountry = "*"
 PyYAML = "*"
-"django-sortedm2m-filter-horizontal-widget" = "*"
 "django-sortedm2m" = "*"
+django-tz-detect = "*"
 
 
 [dev-packages]

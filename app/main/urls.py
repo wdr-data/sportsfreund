@@ -21,4 +21,5 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^fb/', include('bot.urls')),
+    url(r'^tz_detect/', include('tz_detect.urls')),
 ]
