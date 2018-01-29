@@ -180,7 +180,7 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
         reply = reply + f"{match_meta.sport}, " \
                         f"{match_meta.discipline_short}{gender} in {match_meta.town}"
 
-        if match_meta.event:
+        if match_meta.get('event'):
             reply += f" {flag(match_meta.venue.country.iso)} {match_meta.venue.country.code}"
 
         reply += '.'
