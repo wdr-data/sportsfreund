@@ -5,6 +5,7 @@ from time import sleep
 
 from backend.models import FacebookUser, Wiki, Push, Report, Info, Story
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 from fuzzywuzzy import fuzz, process
 
 from lib.facebook import guess_attachment_type
@@ -283,7 +284,11 @@ def story(event, slug, fragment_nr):
     button_title = ''
     link_story = None
 
-    story = Story.objects.get(slug=slug)
+    try:
+        story = Story.objects.get(slug=slug)
+    except ObjectDoesNotExist:
+        event.send_text('Huppsala, das hat nicht funktioniert :(')
+
     fragments = story.fragments.order_by('id')
 
     next_fragment_nr = None
