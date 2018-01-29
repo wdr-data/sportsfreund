@@ -162,7 +162,7 @@ class Report(models.Model):
 
         if self.sport in supported_sports and self.published and not self.delivered:
             queue.add_scheduled("push.SendReport",
-                                {'report_id': self.pk},
+                                {'report_id': self.pk, 'sport': self.sport},
                                 start_at=timezone.now() + timezone.timedelta(seconds=10),
                                 interval=HIGHLIGHT_CHECK_INTERVAL)
 

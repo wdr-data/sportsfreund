@@ -148,7 +148,8 @@ class SendReport(Task):
         report = Report.objects.get(pk=params['report_id'])
 
         subs = Subscription.query(type=Subscription.Type.RESULT,
-                                         filter={'sport': meta.sport})
+                                  filter={'sport': params['sport']})
+
         for sub in subs:
             event = Replyable({'sender': {'id': sub.psid}}, type=SenderTypes.FACEBOOK)
 
