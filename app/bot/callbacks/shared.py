@@ -24,12 +24,6 @@ NEXT_REPORT_BTN = [
     'War noch was?',
 ]
 
-SKIP_REPORT_BTN = [
-    'Nächstes Thema',
-    'Ist mir egal',
-    'Zeig mir was anderes',
-]
-
 
 def get_pushes_by_date(date):
     logger.debug('date: ' + str(date) + ' type of date: ' + str(type(date)))
@@ -182,7 +176,7 @@ def send_push(event, push, report_nr, state):
     )
 
     skip_button = quick_reply(
-        random.choice(SKIP_REPORT_BTN),
+        'Nächstes Thema',
         {'push': push.id, 'report': (report_nr or 0) + 1, 'next_state': 'intro'}
     )
 
