@@ -20,10 +20,10 @@ class CompetitionType(Enum):
     TOURNAMENT = 'tournament'
 
 
-with open(BASE_DIR / 'discipline_aliases.yml', 'r') as f:
+with open(BASE_DIR / 'discipline_aliases.yml', 'rb') as f:
     DISCIPLINE_ALIASES = DotDict(yaml.load(f))
 
-with open(BASE_DIR / 'sports_config.yml', 'r') as f:
+with open(BASE_DIR / 'sports_config.yml', 'rb') as f:
     SPORTS_CONFIG = [DotDict(sport) for sport in yaml.load(f)]
 
 for sport in SPORTS_CONFIG:
