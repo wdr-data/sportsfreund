@@ -100,7 +100,8 @@ def api_next(event, parameters, **kwargs):
         return
 
     if not discipline and not sport:
-        event.send_text('Mein Kalender ist voll mit Terminen. Welche Sportart interessiert dich?')
+        event.send_text('Mein Kalender ist voll mit Terminen. '
+                        'Such dir eine der folgenden Sportarten aus:')
         sports_to_choose = ''
         for i, sport in enumerate(supported_sports):
             if i == len(supported_sports) - 1:
