@@ -101,7 +101,7 @@ def api_winner(event, parameters, **kwargs):
             event.send_text('Das Event {sport} {discipline} ist noch nicht beendet. '
                       'Frag bitte später noch mal. Wenn Du mir "Für " + {sport} + " anmelden" schreibst, melde ich mich, wenn ich das Ergebnis habe'.format(
                           sport=sport,
-                          discipline=discipline
+                          discipline=meta.discipline_short
                       ))
 
 
