@@ -112,13 +112,9 @@ class PushAdmin(admin.ModelAdmin):
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name in ('reports', ):
-            kwargs['widget'] = SortedFilteredSelectMultiple()
+            kwargs['widget'] = SortedFilteredSelectMultiple(
+                attrs={'verbose_name': db_field.verbose_name})
         return super().formfield_for_manytomany(db_field, request, **kwargs)
-
-    class Media:
-        js = (
-            'backend/js/script.js',
-        )
 
 
 class WikiModelForm(forms.ModelForm):
