@@ -34,6 +34,8 @@ class Push(models.Model):
     headline = models.CharField('Titel', max_length=200, null=False)
     text = models.CharField('Intro-Text', max_length=640, null=False)
 
+    outro = models.CharField('Outro-Text', max_length=640, blank=True, null=False)
+
     reports = SortedManyToManyField('Report', related_name='pushes', verbose_name='Meldungen')
 
     pub_date = models.DateTimeField(

@@ -97,6 +97,10 @@ class PushModelForm(forms.ModelForm):
         label='Versendet', help_text="Wurde dieser Push bereits versendet?", disabled=True,
         required=False)
 
+    outro = forms.CharField(
+        required=True, label="Outro-Text",
+        widget=forms.Textarea, initial="Das war's für den Moment. Bis dann.", max_length=640)
+
     class Meta:
         model = Push
         fields = '__all__'
@@ -107,7 +111,10 @@ class PushAdmin(admin.ModelAdmin):
     date_hierarchy = 'pub_date'
     list_filter = ['published']
     search_fields = ['headline']
-    list_display = ('headline', 'pub_date', 'published', 'delivered')
+    list_display = ('published', 'pub_date', 'headline',  'delivered')
+    list_display_links = ('pub_date',)
+    ordering = ('-pub_date',)
+
     # filter_horizontal = ('reports', )
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
