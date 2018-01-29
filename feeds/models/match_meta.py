@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 from time import time as time
 
 from feeds.config import DISCIPLINE_ALIASES, sport_by_name
@@ -11,6 +12,9 @@ class MatchMeta(FeedModel):
     collection = db.matches_meta
     api_function = api.matches_by_topic_for_season
     api_id_name = 'to'
+
+    class Event(Enum):
+        OLYMPIA_18 = 'owg18'
 
     def __init__(self, *args, **kwargs):
         """
@@ -108,6 +112,11 @@ class MatchMeta(FeedModel):
                             datetime_str,
                             '%Y-%m-%d %H:%M'
                         )
+
+                        if id == '1757':
+                            ma['event'] = cls.Event.OLYMPIA_18
+                        else:
+                            ma['event'] = None
 
                         cls.collection.replace_one({'id': ma['id']}, ma, upsert=True)
 
