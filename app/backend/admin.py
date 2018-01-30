@@ -1,9 +1,19 @@
 from django.contrib import admin, messages
 from django import forms
+from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 
 from .models import Push, Report, ReportFragment, FacebookUser, Wiki, Info, Story, StoryFragment
+from feeds.config import SPORTS_CONFIG
 from lib.facebook import UploadFailedError
-from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
+
+SPORT_NAMES = tuple(sorted(s.name for s in SPORTS_CONFIG))
+
+DISCIPLINE_NAMES = []
+
+for sport in SPORTS_CONFIG:
+    DISCIPLINE_NAMES.extend(d.name for d in sport.disciplines)
+
+DISCIPLINE_NAMES = tuple(sorted(set(DISCIPLINE_NAMES)))
 
 UPLOAD_FAILED_MSG = 'Die Datei "%s" konnte nicht zu Facebook hochgeladen werden. ' \
                     'Bitte versuche es erneut.'
@@ -34,6 +44,14 @@ class ReportFragmentAdminInline(admin.TabularInline):
 class ReportModelForm(forms.ModelForm):
     text = forms.CharField(
         required=True, label="Intro-Text", widget=forms.Textarea, max_length=640)
+
+    sport = forms.CharField(
+        required=False,
+        widget=forms.Select(choices=tuple((s, s) for s in SPORT_NAMES)))
+
+    discipline = forms.CharField(
+        required=False,
+        widget=forms.Select(choices=tuple((s, s) for s in DISCIPLINE_NAMES)))
 
     attachment_id = forms.CharField(
         label='Facebook Attachment ID', help_text="Wird automatisch ausgefüllt", disabled=True,
