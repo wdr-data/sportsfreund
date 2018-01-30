@@ -15,6 +15,8 @@ for sport in SPORTS_CONFIG:
 
 DISCIPLINE_NAMES = tuple(sorted(set(DISCIPLINE_NAMES)))
 
+EMPTY_CHOICE = ((None, '---------'), )
+
 UPLOAD_FAILED_MSG = 'Die Datei "%s" konnte nicht zu Facebook hochgeladen werden. ' \
                     'Bitte versuche es erneut.'
 
@@ -47,11 +49,11 @@ class ReportModelForm(forms.ModelForm):
 
     sport = forms.CharField(
         required=False,
-        widget=forms.Select(choices=tuple((s, s) for s in SPORT_NAMES)))
+        widget=forms.Select(choices=EMPTY_CHOICE + tuple((s, s) for s in SPORT_NAMES)))
 
     discipline = forms.CharField(
         required=False,
-        widget=forms.Select(choices=tuple((s, s) for s in DISCIPLINE_NAMES)))
+        widget=forms.Select(choices=EMPTY_CHOICE + tuple((s, s) for s in DISCIPLINE_NAMES)))
 
     attachment_id = forms.CharField(
         label='Facebook Attachment ID', help_text="Wird automatisch ausgefüllt", disabled=True,
