@@ -23,7 +23,7 @@ def medals(event, parameters, **kwargs):
         medals = Medal.search_last(sport=sport, discipline=discipline,
                                    gender=gender, country=country)
 
-    if len(medals) == 0:
+    if not medals:
         event.send_text('In diesem Zeitraum hat kein Event stattgefunden '
                         'oder es wurde noch nicht beendet')
         return
