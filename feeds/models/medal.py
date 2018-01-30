@@ -1,6 +1,8 @@
 from enum import Enum
 from datetime import datetime
 
+from pymongo import ASCENDING, DESCENDING
+
 from lib.mongodb import db
 from .model import ListFeedModel
 from .. import api
@@ -85,7 +87,14 @@ class Medal(ListFeedModel):
         if country is not None:
             filter['team.country.name'] = country
 
-        return cls.collection.find(filter)
+        return cls.collection.find(filter).sort(
+            [
+                ('sport', ASCENDING),
+                ('discipline_short', ASCENDING),
+                ('rank', ASCENDING),
+                ('item', ASCENDING),
+            ]
+        )
 
     @classmethod
     def search_last(cls, *, sport=None, discipline=None, gender=None, country=None):
