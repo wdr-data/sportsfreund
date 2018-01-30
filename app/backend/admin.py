@@ -47,7 +47,8 @@ class ReportModelForm(forms.ModelForm):
 
     class Meta:
         model = Report
-        fields = '__all__'
+        fields = ('headline', 'sport', 'discipline',
+                  'text', 'media', 'attachment_id', 'published', 'delivered')
 
 
 class ReportAdmin(admin.ModelAdmin):
