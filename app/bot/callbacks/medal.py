@@ -2,6 +2,7 @@ from feeds.models.medal import Medal
 from feeds.models.match import Match
 
 from itertools import zip_longest
+from datetime import datetime
 
 
 def grouper(iterable, n, fillvalue=None):
