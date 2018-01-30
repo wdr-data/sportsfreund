@@ -229,6 +229,12 @@ def send_report(event, report, state):
             media = report.attachment_id
             url = report.media
 
+        event.send_buttons(reply,
+                           buttons=[button_postback(button_title,
+                                    {'report': report.id, 'next_state': next_state})
+                           ])
+        return
+
     elif report.fragments.count() > state:
         fragments = report.fragments.order_by('id')
         fragment = fragments[state]
