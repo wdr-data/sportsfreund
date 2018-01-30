@@ -63,6 +63,15 @@ def matches_by_topic_for_season(**kwargs):
     return api_request('matches-by-topic-for-season', kwargs)
 
 
+def medals(**kwargs):
+    """
+
+    :param to: Topic ID
+    :return:
+    """
+    return api_request('medals', kwargs)
+
+
 def match(**kwargs):
     """
 
