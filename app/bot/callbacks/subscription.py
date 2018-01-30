@@ -12,11 +12,13 @@ def api_subscribe(event, parameters, **kwargs):
     discipline = parameters.get('discipline')
     first_name = parameters.get('first_name')
     last_name = parameters.get('last_name')
-    highlight = parameters.get('highlight')
+    subscription_type = parameters.get('subscription_type')
     athlete = None
 
     if last_name and first_name:
         athlete = ' '.join([first_name, last_name])
+
+    highlight = subscription_type == 'highlights' or parameters.get('highlight')
 
     if highlight:
         payload = {'target': 'highlight', 'state': 'subscribe'}
@@ -33,7 +35,6 @@ def api_subscribe(event, parameters, **kwargs):
         event.send_text('Wenn du dich für die Ergebnisse eines Athleten anmelden möchtest, '
                         'schicke mir den Vor- und Nachnamen. Nur um Verwechslungen zu vermeiden ;)')
         return
-
 
     subscribe_flow(event, sport, discipline, athlete)
 
@@ -108,7 +109,7 @@ def send_subscriptions(event, **kwargs):
             buttons=[highlight_button]),
         list_element(
             'Ergebnisdienst ' + result_emoji,
-            'Sportart/ Sportler/ Medaillen',
+            'Sportart / Sportler / Medaillen',
             buttons=[result_button]),
     ]
 
