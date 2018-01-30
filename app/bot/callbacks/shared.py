@@ -117,7 +117,7 @@ def send_push(event, push, report_nr, state):
             headlines = reports_all[0].headline
             for report in reports_all[1:]:
                 headlines += f" +++ {report.headline}"
-            event.send_buttons(reply, buttons=[intro_button])
+            event.send_buttons(headlines, buttons=[intro_button])
             return
         else:
             show_skip = False
