@@ -80,7 +80,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'main.wsgi.application'
 
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = not DEBUG
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
