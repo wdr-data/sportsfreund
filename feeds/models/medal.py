@@ -50,7 +50,9 @@ class Medal(ListFeedModel):
                         ra['rank'] = int(ra['rank'])
                         ra['sport_id'] = sp['id']
                         ra['sport'] = sp['name']
-                        ra['discipline'] = co['shortname']
+                        ra['discipline_short'] = (co['shortname']
+                                                  if co['shortname'] not in {'Olympia'}
+                                                  else None)
                         ra['competition_type'] = co['type']
                         ra['gender'] = co['gender']
                         ra['start_date'] = datetime.strptime(se['start'], '%Y-%m-%d')
