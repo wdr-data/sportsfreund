@@ -1,12 +1,12 @@
 from feeds.models.medal import Medal
 from feeds.models.match import Match
 
-from itertools import izip_longest
+from itertools import zip_longest
 
 
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
-    return izip_longest(*args, fillvalue=fillvalue)
+    return zip_longest(*args, fillvalue=fillvalue)
 
 def medals(event, parameters, **kwargs):
     sport = parameters.get('sport')
