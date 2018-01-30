@@ -8,7 +8,7 @@ from lib.config import FB_PAGE_TOKEN
 from lib.response import Replyable
 # dirty
 from .callbacks import dirty
-from .callbacks import result, calendar, olympia, subscription, video
+from .callbacks import result, calendar, olympia, subscription, video, medal
 from .callbacks import testing
 from .callbacks.default import (
     get_started, start_message, greetings, push, push_step, subscribe, unsubscribe, share_bot,
@@ -89,6 +89,8 @@ def make_event_handler():
         # info.olympia
         ApiAiHandler(olympia.api_countdown_days, 'info.olympia.countown_days'),
 
+        # info.medal
+        ApiAiHandler(medal.medals, 'info.medals.filtered'),
 
         # dirty
         ApiAiHandler(dirty.force_start, 'dirty.force_start'),
