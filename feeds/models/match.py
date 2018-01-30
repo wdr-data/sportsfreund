@@ -118,17 +118,19 @@ class Match(FeedModel):
         )]
 
         for i, (winner_team, winner_result) in enumerate(zip(winner_teams, winner_results)):
-            if not self.meta.medals:
+            if 'medals' in self.meta and not self.meta.medals:
                 reply = f'{i+1}. '
+                image_url = None
             else:
                 reply = f'{Match.medal(i + 1)} '
+                image_url = Match.medal_pic(i + 1)
 
             reply += f'{winner_team.name}, {flag(winner_team.country.iso)} ' \
                      f'{winner_team.country.code} {self.txt_points(winner_result)}'
             header.append(
                 list_element(
                     reply,
-                    image_url=Match.medal_pic(i + 1)))
+                    image_url=image_url))
 
         return header
 
