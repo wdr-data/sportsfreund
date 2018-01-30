@@ -18,11 +18,13 @@ class Subscription(Model):
         SPORT = 'sport'
         DISCIPLINE = 'discipline'
         ATHLETE = 'athlete'
+        COUNTRY = 'country'
         HIGHLIGHT = 'highlight'
 
     class Type(Enum):
         RESULT = 'result'
         HIGHLIGHT = 'highlight'
+        MEDAL = 'medal'
 
     def __init__(self, *args, **kwargs):
 
@@ -72,3 +74,5 @@ class Subscription(Model):
             return f"{filter_arg['sport']}/{filter_arg['discipline']}"
         if 'athlete' in filter_arg:
             return filter_arg['athlete']
+        if 'country' in filter_arg:
+            return filter_arg['country']
