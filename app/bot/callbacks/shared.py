@@ -13,21 +13,7 @@ from lib.response import (quick_reply, button_postback)
 logger = logging.getLogger(__name__)
 
 FIRST_REPORT_BTN = [
-    'Dann erzähl mal',
     "Los geht's",
-    'Lass hören',
-]
-
-NEXT_REPORT_BTN = [
-    'Und sonst so?',
-    'Hast du noch was?',
-    'War noch was?',
-]
-
-SKIP_REPORT_BTN = [
-    'Nächstes Thema',
-    'Ist mir egal',
-    'Zeig mir was anderes',
 ]
 
 
@@ -122,6 +108,17 @@ def send_push(event, push, report_nr, state):
             # button_title = push.reports.all()[0].headline
             button_title = random.choice(FIRST_REPORT_BTN)
             next_report_nr = 0
+            intro_button = button_postback(button_title,
+                                           {'push': push.id, 'report': next_report_nr,
+                                            'next_state': next_state}
+                                           )
+            event.send_text(reply)
+            reports_all = push.reports.all()
+            headlines = reports_all[0].headline
+            for report in reports_all[1:]:
+                headlines += f" +++ {report.headline}"
+            event.send_buttons(headlines, buttons=[intro_button])
+            return
         else:
             show_skip = False
 
@@ -135,7 +132,7 @@ def send_push(event, push, report_nr, state):
             next_state = 0
             button_title = report.fragments.order_by('id')[0].question
         else:
-            button_title = random.choice(NEXT_REPORT_BTN)
+            button_title = 'Nächstes Thema'
             next_state = 'intro'
             next_report_nr = report_nr + 1
             show_skip = False
@@ -162,7 +159,7 @@ def send_push(event, push, report_nr, state):
             next_state = 'intro'
             next_report_nr = report_nr + 1
             # button_title = reports[next_report_nr].headline
-            button_title = random.choice(NEXT_REPORT_BTN)
+            button_title = 'Nächstes Thema'
             show_skip = False
 
         if fragment.attachment_id:
@@ -182,7 +179,7 @@ def send_push(event, push, report_nr, state):
     )
 
     skip_button = quick_reply(
-        random.choice(SKIP_REPORT_BTN),
+        'Nächstes Thema',
         {'push': push.id, 'report': (report_nr or 0) + 1, 'next_state': 'intro'}
     )
 
@@ -205,6 +202,9 @@ def send_push(event, push, report_nr, state):
         else:
             event.send_text(r)
 
+    if not quick_replies:
+        event.send_text(push.outro)
+
     if next_state is None:
         user_subs = Subscription.query(type=Subscription.Type.HIGHLIGHT,
                                        target=Subscription.Target.HIGHLIGHT,
@@ -215,7 +215,7 @@ def send_push(event, push, report_nr, state):
                                buttons=[button_postback('Ja, bitte!', ['subscribe'])])
 
 
-def send_report(event, report, state):
+def send_report(event, report, state=None):
     user_id = event['sender']['id']
     reply = ''
     media = ''
@@ -223,7 +223,17 @@ def send_report(event, report, state):
     button_title = ''
     next_state = None
 
-    if state == 'intro':
+    if not state:
+        reply = report.headline
+        button_text = "Los geht's"
+        next_state = 'intro'
+        event.send_buttons(reply,
+                           buttons=[button_postback(button_text,
+                                                    {'report': report.id, 'next_state': next_state})
+                                    ])
+        return
+
+    elif state == 'intro':
         reply = report.text
 
         if report.fragments.count():

@@ -4,7 +4,8 @@ import random
 from mrq.task import Task
 
 from backend.models import HIGHLIGHT_CHECK_INTERVAL, Push as PushModel
-from bot.callbacks.shared import send_push
+from backend.models import Report
+from bot.callbacks.shared import send_push, send_report
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.subscription import Subscription
@@ -16,14 +17,6 @@ from lib import queue
 
 MATCH_CHECK_INTERVAL = 60
 
-RESULT_PUSH_INTRO = [
-    'Und wieder ging ein Event zu Ende. Hier die Ergebnisse:',
-    "Ein Wettkampf wurde beendet und ich sag dir wer gewonnen hat:",
-    'Schau an. Es wurden mal wieder Höchstleistungen vollbracht:',
-    'Hier deine bestellten Ergebnisse.',
-    'Es war mal wieder Aktion angesagt. Hier die Ergebnisse vom letzten Wettstreit:',
-    'Nicht erschrecken. Es wurde nur mal wieder ein Wettkampf beendet.',
-]
 
 class UpdateSchedule(Task):
 
@@ -111,7 +104,6 @@ class UpdateMatch(Task):
 
         for uid in podium_ids:
             event = Replyable({'sender': {'id': uid}}, type=SenderTypes.FACEBOOK)
-            event.send_text(random.choice(RESULT_PUSH_INTRO))
             event.send_list(match.lst_podium, top_element_style='large', button=match.btn_podium)
 
         for uid, sub in zip(athlete_ids, athlete_subs):
@@ -124,7 +116,7 @@ class UpdateMatch(Task):
                 f'{points} Punkten'
 
             event.send_text(f'{meta.sport} {meta.discipline} in {meta.town} wurde soeben beendet. '
-                       f'Wollen wir mal sehen, wie {athlete} abgeschnitten hat...')
+                            f'Wollen wir mal sehen, wie {athlete} abgeschnitten hat...')
             event.send_text(f'{athlete} belegt Platz {str(athlete_result.rank)} mit {result}.')
 
 
@@ -145,3 +137,23 @@ class SendHighlight(Task):
 
         push.delivered = True
         push.save()
+
+
+class SendReport(Task):
+
+    def run(self, params):
+
+        queue.remove_scheduled('push.SendReport', params, interval=HIGHLIGHT_CHECK_INTERVAL)
+
+        report = Report.objects.get(pk=params['report_id'])
+
+        subs = Subscription.query(type=Subscription.Type.RESULT,
+                                  filter={'sport': params['sport']})
+
+        for sub in subs:
+            event = Replyable({'sender': {'id': sub.psid}}, type=SenderTypes.FACEBOOK)
+
+            send_report(event, report)
+
+        report.delivered = True
+        report.save()

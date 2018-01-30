@@ -253,7 +253,7 @@ def result_change(event, payload, **kwargs):
             sub_filter = {}
             if target == 'sport':
                 sub_filter['sport'] = filter_arg
-                reply = f'Ok. In der Übersicht siehst du für welche Ergebniss-Dienste du ' \
+                reply = f'Ok. In der Übersicht siehst du für welche Ergebnis-Dienste du ' \
                         f'angemeldet bist.'
             else:
                 sub_filter['athlete'] = filter_arg

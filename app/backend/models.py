@@ -9,6 +9,7 @@ from sortedm2m.fields import SortedManyToManyField
 
 from lib import queue
 from lib.facebook import upload_attachment
+from feeds.config import supported_sports
 
 
 def default_pub_date():
@@ -32,6 +33,8 @@ class Push(models.Model):
 
     headline = models.CharField('Titel', max_length=200, null=False)
     text = models.CharField('Intro-Text', max_length=640, null=False)
+
+    outro = models.CharField('Outro-Text', max_length=640, blank=True, null=False)
 
     reports = SortedManyToManyField('Report', related_name='pushes', verbose_name='Meldungen')
 
@@ -150,6 +153,20 @@ class Report(models.Model):
             reports = reports.order_by('-id')
 
         return reports[offset:count]
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            queue.remove_scheduled("push.SendReport",
+                                   {'report_id': self.pk},
+                                   interval=HIGHLIGHT_CHECK_INTERVAL)
+
+        super().save(*args, **kwargs)
+
+        if self.sport in supported_sports and self.published and not self.delivered:
+            queue.add_scheduled("push.SendReport",
+                                {'report_id': self.pk, 'sport': self.sport},
+                                start_at=timezone.now() + timezone.timedelta(seconds=10),
+                                interval=HIGHLIGHT_CHECK_INTERVAL)
 
 
 class ReportFragment(models.Model):

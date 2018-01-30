@@ -1,9 +1,19 @@
 from django.contrib import admin, messages
 from django import forms
+from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 
 from .models import Push, Report, ReportFragment, FacebookUser, Wiki, Info, Story, StoryFragment
+from feeds.config import SPORTS_CONFIG
 from lib.facebook import UploadFailedError
-from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
+
+SPORT_NAMES = tuple(sorted(s.name for s in SPORTS_CONFIG))
+
+DISCIPLINE_NAMES = []
+
+for sport in SPORTS_CONFIG:
+    DISCIPLINE_NAMES.extend(d.name for d in sport.disciplines)
+
+DISCIPLINE_NAMES = tuple(sorted(set(DISCIPLINE_NAMES)))
 
 UPLOAD_FAILED_MSG = 'Die Datei "%s" konnte nicht zu Facebook hochgeladen werden. ' \
                     'Bitte versuche es erneut.'
@@ -35,6 +45,14 @@ class ReportModelForm(forms.ModelForm):
     text = forms.CharField(
         required=True, label="Intro-Text", widget=forms.Textarea, max_length=640)
 
+    sport = forms.CharField(
+        required=False,
+        widget=forms.Select(choices=tuple((s, s) for s in SPORT_NAMES)))
+
+    discipline = forms.CharField(
+        required=False,
+        widget=forms.Select(choices=tuple((s, s) for s in DISCIPLINE_NAMES)))
+
     attachment_id = forms.CharField(
         label='Facebook Attachment ID', help_text="Wird automatisch ausgefüllt", disabled=True,
         required=False)
@@ -47,7 +65,8 @@ class ReportModelForm(forms.ModelForm):
 
     class Meta:
         model = Report
-        fields = '__all__'
+        fields = ('headline', 'sport', 'discipline',
+                  'text', 'media', 'attachment_id', 'published', 'delivered')
 
 
 class ReportAdmin(admin.ModelAdmin):
@@ -97,6 +116,10 @@ class PushModelForm(forms.ModelForm):
         label='Versendet', help_text="Wurde dieser Push bereits versendet?", disabled=True,
         required=False)
 
+    outro = forms.CharField(
+        required=True, label="Outro-Text",
+        widget=forms.Textarea, initial="Das war's für den Moment. Bis dann.", max_length=640)
+
     class Meta:
         model = Push
         fields = '__all__'
@@ -107,18 +130,17 @@ class PushAdmin(admin.ModelAdmin):
     date_hierarchy = 'pub_date'
     list_filter = ['published']
     search_fields = ['headline']
-    list_display = ('headline', 'pub_date', 'published', 'delivered')
+    list_display = ('published', 'pub_date', 'headline',  'delivered')
+    list_display_links = ('pub_date',)
+    ordering = ('-pub_date',)
+
     # filter_horizontal = ('reports', )
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name in ('reports', ):
-            kwargs['widget'] = SortedFilteredSelectMultiple()
+            kwargs['widget'] = SortedFilteredSelectMultiple(
+                attrs={'verbose_name': db_field.verbose_name})
         return super().formfield_for_manytomany(db_field, request, **kwargs)
-
-    class Media:
-        js = (
-            'backend/js/script.js',
-        )
 
 
 class WikiModelForm(forms.ModelForm):

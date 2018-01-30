@@ -100,7 +100,8 @@ def api_next(event, parameters, **kwargs):
         return
 
     if not discipline and not sport:
-        event.send_text('Mein Kalender ist voll mit Terminen. Welche Sportart interessiert dich?')
+        event.send_text('Mein Kalender ist voll mit Terminen. '
+                        'Such dir eine der folgenden Sportarten aus:')
         sports_to_choose = ''
         for i, sport in enumerate(supported_sports):
             if i == len(supported_sports) - 1:
@@ -176,10 +177,14 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
         else:
             reply = f'{match_meta.match_time} Uhr - '
 
-        event.send_text(reply+ f"{match_meta.sport}, "
-                               f"{match_meta.discipline_short}{gender} in {match_meta.town} "
-                               f"{flag(match_meta.venue.country.iso)} "
-                               f"{match_meta.venue.country.code}")
+        reply = reply + f"{match_meta.sport}, " \
+                        f"{match_meta.discipline_short}{gender} in {match_meta.town}"
+
+        if match_meta.get('event'):
+            reply += f" {flag(match_meta.venue.country.iso)} {match_meta.venue.country.code}"
+
+        reply += '.'
+        event.send_text(reply)
 
 
 def period_to_dates(period):
