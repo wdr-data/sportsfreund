@@ -18,7 +18,7 @@ def api_subscribe(event, parameters, **kwargs):
     if last_name and first_name:
         athlete = ' '.join([first_name, last_name])
 
-    highlight = subscription_type == 'highlights' or parameters.get('highlight')
+    highlight = subscription_type == 'highlight' or parameters.get('highlight')
 
     if highlight:
         payload = {'target': 'highlight', 'state': 'subscribe'}
