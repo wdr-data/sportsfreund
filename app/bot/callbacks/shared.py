@@ -112,6 +112,11 @@ def send_push(event, push, report_nr, state):
                                            {'push': push.id, 'report': next_report_nr,
                                             'next_state': next_state}
                                            )
+            event.send_text(reply)
+            reports_all = push.reports.all()
+            headlines = reports_all[0].headline
+            for report in reports_all[1:]:
+                headlines += f" +++ {report.headline}"
             event.send_buttons(reply, buttons=[intro_button])
             return
         else:
