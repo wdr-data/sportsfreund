@@ -153,7 +153,7 @@ class SendReport(Task):
         for sub in subs:
             event = Replyable({'sender': {'id': sub.psid}}, type=SenderTypes.FACEBOOK)
 
-            send_report(event, report, 'intro')
+            send_report(event, report)
 
         report.delivered = True
         report.save()

@@ -210,7 +210,7 @@ def send_push(event, push, report_nr, state):
                                buttons=[button_postback('Ja, bitte!', ['subscribe'])])
 
 
-def send_report(event, report, state):
+def send_report(event, report, state=None):
     user_id = event['sender']['id']
     reply = ''
     media = ''
@@ -218,7 +218,17 @@ def send_report(event, report, state):
     button_title = ''
     next_state = None
 
-    if state == 'intro':
+    if not state:
+        reply = report.headline
+        button_text = "Los geht's"
+        next_state = 'intro'
+        event.send_buttons(reply,
+                           buttons=[button_postback(button_text,
+                                                    {'report': report.id, 'next_state': next_state})
+                                    ])
+        return
+
+    elif state == 'intro':
         reply = report.text
 
         if report.fragments.count():
@@ -228,12 +238,6 @@ def send_report(event, report, state):
         if report.attachment_id:
             media = report.attachment_id
             url = report.media
-
-        event.send_buttons(reply,
-                           buttons=[button_postback(button_title,
-                                    {'report': report.id, 'next_state': next_state})
-                           ])
-        return
 
     elif report.fragments.count() > state:
         fragments = report.fragments.order_by('id')
