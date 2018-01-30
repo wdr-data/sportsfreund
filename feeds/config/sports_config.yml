@@ -59,9 +59,11 @@
   article: das
   disciplines:
     - name: Großschanze
+      rounds: True
       competition_type: SINGLE
       article: das
     - name: Normalschanze
+      rounds: True
       competition_type: SINGLE
       article: das
     - name: Flugschanze
@@ -71,6 +73,7 @@
       competition_type: SINGLE
       article: das
     - name: Team Großschanze
+      rounds: True
       competition_type: SINGLE
       article: das
     - name: Team Normalschanze
@@ -124,6 +127,7 @@
   article: das
   disciplines:
     - name: Zweierbob
+      rounds: True
       competition_type: SINGLE
       article: das
     - name: Viererbob
@@ -138,7 +142,7 @@
   article: das
   disciplines:
     - name: Olympia
-      competition_type: TOURNAMENT
+      competition_type: ROBIN
       article: das
 
 - name: Eiskunstlauf
@@ -148,9 +152,10 @@
   competition_term: Event
   article: das
   disciplines:
-    - name: Aerials
+    - name: Kür
       competition_type: SINGLE
       article: das
+
 
 - name: Eisschnelllauf
   topic_id: None
@@ -183,6 +188,7 @@
   article: das
   disciplines:
     - name: Einsitzer
+      rounds: True
       competition_type: SINGLE
       article: der
     - name: Doppelsitzer

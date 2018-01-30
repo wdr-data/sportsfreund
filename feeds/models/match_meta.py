@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from time import time as time
 
-from feeds.config import DISCIPLINE_ALIASES, sport_by_name
+from feeds.config import DISCIPLINE_ALIASES, sport_by_name, discipline_config
 from lib.mongodb import db
 from .model import ListFeedModel
 from .. import api
@@ -133,10 +133,30 @@ class MatchMeta(ListFeedModel):
                             ma['competition_id'] = ro['id']
                             ma['gender'] = co['gender']
                             ma['discipline'] = co['name']
-                            ma['discipline_short'] = DISCIPLINE_ALIASES.get(co['shortname'],
+                            if co['shortname'] == 'Olympia':
+                                ma['discipline_short'] = DISCIPLINE_ALIASES.get(ro['name'],
+                                                                                ro['name'])
+                            else:
+                                ma['discipline_short'] = DISCIPLINE_ALIASES.get(co['shortname'],
                                                                             co['shortname'])
                             ma['_cached_at'] = now
                             ma['match_incident'] = ma.get('match_incident')
+
+                            ma['round'] = ro['name']
+
+                            config = discipline_config(ma['sport'], ma['discipline'])
+
+                            if isinstance(config, dict) and 'rounds' in config:
+                                ma['round_mode'] = config.rounds
+                            else:
+                                ma['round_mode'] = None
+
+                            if 'match_meta' in ma:
+                                for element in ma['match_meta']:
+                                    if 'kind' in element and element['kind'] == 'medals':
+                                        ma['medals'] = element['content']
+                            else:
+                                ma['medals'] = None
 
                             if ma['match_time'] == 'unknown':
                                 ma['match_time'] = 'unbekannt'
