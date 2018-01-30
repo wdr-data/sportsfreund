@@ -3,7 +3,7 @@ from calendar import day_name
 from typing import Iterable, List
 import locale
 
-from feeds.config import sport_by_name, ResultType
+from feeds.config import sport_by_name, ResultType, discipline_config
 from feeds.models.match_meta import MatchMeta
 from feeds.models.team import Team
 from lib.flag import flag
@@ -109,10 +109,18 @@ class Match(FeedModel):
         winning_points = winner_results[0].match_result
         date = datetime.strptime(self.match_date, '%Y-%m-%d')
 
+        config = discipline_config(self.meta.sport, self.meta.discipline_short)
+        if isinstance(config, dict) and 'rounds' in config:
+            header_text = f'++ {self.meta.round_mode} ++ '
+        else:
+            header_text = ''
+
+        header_text += f'{self.meta.sport}, {self.meta.discipline_short}, {self.meta.gender_name}' \
+                       f' in {self.venue.town.name} {day_name[date.weekday()]},' \
+                       f' {date.strftime("%d.%m.%Y")} um {self.match_time} Uhr'
+
         header = [list_element(
-            f'{self.meta.sport}, {self.meta.discipline_short}, {self.meta.gender_name}'
-            f' in {self.venue.town.name}',
-            f'{day_name[date.weekday()]}, {date.strftime("%d.%m.%Y")} um {self.match_time} Uhr',
+            header_text,
             image_url='https://i.imgur.com/DnWwUM5.jpg' if self.meta.sport == 'Ski Alpin'
             else 'https://i.imgur.com/Bu05xF6.jpg'
         )]
