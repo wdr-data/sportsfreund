@@ -61,7 +61,9 @@ class Medal(ListFeedModel):
                         ra['end_date'] = datetime.strptime(se['end'], '%Y-%m-%d')
                         ra['_cached_at'] = now
 
-                        cls.collection.replace_one({'id': ra['id']}, ra, upsert=True)
+                    cls.collection.replace_one(
+                        {'id': se['id']}, {ranking['item']: ranking for ranking in se['ranking']},
+                        upsert=True)
 
 
     @classmethod
