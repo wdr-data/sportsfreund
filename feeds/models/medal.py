@@ -63,7 +63,7 @@ class Medal(ListFeedModel):
 
 
     @classmethod
-    def _search(cls, base_filter, sport, discipline, gender):
+    def _search(cls, base_filter, sport, discipline, gender, country):
 
         try:
             for p in FEED_PARAMS:
@@ -82,21 +82,25 @@ class Medal(ListFeedModel):
         if gender is not None:
             filter['gender'] = gender
 
+        if country is not None:
+            filter['team.country.name'] = country
+
         return cls.collection.find(filter)
 
     @classmethod
-    def search_last(cls, *, sport=None, discipline=None, gender=None):
+    def search_last(cls, *, sport=None, discipline=None, gender=None, country=None):
         """
         Searches the last match and returns details about it
 
         :param sport: Filter by the name of the sport (eg. "Ski Alpin")
         :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
         :param gender: Filter by gender (eg: male, female, mixed)
+        :param country: Filter by country
         :return: A `MatchMeta` object of the corresponding match, or `None` if no match was found
         """
 
         cursor = cls._search(
-            {}, sport, discipline, gender).sort([("_cached_at", -1)]).limit(1)
+            {}, sport, discipline, gender, country).sort([("_cached_at", -1)]).limit(1)
 
         if cursor and cursor.count():
             result = cursor.next()
@@ -104,7 +108,7 @@ class Medal(ListFeedModel):
             return cls(**result)
 
     @classmethod
-    def search_date(cls, date, *, sport=None, discipline=None, gender=None):
+    def search_date(cls, date, *, sport=None, discipline=None, gender=None, country=None):
         """
         Searches for matches on a specific day and returns details about them
 
@@ -112,6 +116,7 @@ class Medal(ListFeedModel):
         :param sport: Filter by the name of the sport (eg. "Ski Alpin")
         :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
         :param gender: Filter by gender (eg: male, female, mixed)
+        :param country: Filter by country
         :return: A list of `MatchMeta` objects
         """
 
@@ -119,6 +124,6 @@ class Medal(ListFeedModel):
             'end_date': datetime(date.year, date.month, date.day)
         }
 
-        cursor = cls._search(filter, sport, discipline, gender).sort([("datetime", 1)])
+        cursor = cls._search(filter, sport, discipline, gender, country).sort([("datetime", 1)])
 
         return [cls(**result) for result in cursor]
