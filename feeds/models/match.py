@@ -118,12 +118,12 @@ class Match(FeedModel):
         )]
 
         for i, (winner_team, winner_result) in enumerate(zip(winner_teams, winner_results)):
-            if 'medals' in self.meta and not self.meta.medals:
-                reply = f'{i+1}. '
-                image_url = None
-            else:
+            if 'medals' in self.meta and self.meta.medals == 'complete':
                 reply = f'{Match.medal(i + 1)} '
                 image_url = Match.medal_pic(i + 1)
+            else:
+                reply = f'{i+1}. '
+                image_url = None
 
             reply += f'{winner_team.name}, {flag(winner_team.country.iso)} ' \
                      f'{winner_team.country.code} {self.txt_points(winner_result)}'
