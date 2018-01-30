@@ -173,14 +173,14 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
     else:
         if not one_in_many:
             reply = f"Am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} " \
-                    f"um {match_meta.match_time} Uhr:"
+                    f"um {match_meta.match_time} Uhr: "
         else:
             reply = f'{match_meta.match_time} Uhr - '
 
         reply = reply + f"{match_meta.sport}, " \
                         f"{match_meta.discipline_short}{gender} in {match_meta.town}"
 
-        if match_meta.get('event'):
+        if match_meta.get('event') == 'owg18': # owg = olympic_winter_games
             reply += f" {flag(match_meta.venue.country.iso)} {match_meta.venue.country.code}"
 
         reply += '.'

@@ -15,6 +15,7 @@ class MatchMeta(FeedModel):
 
     class Event(Enum):
         OLYMPIA_18 = 'owg18'
+        WORLDCUP = 'worldcup'
 
     def __init__(self, *args, **kwargs):
         """
@@ -113,10 +114,8 @@ class MatchMeta(FeedModel):
                             '%Y-%m-%d %H:%M'
                         )
 
-                        if id == '1757':
-                            ma['event'] = cls.Event.OLYMPIA_18
-                        else:
-                            ma['event'] = None
+                        ma['event'] = cls.Event.WORLDCUP.value
+
 
                         cls.collection.replace_one({'id': ma['id']}, ma, upsert=True)
 
@@ -193,6 +192,9 @@ class MatchMeta(FeedModel):
                                 datetime_str,
                                 '%Y-%m-%d %H:%M'
                             )
+
+                            ma['event'] = cls.Event.OLYMPIA_18.value
+
 
                             cls.collection.replace_one({'id': ma['id']}, ma, upsert=True)
 
