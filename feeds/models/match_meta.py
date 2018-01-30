@@ -144,7 +144,7 @@ class MatchMeta(ListFeedModel):
 
                             ma['round'] = ro['name']
 
-                            config = discipline_config(ma['sport'], ma['discipline'])
+                            config = discipline_config(ma['sport'], ma['discipline_short'])
 
                             if isinstance(config, dict) and 'rounds' in config:
                                 ma['round_mode'] = config.rounds
