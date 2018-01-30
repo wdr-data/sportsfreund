@@ -1,4 +1,5 @@
-from time import time
+from abc import abstractmethod, ABCMeta
+from time import time as time
 
 from lib.model import Model
 
@@ -97,3 +98,56 @@ class FeedModel(Model):
 
         else:
             return item
+
+
+class ListFeedModel(FeedModel, metaclass=ABCMeta):
+    @classmethod
+    def load_feed(cls, id, clear_cache=False):
+        """
+        Load all items in a matches-by-topic-for-season feed if its cache is expired
+
+        :param id: The topic ID
+        :param clear_cache: If `True`, the cache for the feed is cleared and it is reloaded
+            and cached from the feed. Default is `False`
+
+        :returns `True` if the feed has been updated, else `False` (cache hit)
+        """
+        id = str(id)
+
+        cls.logger.info('%s %s in db', cls.collection.count(), cls.__name__)
+
+        cache_marker = cls.collection.find_one({'_feed_id': id})
+
+        if cache_marker:
+            cls.logger.debug('Cache hit for %s with id %s', cls.__name__, id)
+
+            if clear_cache:
+                cls.logger.debug('Force-clear cache for %s with id %s', cls.__name__, id)
+
+            elif cache_marker['_cached_at'] + cls.cache_time < time():
+                cls.logger.debug('Cache expired for %s with id %s', cls.__name__, id)
+
+            else:
+                return False
+
+        obj = cls.api_function(**{cls.api_id_name: id})
+        now = int(time())
+
+        cls.transform(obj, id, now)
+
+        cls.logger.info('%s match metas in db', cls.collection.count())
+
+        new_cache_marker = {'_feed_id': id, '_cached_at': now}
+
+        if cache_marker:
+            cls.collection.replace_one({'_id': cache_marker['_id']}, new_cache_marker)
+
+        else:
+            cls.collection.insert_one(new_cache_marker)
+
+        return True
+
+    @classmethod
+    @abstractmethod
+    def transform(cls, obj, topic_id, now):
+        pass

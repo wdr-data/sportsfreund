@@ -4,11 +4,11 @@ from time import time as time
 
 from feeds.config import DISCIPLINE_ALIASES, sport_by_name
 from lib.mongodb import db
-from .model import FeedModel
+from .model import ListFeedModel
 from .. import api
 
 
-class MatchMeta(FeedModel):
+class MatchMeta(ListFeedModel):
     collection = db.matches_meta
     api_function = api.matches_by_topic_for_season
     api_id_name = 'to'
@@ -51,40 +51,9 @@ class MatchMeta(FeedModel):
             return None
 
     @classmethod
-    def load_feed(cls, id, clear_cache=False):
-        """
-        Load all items in a matches-by-topic-for-season feed if its cache is expired
-
-        :param id: The topic ID
-        :param clear_cache: If `True`, the cache for the feed is cleared and it is reloaded
-            and cached from the feed. Default is `False`
-
-        :returns `True` if the feed has been updated, else `False` (cache hit)
-        """
-        id = str(id)
-
-        cls.logger.info('%s match metas in db', cls.collection.count())
-
-        cache_marker = cls.collection.find_one({'_feed_id': id})
-
-        if cache_marker:
-            cls.logger.debug('Cache hit for %s with id %s', cls.__name__, id)
-
-            if clear_cache:
-                cls.logger.debug('Force-clear cache for %s with id %s', cls.__name__, id)
-
-            elif cache_marker['_cached_at'] + cls.cache_time < time():
-                cls.logger.debug('Cache expired for %s with id %s', cls.__name__, id)
-
-            else:
-                return False
-
-        obj = cls.api_function(**{cls.api_id_name: id})
-
+    def transform(cls, obj, topic_id, now):
         # Single-element list at top level
         sp = obj[0]  # sport object
-        now = int(time())
-
         for co in sp['competition']:
             for se in co['season']:
                 for ro in se['round']:
@@ -116,20 +85,7 @@ class MatchMeta(FeedModel):
 
                         ma['event'] = cls.Event.WORLDCUP.value
 
-
                         cls.collection.replace_one({'id': ma['id']}, ma, upsert=True)
-
-        cls.logger.info('%s match metas in db', cls.collection.count())
-
-        new_cache_marker = {'_feed_id': id, '_cached_at': now}
-
-        if cache_marker:
-            cls.collection.replace_one({'_id': cache_marker['_id']}, new_cache_marker)
-
-        else:
-            cls.collection.insert_one(new_cache_marker)
-
-        return True
 
     @classmethod
     def load_olympia_feed(cls, id, clear_cache=False):
@@ -194,7 +150,6 @@ class MatchMeta(FeedModel):
                             )
 
                             ma['event'] = cls.Event.OLYMPIA_18.value
-
 
                             cls.collection.replace_one({'id': ma['id']}, ma, upsert=True)
 
