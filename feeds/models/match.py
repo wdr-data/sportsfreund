@@ -229,4 +229,4 @@ class Match(FeedModel):
             )
             return
 
-        result_total(event, {'result_total': match_id, 'step': 'top_10'})
+        result_total(event, {'result_total': self.id,  'step': 'top_10'})
