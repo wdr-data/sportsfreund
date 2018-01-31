@@ -72,6 +72,15 @@ def medals(**kwargs):
     return api_request('medals', kwargs)
 
 
+def medals_table(**kwargs):
+    """
+
+    :param to: Topic ID
+    :return:
+    """
+    return api_request('medals-table', kwargs)
+
+
 def match(**kwargs):
     """
 
