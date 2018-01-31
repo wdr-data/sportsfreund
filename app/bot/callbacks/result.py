@@ -114,16 +114,16 @@ def result_total(event, payload):
     match_id = payload['result_total']
     match = Match.by_id(match_id)
 
-    if step == 'top_10':
+    buttons = []
+    if step == 'top_10' or step == 'round_mode':
         results = match.results[:10]
         if len(match.results) > 10:
-            button = button_postback('Und der Rest?', {'result_total': match_id, 'step': None})
-        else:
-            button = None
+            buttons.append(
+                button_postback('Und der Rest?',
+                                {'result_total': match_id, 'step': None}))
         result_kind = f'Top {len(results)}'
     else:
         results = match.results[11:]
-        button = None
         result_kind = 'restliche Ergebnisse'
 
     teams = [result.team for result in results]
@@ -133,24 +133,31 @@ def result_total(event, payload):
         for r, t in zip(results, teams))
 
     config = discipline_config(match.meta.sport, match.meta.discipline_short)
+
     if isinstance(config, dict) and 'rounds' in config and config['rounds']:
         date = datetime.strptime(match.match_date, '%Y-%m-%d')
         reply = f'++ {match.meta.round_mode} ++ {match.meta.sport}, ' \
                 f'{match.meta.discipline_short}, {match.meta.gender_name}'
-        reply += f'\n{day_name[date.weekday()]},' \
-                 f' {date.strftime("%d.%m.%Y")} ' \
-                 f'um {match.match_time} Uhr in {match.venue.town.name}\n\n{top_ten}'
+
+        if step == 'top_10':
+            reply += f'\n{day_name[date.weekday()]},' \
+                     f' {date.strftime("%d.%m.%Y")} ' \
+                     f'um {match.match_time} Uhr in {match.venue.town.name}'
+        elif step == 'round_mode':
+            reply += f'\n{day_name[date.weekday()]},' \
+                     f' {date.strftime("%d.%m.%Y")} ' \
+                     f'um {match.match_time} Uhr in {match.venue.town.name}'
     else:
         reply = f'Hier die {result_kind} zu {match.meta.sport} {match.meta.discipline_short} ' \
-                f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}'
+                f'in {match.meta.town}, {match.meta.country}:'
 
-    if button:
-        event.send_buttons(reply,
-                           buttons=[button])
-    else:
-        event.send_text(reply)
+    buttons.append(button_postback(f"Deutsche Sportler",
+                         {'result_by_country': 'Deutschland', 'match_id': match_id}))
+    buttons.append(button_postback('Anderes Land',
+                         {'result_by_country': None, 'match_id': match_id}))
 
-    return
+    event.send_buttons(f'{reply}\n\n{top_ten}',
+                       buttons=buttons)
 
 
 def result_by_country(event, payload):
@@ -202,7 +209,7 @@ def send_result(event, match):
         )
         return
 
-    result_total(event, {'result_total': match.id, 'step': 'top_10'})
+    result_total(event, {'result_total': match.id, 'step': 'round_mode'})
 
 
 handlers = [

@@ -175,7 +175,7 @@ class Match(FeedModel):
 
     @property
     def btn_podium(self):
-        return button_postback('Mehr Platzierungen', {'result_details': self.id})
+        return button_postback('Mehr Platzierungen', {'result_total': self.id, 'step': 'top_10'})
 
     @property
     def txt_podium(self):
