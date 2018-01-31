@@ -207,7 +207,7 @@
 
 - name: Nordische Kombination
   topic_id: None
-  result_type: POINTS
+  result_type: TIME
   result_digits: 1
   competition_term: Rennen
   article: das
