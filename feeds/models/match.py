@@ -115,9 +115,9 @@ class Match(FeedModel):
         else:
             header_text = ''
 
-        header_text += f'{self.meta.sport}, {self.meta.discipline_short}, {self.meta.gender_name}',
-        header_sbtl =  f'{day_name[date.weekday()]}, {date.strftime("%d.%m.%Y")} ' \
-                       f'um {self.match_time} Uhr in {self.venue.town.name}'
+        header_text += f'{self.meta.sport}, {self.meta.discipline_short}, {self.meta.gender_name}'
+        header_sbtl = f'{day_name[date.weekday()]}, {date.strftime("%d.%m.%Y")} ' \
+                      f'um {self.match_time} Uhr in {self.venue.town.name}'
 
         header = [list_element(
             header_text,
