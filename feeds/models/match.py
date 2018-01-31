@@ -6,7 +6,6 @@ import locale
 from feeds.config import sport_by_name, ResultType, discipline_config
 from feeds.models.match_meta import MatchMeta
 from feeds.models.team import Team
-from bot.callbacks.result import result_total
 from lib.flag import flag
 from lib.response import list_element, button_postback
 from .. import api
@@ -229,4 +228,9 @@ class Match(FeedModel):
             )
             return
 
-        result_total(event, {'result_total': self.id,  'step': 'top_10'})
+        event.send_text('.')
+        event.send_list(
+            self.lst_podium,
+            top_element_style='large',
+            button=self.btn_podium
+        )
