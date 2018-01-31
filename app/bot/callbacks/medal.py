@@ -39,7 +39,7 @@ def medals(event, parameters, **kwargs):
                                      member.team.country.code]))
                 for i, member in enumerate(medal.ranking))
 
-            event.send(
+            event.send_text(
                 'Medaillen für {sport} {discipline} {gender} am {date}: \n\n{winner}'.format(
                     sport=medal.sport,
                     discipline=medal.discipline_short,
