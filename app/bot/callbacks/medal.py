@@ -34,7 +34,7 @@ def medals(event, parameters, **kwargs):
         return
 
     else:
-        for medal in medals[:3]:
+        for medal in medals:
             winner = '\n'.join(
                 '{i} {winner}'.format(
                     i=Match.medal(i + 1),
@@ -51,9 +51,3 @@ def medals(event, parameters, **kwargs):
                     winner=winner,
                 )
             )
-
-        if len(medals) > 3:
-            event.send_text(
-                'Ich habe zu viele Medaillentscheidungen zu deiner Suchanfrage gefunden, '
-                'als dass ich sie jetzt alle anzeigen könnte. Schränke deine Frage ein, '
-                'z.B. nach Sportart, Datum oder Herren/Damen.')
