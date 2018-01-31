@@ -79,21 +79,21 @@ def medals_table(event, parameters, **kwargs):
 
         if medals:
             country_rank = '\n'.join(
-                f'{str(m.rank)}. {m.country.name}:\n'
+                f'{str(m.rank)}. {m.country.name}:'
                 f'{Match.medal(1)} {m.first} '
                 f'{Match.medal(2)} {m.second} '
                 f'{Match.medal(3)} {m.third}'
             for m in medals)
 
             event.send_buttons(f'{country_rank}',
-                            buttons=[button_postback('Und der Rest?',['medal_list'])])
+                            buttons=[button_postback('Und der Rest?', ['medal_list'])])
 
 def medal_list(event, payload):
     medals = MedalsTable.with_medals()
 
     if medals:
         country_rank = '\n'.join(
-            f'{str(m.rank)}. {m.country.name}:\n'
+            f'{str(m.rank)}. {m.country.name}:'
             f'{Match.medal(1)} {m.first} '
             f'{Match.medal(2)} {m.second} '
             f'{Match.medal(3)} {m.third}'
