@@ -23,8 +23,8 @@ class Medal(ListFeedModel):
 
     @classmethod
     def api_function(cls, **kwargs):
-        kwargs['df'] = FEED_PARAMS[kwargs[cls.api_id_name]]['df']
-        kwargs['dt'] = FEED_PARAMS[kwargs[cls.api_id_name]]['dt']
+        kwargs['df'] = FEED_PARAMS[int(kwargs[cls.api_id_name])]['df']
+        kwargs['dt'] = FEED_PARAMS[int(kwargs[cls.api_id_name])]['dt']
         return api.medals(**kwargs)
 
 
@@ -50,24 +50,23 @@ class Medal(ListFeedModel):
                     for ra in se['ranking']:
                         ra['item'] = int(ra['item'])
                         ra['rank'] = int(ra['rank'])
-                        ra['sport_id'] = sp['id']
-                        ra['sport'] = sp['name']
-                        ra['discipline_short'] = (co['shortname']
-                                                  if co['shortname'] not in {'Olympia'}
-                                                  else None)
-                        ra['competition_type'] = co['type']
-                        ra['gender'] = co['gender']
-                        ra['start_date'] = datetime.strptime(se['start'], '%Y-%m-%d')
-                        ra['end_date'] = datetime.strptime(se['end'], '%Y-%m-%d')
-                        ra['_cached_at'] = now
 
-                    cls.collection.replace_one(
-                        {'id': se['id']}, {ranking['item']: ranking for ranking in se['ranking']},
-                        upsert=True)
+                    se['sport_id'] = sp['id']
+                    se['sport'] = sp['name']
+                    se['discipline_short'] = (co['shortname']
+                                              if co['shortname'] not in {'Olympia'}
+                                              else None)
+                    se['competition_type'] = co['type']
+                    se['gender'] = co['gender']
+                    se['start_date'] = datetime.strptime(se['start'], '%Y-%m-%d')
+                    se['end_date'] = datetime.strptime(se['end'], '%Y-%m-%d')
+                    se['_cached_at'] = now
+
+                    cls.collection.replace_one({'id': se['id']}, se, upsert=True)
 
 
     @classmethod
-    def _search(cls, base_filter, sport, discipline, gender, country):
+    def _search(cls, base_filter, sport, discipline, gender, country, sorting=[]):
 
         try:
             for p in FEED_PARAMS:
@@ -87,14 +86,13 @@ class Medal(ListFeedModel):
             filter['gender'] = gender
 
         if country is not None:
-            filter['team.country.name'] = country
+            filter['ranking.team.country.name'] = country
 
         return cls.collection.find(filter).sort(
+            sorting +
             [
-                ('sport', ASCENDING),
-                ('discipline_short', ASCENDING),
-                ('rank', ASCENDING),
-                ('item', ASCENDING),
+                ('sport', DESCENDING),
+                ('discipline_short', DESCENDING),
             ]
         )
 
@@ -111,7 +109,8 @@ class Medal(ListFeedModel):
         """
 
         cursor = cls._search(
-            {}, sport, discipline, gender, country).sort([("_cached_at", -1)]).limit(1)
+            {}, sport, discipline, gender, country, sorting=[('end_date', DESCENDING),
+                                                             ("_cached_at", DESCENDING)]).limit(1)
 
         if cursor and cursor.count():
             result = cursor.next()
