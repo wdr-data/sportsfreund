@@ -115,30 +115,35 @@ class Match(FeedModel):
         else:
             header_text = ''
 
-        header_text += f'{self.meta.sport}, {self.meta.discipline_short}, {self.meta.gender_name}' \
-                       f' in {self.venue.town.name} {day_name[date.weekday()]},' \
-                       f' {date.strftime("%d.%m.%Y")} um {self.match_time} Uhr'
+        header_text += f'{self.meta.sport}, {self.meta.discipline_short}, {self.meta.gender_name}',
+        header_sbtl =  f'{day_name[date.weekday()]}, {date.strftime("%d.%m.%Y")} ' \
+                       f'um {self.match_time} Uhr in {self.venue.town.name}'
 
         header = [list_element(
             header_text,
+            header_sbtl,
             image_url='https://i.imgur.com/DnWwUM5.jpg' if self.meta.sport == 'Ski Alpin'
             else 'https://i.imgur.com/Bu05xF6.jpg'
         )]
 
         for i, (winner_team, winner_result) in enumerate(zip(winner_teams, winner_results)):
             if 'medals' in self.meta and self.meta.medals == 'complete':
-                reply = f'{Match.medal(i + 1)} '
+                title = f'{Match.medal(i + 1)} '
+                image_url = Match.medal_pic(i + 1)
 
             else:
-                reply = f'{i+1}. '
+                title = f'{i+1}. '
+                image_url = None
 
-            reply += f'{winner_team.name}, {flag(winner_team.country.iso)} ' \
-                     f'{winner_team.country.code} {self.txt_points(winner_result)}'
+            title += f'{winner_team.name}, {flag(winner_team.country.iso)}' \
+                     f' {winner_team.country.code} '
+            subtl = f'{self.txt_points(winner_result)}'
 
             header.append(
                 list_element(
-                    reply,
-                    image_url=Match.medal_pic(i + 1)))
+                    title,
+                    subtl,
+                    image_url=image_url))
 
         return header
 
