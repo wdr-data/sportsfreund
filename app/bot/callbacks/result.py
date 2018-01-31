@@ -121,6 +121,14 @@ def result_total(event, payload):
             buttons.append(
                 button_postback('Und der Rest?',
                                 {'result_total': match_id, 'step': None}))
+            buttons.append(
+                button_postback(f"Deutsche Sportler",
+                                {'result_by_country': 'Deutschland',
+                                            'match_id': match_id}))
+            buttons.append(
+                button_postback('Anderes Land',
+                                {'result_by_country': None, 'match_id': match_id}))
+
         result_kind = f'Top {len(results)}'
     else:
         results = match.results[11:]
@@ -157,13 +165,12 @@ def result_total(event, payload):
         reply = f'Hier die {result_kind} zu {match.meta.sport} {match.meta.discipline_short} ' \
                 f'in {match.meta.town}, {match.meta.country}:'
 
-    buttons.append(button_postback(f"Deutsche Sportler",
-                         {'result_by_country': 'Deutschland', 'match_id': match_id}))
-    buttons.append(button_postback('Anderes Land',
-                         {'result_by_country': None, 'match_id': match_id}))
+    reply = f'{reply}\n\n{top_ten}'
 
-    event.send_buttons(f'{reply}\n\n{top_ten}',
-                       buttons=buttons)
+    if buttons:
+        event.send_buttons(reply, buttons=buttons)
+    else:
+        event.send_text(reply)
 
 
 def result_by_country(event, payload):
