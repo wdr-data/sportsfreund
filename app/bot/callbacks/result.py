@@ -128,9 +128,15 @@ def result_total(event, payload):
 
     teams = [result.team for result in results]
 
-    top_ten = '\n'.join(
-        f'{r.rank}. {t.name} {flag(t.country.iso)} {t.country.code} {match.txt_points(r)}'
-        for r, t in zip(results, teams))
+    if 'medals' in match.meta and match.meta.medals == 'complete' or match.meta.event != 'owg18':
+        top_ten = '\n'.join(
+            f'{match.medal(int(r.rank))}. {t.name} {flag(t.country.iso)}'
+            f' {t.country.code} {match.txt_points(r)}'
+            for r, t in zip(results, teams))
+    else:
+        top_ten = '\n'.join(
+            f'{r.rank}. {t.name} {flag(t.country.iso)} {t.country.code} {match.txt_points(r)}'
+            for r, t in zip(results, teams))
 
     config = discipline_config(match.meta.sport, match.meta.discipline_short)
 
@@ -191,9 +197,14 @@ def result_by_country(event, payload):
     teams = [result.team for result in results]
     country = teams[0].country
 
-    athletes_by_country = '\n'.join(
-        f'{r.rank}. {t.name} {match.txt_points(r)}'
-        for r, t in zip(results, teams))
+    if 'medals' in match.meta and match.meta.medals == 'complete' or match.meta.event != 'owg18':
+        athletes_by_country = '\n'.join(
+            f'{match.medal(int(r.rank))}. {t.name} {match.txt_points(r)}'
+            for r, t in zip(results, teams))
+    else:
+        athletes_by_country = '\n'.join(
+            f'{r.rank}. {t.name} {match.txt_points(r)}'
+            for r, t in zip(results, teams))
 
     event.send_text(f'Hier die Ergebnisse aus {flag(country.iso)} {country.code} '
                     f'in {match.meta.town}: \n\n{athletes_by_country}')

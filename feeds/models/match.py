@@ -197,6 +197,9 @@ class Match(FeedModel):
             2: '🥈',
             3: '🥉'
         }
+        for i in range(4,150):
+            medals[i] = str(i)
+
         return medals[rank]
 
     @staticmethod
