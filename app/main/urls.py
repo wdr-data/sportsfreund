@@ -17,9 +17,14 @@ import os
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.views.generic.base import RedirectView
+from .settings import DEBUG
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^fb/', include('bot.urls')),
     url(r'^tz_detect/', include('tz_detect.urls')),
 ]
+
+if not DEBUG:
+    urlpatterns.append(url(r'^$', RedirectView.as_view(url='https://m.me/sportsfreund.sportschau', permanent=False)))
