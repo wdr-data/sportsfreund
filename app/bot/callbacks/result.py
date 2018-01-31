@@ -7,7 +7,7 @@ from lib.model import Model
 from ..handlers.payloadhandler import PayloadHandler
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
-from feeds.models.team import Team
+from feeds.config import discipline_config
 from feeds.config import supported_sports, sport_by_name
 from lib.flag import flag
 from lib.response import button_postback, quick_reply
@@ -132,15 +132,24 @@ def result_total(event, payload):
         f'{r.rank}. {t.name} {flag(t.country.iso)} {t.country.code} {match.txt_points(r)}'
         for r, t in zip(results, teams))
 
+    config = discipline_config(match.meta.sport, match.meta.discipline_short)
+    if isinstance(config, dict) and 'rounds' in config and config['rounds']:
+        reply = f'++ {match.meta.round_mode} ++ {match.meta.sport}, ' \
+                f'{match.meta.discipline_short}, {match.meta.gender_name}'
+        reply += f'\n{day_name[match.meta.date.weekday()]},' \
+                 f' {match.meta.date.strftime("%d.%m.%Y")} ' \
+                 f'um {match.match_time} Uhr in {match.venue.town.name}'
+    else:
+        reply = f'Hier die {result_kind} zu {match.meta.sport} {match.meta.discipline_short} ' \
+                f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}'
+
     if button:
-        event.send_buttons(f'Hier die {result_kind} zu {match.meta.sport}'
-                           f' {match.meta.discipline_short} '
-                           f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}',
+        event.send_buttons(reply,
                            buttons=[button])
     else:
-        event.send_text(f'Hier die {result_kind} zu {match.meta.sport} '
-                        f'{match.meta.discipline_short} '
-                        f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}')
+        event.send_text(reply)
+
+    return
 
 
 def result_by_country(event, payload):
@@ -181,9 +190,10 @@ def result_by_country(event, payload):
     event.send_text(f'Hier die Ergebnisse aus {flag(country.iso)} {country.code} '
                     f'in {match.meta.town}: \n\n{athletes_by_country}')
 
+
 def send_result(event, match):
 
-    if 'medals' in match.meta and match.meta.medals == 'complete':
+    if 'medals' in match.meta and match.meta.medals == 'complete' or match.meta.event != 'owg18':
         event.send_list(
             match.lst_podium,
             top_element_style='large',
