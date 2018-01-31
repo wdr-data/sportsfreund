@@ -38,7 +38,7 @@ def report(event, **kwargs):
             str(r),
             subtitle=r.text[:80],
             buttons=[button_postback('Test',
-                                     {'report': r.id, 'next_state': None})])
+                                     {'report': r.id, 'next_state': 'headline'})])
         for r in reports
     ])
 
