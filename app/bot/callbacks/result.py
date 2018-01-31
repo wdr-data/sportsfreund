@@ -134,11 +134,12 @@ def result_total(event, payload):
 
     config = discipline_config(match.meta.sport, match.meta.discipline_short)
     if isinstance(config, dict) and 'rounds' in config and config['rounds']:
+        date = datetime.strptime(self.match_date, '%Y-%m-%d')
         reply = f'++ {match.meta.round_mode} ++ {match.meta.sport}, ' \
                 f'{match.meta.discipline_short}, {match.meta.gender_name}'
-        reply += f'\n{day_name[match.match_date.weekday()]},' \
-                 f' {match.match_date.strftime("%d.%m.%Y")} ' \
-                 f'um {match.match_time} Uhr in {match.venue.town.name}'
+        reply += f'\n{day_name[date.weekday()]},' \
+                 f' {date.strftime("%d.%m.%Y")} ' \
+                 f'um {match.match_time} Uhr in {match.venue.town.name}\n\n{top_ten}'
     else:
         reply = f'Hier die {result_kind} zu {match.meta.sport} {match.meta.discipline_short} ' \
                 f'in {match.meta.town}, {match.meta.country}: \n\n{top_ten}'
