@@ -81,3 +81,18 @@ class MedalsTable(ListFeedModel):
         cursor = cls._search({}).limit(number)
 
         return [cls(**result) for result in cursor]
+
+    @classmethod
+    def with_medals(cls):
+        """
+        Searches the last match and returns details about it
+
+        :param country: Integer of members to show
+        :return: A `MatchMeta` object, or `None` if nothing was found
+        """
+
+        cursor = cls._search({'$or': [{'first': {'$ne': 0}},
+                                      {'second': {'$ne': 0}},
+                                      {'third': {'$ne': 0}}]})
+
+        return [cls(**result) for result in cursor]
