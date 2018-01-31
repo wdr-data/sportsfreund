@@ -9,6 +9,7 @@ def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return zip_longest(*args, fillvalue=fillvalue)
 
+
 def medals(event, parameters, **kwargs):
     sport = parameters.get('sport')
     discipline = parameters.get('discipline')
@@ -38,14 +39,15 @@ def medals(event, parameters, **kwargs):
                                      member.team.country.code]))
                 for i, member in enumerate(medal.ranking))
 
-            event.send('Medaillen für {sport} {discipline} {gender} am {date}: \n\n'
-                       '{winner}'.format(
-                sport = medal.sport,
-                discipline = medal.discipline_short,
-                gender = medal.gender_name,
-                date = medal.end_date.strftime('%d.%m.%Y'),
-                winner = winner,
-            ))
+            event.send(
+                'Medaillen für {sport} {discipline} {gender} am {date}: \n\n{winner}'.format(
+                    sport=medal.sport,
+                    discipline=medal.discipline_short,
+                    gender=medal.gender_name,
+                    date=medal.end_date.strftime('%d.%m.%Y'),
+                    winner=winner,
+                )
+            )
 
         if len(medals) > 3:
             event.send_text(
