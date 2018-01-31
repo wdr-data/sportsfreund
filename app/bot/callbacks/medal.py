@@ -29,26 +29,26 @@ def medals(event, parameters, **kwargs):
                         'oder es wurde noch nicht beendet')
         return
 
-    elif len(medals) > 9:
-        event.send_text('Ich habe zu viele Medaillentscheidungen zu deiner Suchanfrage gefunden, '
-                        'als dass ich sie jetzt alle anzeigen könnte. Schränke deine Frage ein, '
-                        'z.B. nach Sportart, Datum oder Herren/Damen.')
-
     else:
-        medalsets = grouper(medals, 3)
-        for set in medalsets:
+        for medal in medals[:3]:
             winner = '\n'.join(
                 '{i} {winner}'.format(
                     i=Match.medal(i + 1),
                     winner=' '.join([member.team.name,
                                      member.team.country.code]))
-                for i, member in enumerate(set))
+                for i, member in enumerate(medal.ranking))
 
-            event.send(f'Medaillen für {sport} {discipline} {gender} am {date}: \n'
-                       f'{winner}'.format(
-                sport = set.sport,
-                discipline = set.discipline_short,
-                gender = set.gender,
-                date = set.end_date,
+            event.send('Medaillen für {sport} {discipline} {gender} am {date}: \n\n'
+                       '{winner}'.format(
+                sport = medal.sport,
+                discipline = medal.discipline_short,
+                gender = medal.gender_name,
+                date = medal.end_date.strftime('%d.%m.%Y'),
                 winner = winner,
             ))
+
+        if len(medals) > 3:
+            event.send_text(
+                'Ich habe zu viele Medaillentscheidungen zu deiner Suchanfrage gefunden, '
+                'als dass ich sie jetzt alle anzeigen könnte. Schränke deine Frage ein, '
+                'z.B. nach Sportart, Datum oder Herren/Damen.')
