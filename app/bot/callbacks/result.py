@@ -116,7 +116,10 @@ def result_total(event, payload):
 
     if step == 'top_10':
         results = match.results[:10]
-        button = button_postback('Und der Rest?', {'result_total': match_id, 'step': None})
+        if len(match.results) > 10:
+            button = button_postback('Und der Rest?', {'result_total': match_id, 'step': None})
+        else:
+            button = None
         result_kind = 'Top 10'
     else:
         results = match.results[11:]
