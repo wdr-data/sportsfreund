@@ -136,8 +136,8 @@ def result_total(event, payload):
     if isinstance(config, dict) and 'rounds' in config and config['rounds']:
         reply = f'++ {match.meta.round_mode} ++ {match.meta.sport}, ' \
                 f'{match.meta.discipline_short}, {match.meta.gender_name}'
-        reply += f'\n{day_name[match.meta.date.weekday()]},' \
-                 f' {match.meta.date.strftime("%d.%m.%Y")} ' \
+        reply += f'\n{day_name[match.match_date.weekday()]},' \
+                 f' {match.match_date.strftime("%d.%m.%Y")} ' \
                  f'um {match.match_time} Uhr in {match.venue.town.name}'
     else:
         reply = f'Hier die {result_kind} zu {match.meta.sport} {match.meta.discipline_short} ' \
