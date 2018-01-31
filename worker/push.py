@@ -6,6 +6,7 @@ from mrq.task import Task
 from backend.models import HIGHLIGHT_CHECK_INTERVAL, Push as PushModel
 from backend.models import Report
 from bot.callbacks.shared import send_push, send_report
+from bot.callbacks.result import send_result
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.subscription import Subscription
@@ -105,7 +106,7 @@ class UpdateMatch(Task):
         for uid in podium_ids:
             event = Replyable({'sender': {'id': uid}}, type=SenderTypes.FACEBOOK)
 
-            match.send_result(event)
+            send_result(event, match)
 
         for uid, sub in zip(athlete_ids, athlete_subs):
             event = Replyable({'sender': {'id': uid}}, type=SenderTypes.FACEBOOK)

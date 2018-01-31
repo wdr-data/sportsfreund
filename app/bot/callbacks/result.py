@@ -85,7 +85,7 @@ def result_podium(event, payload):
                             f'in {meta.town}')
         elif match.finished:
 
-            match.send_result(event)
+            send_result(event, match)
 
 
         else:
@@ -120,7 +120,7 @@ def result_total(event, payload):
             button = button_postback('Und der Rest?', {'result_total': match_id, 'step': None})
         else:
             button = None
-        result_kind = 'Top 10'
+        result_kind = f'Top {len(results)}'
     else:
         results = match.results[11:]
         button = None
@@ -180,6 +180,18 @@ def result_by_country(event, payload):
 
     event.send_text(f'Hier die Ergebnisse aus {flag(country.iso)} {country.code} '
                     f'in {match.meta.town}: \n\n{athletes_by_country}')
+
+def send_result(event, match):
+
+    if 'medals' in match.meta and match.meta.medals == 'complete':
+        event.send_list(
+            match.lst_podium,
+            top_element_style='large',
+            button=match.btn_podium
+        )
+        return
+
+    result_total(event, {'result_total': match.id, 'step': 'top_10'})
 
 
 handlers = [
