@@ -134,7 +134,7 @@ def result_total(event, payload):
 
     config = discipline_config(match.meta.sport, match.meta.discipline_short)
     if isinstance(config, dict) and 'rounds' in config and config['rounds']:
-        date = datetime.strptime(self.match_date, '%Y-%m-%d')
+        date = datetime.strptime(match.match_date, '%Y-%m-%d')
         reply = f'++ {match.meta.round_mode} ++ {match.meta.sport}, ' \
                 f'{match.meta.discipline_short}, {match.meta.gender_name}'
         reply += f'\n{day_name[date.weekday()]},' \
