@@ -43,9 +43,9 @@ def medals(event, parameters, **kwargs):
                 for i, member in enumerate(medal.ranking))
 
             event.send_text(
-                'Medaillen für {sport} {discipline} {gender} am {date}: \n\n{winner}'.format(
+                'Medaillen für {sport}{discipline} {gender} am {date}: \n\n{winner}'.format(
                     sport=medal.sport,
-                    discipline=medal.discipline_short,
+                    discipline=f' {medal.discipline_short}' if medal.discipline_short else '',
                     gender=medal.gender_name,
                     date=medal.end_date.strftime('%d.%m.%Y'),
                     winner=winner,
