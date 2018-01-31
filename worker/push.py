@@ -133,7 +133,7 @@ class SendHighlight(Task):
         for sub in subs:
             event = Replyable({'sender': {'id': sub.psid}}, type=SenderTypes.FACEBOOK)
 
-            send_push(event, push, report_nr=None, state='Intro')
+            send_push(event, push, report_nr=None, state=None)
 
         push.delivered = True
         push.save()
@@ -153,7 +153,7 @@ class SendReport(Task):
         for sub in subs:
             event = Replyable({'sender': {'id': sub.psid}}, type=SenderTypes.FACEBOOK)
 
-            send_report(event, report)
+            send_report(event, report, 'headline')
 
         report.delivered = True
         report.save()

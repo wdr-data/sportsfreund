@@ -223,7 +223,7 @@ def send_report(event, report, state=None):
     button_title = ''
     next_state = None
 
-    if not state:
+    if state == 'headline':
         reply = report.headline
         button_text = "Los geht's"
         next_state = 'intro'

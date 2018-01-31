@@ -18,6 +18,7 @@ class CompetitionType(Enum):
     SINGLE = 'single'
     RACE = 'race'
     TOURNAMENT = 'tournament'
+    ROBIN = 'robin'
 
 
 with open(BASE_DIR / 'discipline_aliases.yml', 'rb') as f:
@@ -36,6 +37,19 @@ sport_by_name = {
     sport.name: sport
     for sport in SPORTS_CONFIG
 }
+
+
+def discipline_config(sport, discipline):
+    for sport_config in SPORTS_CONFIG:
+        if sport_config.name == sport:
+            for dis in sport_config.disciplines:
+                if dis.name == discipline:
+                    conf = dis
+                    conf['result_type'] = sport_config['result_type']
+                    conf['sport'] = sport
+                    return conf
+
+    return None
 
 supported_sports = [
     sport.name for sport in SPORTS_CONFIG

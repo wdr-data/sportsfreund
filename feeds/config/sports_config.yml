@@ -8,6 +8,7 @@
   result_digits: 1
   competition_term: Rennen
   article: das
+  pictogram: url
   disciplines:
     - name: Einzel
       competition_type: SINGLE
@@ -59,9 +60,11 @@
   article: das
   disciplines:
     - name: Großschanze
+      rounds: True
       competition_type: SINGLE
       article: das
     - name: Normalschanze
+      rounds: True
       competition_type: SINGLE
       article: das
     - name: Flugschanze
@@ -70,7 +73,7 @@
     - name: Team Normalschanze
       competition_type: SINGLE
       article: das
-    - name: Team Großschanze
+    - name: Teamspringen
       competition_type: SINGLE
       article: das
     - name: Team Normalschanze
@@ -85,6 +88,7 @@
   article: das
   disciplines:
     - name: Skeleton
+      rounds: True
       competition_type: SINGLE
       article: das
 
@@ -96,13 +100,21 @@
   article: das
   disciplines:
     - name: Aerials
+      rounds: True
       competition_type: SINGLE
       article: das
     - name: Buckelpiste
+      rounds: True
+      competition_type: SINGLE
+      article: die
+    - name: Halfpipe
+      rounds: True
       competition_type: SINGLE
       article: die
     - name: Slopestyle
+      rounds: True
       competition_type: SINGLE
+      article: die
 
 
 - name: Eishockey
@@ -124,6 +136,7 @@
   article: das
   disciplines:
     - name: Zweierbob
+      rounds: True
       competition_type: SINGLE
       article: das
     - name: Viererbob
@@ -138,7 +151,7 @@
   article: das
   disciplines:
     - name: Olympia
-      competition_type: TOURNAMENT
+      competition_type: ROBIN
       article: das
 
 - name: Eiskunstlauf
@@ -148,7 +161,20 @@
   competition_term: Event
   article: das
   disciplines:
-    - name: Aerials
+    - name: Einzel
+      rounds: True
+      competition_type: SINGLE
+      article: das
+    - name: Teamwettbewerb
+      rounds: True
+      competition_type: SINGLE
+      article: das
+    - name: Eistanz
+      rounds: True
+      competition_type: SINGLE
+      article: das
+    - name: Paarlauf
+      rounds: True
       competition_type: SINGLE
       article: das
 
@@ -159,7 +185,23 @@
   competition_term: Rennen
   article: das
   disciplines:
-    - name: Aerials
+    - name: Teamverfolgung
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: 10000 m
+      competition_type: SINGLE
+      article: das
+    - name: 1500 m
+      rounds: True
+      competition_type: SINGLE
+      article: das
+    - name: Teamwettbewerb
+      rounds: True
+      competition_type: SINGLE
+      article: das
+    - name: Teamwettbewerb
+      rounds: True
       competition_type: SINGLE
       article: das
 
@@ -170,10 +212,15 @@
   competition_term: Rennen
   article: das
   disciplines:
-    - name: Aerials
+    - name: Normalschanze
       competition_type: SINGLE
       article: das
-
+    - name: Großschanze
+      competition_type: SINGLE
+      article: das
+    - name: Team
+      competition_type: SINGLE
+      article: das
 
 - name: Rodeln
   topic_id: None
@@ -183,6 +230,7 @@
   article: das
   disciplines:
     - name: Einsitzer
+      rounds: True
       competition_type: SINGLE
       article: der
     - name: Doppelsitzer
@@ -199,7 +247,20 @@
   competition_term: Rennen
   article: das
   disciplines:
-    - name: Aerials
+    - name: Staffel
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: 1000 m
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: 1500 m
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: 500 m
+      rounds: True
       competition_type: TOURNAMENT
       article: das
 
@@ -210,8 +271,24 @@
   competition_term: Rennen
   article: das
   disciplines:
-    - name: Aerials
+    - name: Sprint
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Staffel
+      competition_type: RACE
+      article: das
+    - name: Skating
       competition_type: SINGLE
+      article: das
+    - name: Skiathlon
+      competition_type: TOURNAMENT
+      article: das
+    - name: Skating
+      competition_type: SINGLE
+      article: das
+    - name: 50km
+      competition_type: RACE
       article: das
 
 - name: Snowboard
@@ -221,7 +298,20 @@
   competition_term: Event
   article: das
   disciplines:
-    - name: Aerials
+    - name: Halfpipe
+      rounds: True
+      competition_type: SINGLE
+      article: das
+    - name: Slopestyle
+      rounds: True
+      competition_type: SINGLE
+      article: das
+    - name: Snowboardcross
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Big Air
+      rounds: True
       competition_type: SINGLE
       article: das
 ...
