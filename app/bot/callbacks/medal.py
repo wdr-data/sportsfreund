@@ -1,4 +1,5 @@
 from feeds.models.medal import Medal
+from feeds.models.medals_table import MedalsTable
 from feeds.models.match import Match
 
 from itertools import zip_longest
@@ -51,3 +52,36 @@ def medals(event, parameters, **kwargs):
                     winner=winner,
                 )
             )
+
+        if len(medals) > 3:
+            event.send_text(
+                'Ich habe zu viele Medaillentscheidungen zu deiner Suchanfrage gefunden, '
+                'als dass ich sie jetzt alle anzeigen könnte. Schränke deine Frage ein, '
+                'z.B. nach Sportart, Datum oder Herren/Damen.')
+
+def medals_table(event, parameters, **kwargs):
+    country = parameters.get('country')
+
+    if country:
+        medals = MedalsTable.by_country(country=country)
+
+        event.send_text(
+            f'{country} im Medaillenspiegel auf Platz {medals.rank}:\n'
+            f'{str(medals.first)} Goldmedaillen {Match.medal(1)}\n'
+            f'{str(medals.second)} Siblermedaillen {Match.medal(2)}\n'
+            f'{str(medals.third)} Bronzemedaillen {Match.medal(3)}'
+        )
+
+    else:
+        medals = MedalsTable.top(number=10)
+
+        if medals:
+            for m in medals:
+                country_rank = '\n'.join(
+                    f'{str(m.rank)}. {m.country.name}: '
+                    f'{Match.medal(1)} {m.first}, '
+                    f'{Match.medal(2)} {m.second}, '
+                    f'{Match.medal(3)} {m.third}'
+                )
+            return country_rank
+            #event.send_text(f'{country_rank}')
