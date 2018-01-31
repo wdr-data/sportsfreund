@@ -76,12 +76,11 @@ def medals_table(event, parameters, **kwargs):
         medals = MedalsTable.top(number=10)
 
         if medals:
-            for m in medals:
-                country_rank = '\n'.join(
-                    f'{str(m.rank)}. {m.country.name}: '
-                    f'{Match.medal(1)} {m.first}, '
-                    f'{Match.medal(2)} {m.second}, '
-                    f'{Match.medal(3)} {m.third}'
-                )
+            country_rank = '\n'.join(
+                f'{str(m.rank)}. {m.country.name}: '
+                f'{Match.medal(1)} {m.first}, '
+                f'{Match.medal(2)} {m.second}, '
+                f'{Match.medal(3)} {m.third}'
+            for m in medals)
 
             event.send_text(f'{country_rank}')
