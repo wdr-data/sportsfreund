@@ -32,7 +32,7 @@ def api_next(event, parameters, **kwargs):
         elif until_date - from_date > timedelta(3):
             from_date = until_date - timedelta(3)
             event.send_text("Ich schau was ich im Zeitraum "
-                            f"{date.strftime(until_date - timedelta(3), '%d.%m.')}-"
+                            f"{date.strftime(from_date, '%d.%m.')}-"
                             f"{date.strftime(until_date, '%d.%m.%Y')} für dich an Events habe.")
 
         match_meta = MatchMeta.search_range(
@@ -48,7 +48,9 @@ def api_next(event, parameters, **kwargs):
                                 'aber vielleicht interessiert dich ja folgendes:')
                 multiple_entry(event, match_meta)
             else:
-                event.send_text('In dem Zeitraum {from_da}-{till} ist mein Kalender leer.')
+                event.send_text(f"In dem Zeitraum "
+                                f"{date.strftime(from_date, '%d.%m.')}-{date.strftime(until_date, '%d.%m.%Y')} "
+                                f"ist mein Kalender leer.")
         else:
             multiple_entry(event, match_meta)
         return
