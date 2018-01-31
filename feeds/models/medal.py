@@ -132,6 +132,41 @@ class Medal(ListFeedModel):
             'end_date': datetime(date.year, date.month, date.day)
         }
 
-        cursor = cls._search(filter, sport, discipline, gender, country).sort([("datetime", 1)])
+        cursor = cls._search(filter, sport, discipline, gender, country)
+
+        return [cls(**result) for result in cursor]
+
+    @classmethod
+    def search_range(cls, *, from_date=None, until_date=None, sport=None, discipline=None,
+                     gender=None, country=None):
+        """
+        Searches for matches on a specific day and returns details about them
+
+        :param from_date: A `datetime.date` object specifying the first date to search
+        :param until_date: A `datetime.date` object specifing the last date to search
+        :param sport: Filter by the name of the sport (eg. "Ski Alpin")
+        :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
+        :param gender: Filter by gender (eg: male, female, mixed)
+        :param country: Filter by country
+        :return: A list of `Medal` objects
+        """
+
+        filter = {
+            'end_date': {},
+        }
+
+        if from_date:
+            if not isinstance(from_date, datetime):
+                from_date = datetime(from_date.year, from_date.month, from_date.day)
+            filter['end_date']['$gte'] = from_date
+
+        if until_date:
+            if not isinstance(until_date, datetime):
+                until_date = datetime(until_date.year, until_date.month, until_date.day,
+                                      hour=23, minute=59, second=59)
+            filter['end_date']['$lte'] = until_date
+
+        cursor = cls._search(
+            filter, sport, discipline, gender, country, sorting=[('end_date', ASCENDING)])
 
         return [cls(**result) for result in cursor]
