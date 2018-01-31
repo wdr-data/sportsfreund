@@ -4,6 +4,9 @@ from feeds.models.match import Match
 from itertools import zip_longest
 from datetime import datetime
 
+from feeds.models.team import Team
+from lib.flag import flag
+
 
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
@@ -36,7 +39,7 @@ def medals(event, parameters, **kwargs):
                 '{i} {winner}'.format(
                     i=Match.medal(i + 1),
                     winner=' '.join([member.team.name,
-                                     member.team.country.code]))
+                                     flag(Team.by_id(member.team.id).country.iso)]))
                 for i, member in enumerate(medal.ranking))
 
             event.send_text(
