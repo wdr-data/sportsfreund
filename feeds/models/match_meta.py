@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 from time import time as time
 
@@ -328,7 +328,7 @@ class MatchMeta(ListFeedModel):
         if until_date:
             if not isinstance(until_date, datetime):
                 until_date = datetime(
-                    until_date.year, until_date.month, until_date.day + 1)
+                    until_date.year, until_date.month, until_date.day) + timedelta(days=1)
             filter['datetime']['$lte'] = until_date
 
         if not filter['datetime']:
