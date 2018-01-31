@@ -83,5 +83,5 @@ def medals_table(event, parameters, **kwargs):
                     f'{Match.medal(2)} {m.second}, '
                     f'{Match.medal(3)} {m.third}'
                 )
-            return country_rank
-            #event.send_text(f'{country_rank}')
+
+            event.send_text(f'{country_rank}')
