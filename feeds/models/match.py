@@ -217,3 +217,11 @@ class Match(FeedModel):
             dt = dt[1:]
 
         return f'{dt}.{str(int(micro) // 10 ** (6 - digits)).zfill(digits)}'
+
+    def send_result(self, event):
+
+        event.send_list(
+            self.lst_podium,
+            top_element_style='large',
+            button=self.btn_podium
+        )

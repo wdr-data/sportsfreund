@@ -85,11 +85,8 @@ def result_podium(event, payload):
                             f'in {meta.town}')
         elif match.finished:
 
-            event.send_list(
-                match.lst_podium,
-                top_element_style='large',
-                button=match.btn_podium
-            )
+            match.send_result(event)
+
 
         else:
             event.send_text(f'Das Event {sport} {meta.discipline_short} in '

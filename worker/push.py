@@ -104,7 +104,8 @@ class UpdateMatch(Task):
 
         for uid in podium_ids:
             event = Replyable({'sender': {'id': uid}}, type=SenderTypes.FACEBOOK)
-            event.send_list(match.lst_podium, top_element_style='large', button=match.btn_podium)
+
+            match.send_result(event)
 
         for uid, sub in zip(athlete_ids, athlete_subs):
             event = Replyable({'sender': {'id': uid}}, type=SenderTypes.FACEBOOK)
