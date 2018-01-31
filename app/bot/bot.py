@@ -91,6 +91,7 @@ def make_event_handler():
 
         # info.medal
         ApiAiHandler(medal.medals, 'info.medals.filtered'),
+        ApiAiHandler(medal.medals_table, 'info.medals.table'),
 
         # dirty
         ApiAiHandler(dirty.force_start, 'dirty.force_start'),
