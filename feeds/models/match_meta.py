@@ -3,6 +3,7 @@ from enum import Enum
 from time import time as time
 
 from feeds.config import DISCIPLINE_ALIASES, sport_by_name, discipline_config
+from feeds.models.match import Match
 from lib.mongodb import db
 from .model import ListFeedModel
 from .. import api
@@ -150,6 +151,15 @@ class MatchMeta(ListFeedModel):
                                 ma['round_mode'] = ro['name']
                             else:
                                 ma['round_mode'] = None
+
+                            if config.competition_type == ('ROBIN' or 'TOURNAMENT'):
+                                match = Match.by_id(ma['id'])
+                                if 'home' in match and 'away' in match:
+                                    ma['home'] = match.home
+                                    ma['away'] = match.away
+                                else:
+                                    ma['home'] = 'N.N.'
+                                    ma['away'] = 'N.N.'
 
                             if 'match_meta' in ma:
                                 for element in ma['match_meta']:

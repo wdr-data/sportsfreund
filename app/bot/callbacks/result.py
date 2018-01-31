@@ -220,14 +220,41 @@ def result_by_country(event, payload):
 def send_result(event, match):
 
     if 'medals' in match.meta and match.meta.medals == 'complete' or match.meta.event != 'owg18':
-        event.send_list(
-            match.lst_podium,
-            top_element_style='large',
-            button=match.btn_podium
-        )
+
+        type = discipline_config(match.sport, match.discipline_short).competition_type
+        if type == 'ROBIN' or type == 'TOURNAMENT':
+            # Ice Hockey Result
+            result_game(event, match)
+        else:
+            event.send_list(
+                match.lst_podium,
+                top_element_style='large',
+                button=match.btn_podium
+            )
         return
 
     result_total(event, {'result_total': match.id, 'step': 'round_mode'})
+
+
+def result_game(event, match):
+
+    date = datetime.strptime(match.match_date, '%Y-%m-%d')
+    reply = f'{match.meta.sport}, ++ {match.meta.round_mode} ++ {match.meta.gender_name}'
+    reply += f'\n{day_name[date.weekday()]}, ' \
+             f'{date.strftime("%d.%m.%Y")} um {match.match_time} Uhr\n'
+
+    results = match.results
+    home = results[0]
+    away = resutls[1]
+    if len(results) == 2:
+        reply += f'{home.team.name}{flag(away.team.county.iso)}  {home.match_result}:' \
+                 f'{away.match_result}  {flag(away.team.county.iso)}{away.team.name}'
+    else:
+        reply += 'Sorry, aber da muss ich nochmal in meine Datenbank schauen.'
+        logger.debug(f'More than two oponents in a tournament match {match.id}')
+        return
+
+    event.send_text(reply)
 
 
 handlers = [
