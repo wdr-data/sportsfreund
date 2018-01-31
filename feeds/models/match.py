@@ -122,7 +122,7 @@ class Match(FeedModel):
         header = [list_element(
             header_text,
             header_sbtl,
-            image_url='https://i.imgur.com/DnWwUM5.jpg' if self.meta.sport == 'Ski Alpin'
+            image_url='https://imgur.com/7ZgRGvd' if self.meta.sport == 'Ski Alpin'
             else 'https://i.imgur.com/Bu05xF6.jpg'
         )]
 
