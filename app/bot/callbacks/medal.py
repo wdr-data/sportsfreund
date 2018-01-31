@@ -22,8 +22,8 @@ def medals(event, parameters, **kwargs):
         medals = Medal.search_date(date=date, sport=sport,
                                    discipline=discipline, gender=gender, country=country)
     else:
-        medals = Medal.search_last(sport=sport, discipline=discipline,
-                                   gender=gender, country=country)
+        medals = [Medal.search_last(sport=sport, discipline=discipline,
+                                   gender=gender, country=country)]
 
     if not medals:
         event.send_text('In diesem Zeitraum hat kein Event stattgefunden '
