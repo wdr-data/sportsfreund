@@ -165,10 +165,10 @@ def result_by_country(event, payload):
     results = []
     for r in results_all:
         results.append(r)
-        
+
     if not results:
-        event.send_text(f'Kein Athlet aus {flag(country.iso)} {country.code}'
-                        f' hat das {sport_by_name[sport].competition_term} beendet.')
+        event.send_text(f'Kein Athlet aus {country_name}'
+                        f' hat das {sport_by_name[match.sport].competition_term} beendet.')
         return
 
     teams = [result.team for result in results]
