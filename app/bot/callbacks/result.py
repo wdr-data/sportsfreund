@@ -81,9 +81,12 @@ def result_podium(event, payload):
 
     for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
         if match.match_incident:
-            event.send_text(f'{match.match_incident.name}: '
-                            f'{meta.discipline_short}, {meta.gender_name}'
-                            f'in {meta.town}')
+            if match.match_incident.id == '3' or match.match_incident.id == '4':
+                event.send_text(f'{match.match_incident.name}: '
+                                f'{meta.discipline_short}, {meta.gender_name}'
+                                f'in {meta.town}')
+            else:
+                send_result(event, match)
         elif match.finished:
 
             send_result(event, match)
@@ -253,6 +256,8 @@ def result_game(event, match):
         reply += 'Sorry, aber da muss ich nochmal in meine Datenbank schauen.'
         logger.debug(f'More than two oponents in a tournament match {match.id}')
         return
+    if match.match_incident:
+        reply += f'\n++ Entscheidung fiel {match.match_incident.name} ++ '
 
     event.send_text(reply)
 
