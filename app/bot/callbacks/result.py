@@ -10,6 +10,7 @@ from feeds.models.match_meta import MatchMeta
 from feeds.config import discipline_config
 from feeds.config import supported_sports, sport_by_name
 from lib.flag import flag
+from lib.emoij_number import emoji_number
 from lib.response import button_postback, quick_reply
 
 logger = logging.Logger(__name__)
@@ -237,7 +238,7 @@ def send_result(event, match):
 def result_game(event, match):
 
     date = datetime.strptime(match.match_date, '%Y-%m-%d')
-    reply = f'{match.meta.sport}, ++ {match.meta.round_mode} ++ {match.meta.gender_name}'
+    reply = f'{match.meta.sport}, {match.meta.gender_name} ++ {match.meta.round_mode} ++ '
     reply += f'\n{day_name[date.weekday()]}, ' \
              f'{date.strftime("%d.%m.%Y")} um {match.match_time} Uhr\n'
 
@@ -245,8 +246,9 @@ def result_game(event, match):
     home = results[0]
     away = results[1]
     if len(results) == 2:
-        reply += f'{home.team.name}{flag(away.team.country.iso)}  {home.match_result}:' \
-                 f'{away.match_result}  {flag(away.team.country.iso)}{away.team.name}'
+        reply += f'{home.team.name} {flag(home.team.country.iso)} ' \
+                 f' {emoji_number(home.match_result)}➖{emoji_number(away.match_result)}' \
+                 f'  {flag(away.team.country.iso)} {away.team.name}'
     else:
         reply += 'Sorry, aber da muss ich nochmal in meine Datenbank schauen.'
         logger.debug(f'More than two oponents in a tournament match {match.id}')
