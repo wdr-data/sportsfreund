@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 from time import time as time
 
-from feeds.config import DISCIPLINE_ALIASES, sport_by_name, discipline_config
+from feeds.config import DISCIPLINE_ALIASES, sport_by_name, discipline_config, SPORTS_CONFIG
 from lib.mongodb import db
 from .model import ListFeedModel
 from .. import api
@@ -12,6 +12,8 @@ class MatchMeta(ListFeedModel):
     collection = db.matches_meta
     api_function = api.matches_by_topic_for_season
     api_id_name = 'to'
+
+    olympia_feeds = [1757, 548]
 
     class Event(Enum):
         OLYMPIA_18 = 'owg18'
@@ -198,9 +200,7 @@ class MatchMeta(ListFeedModel):
         return True
 
     @classmethod
-    def _search(cls, base_filter, sport, discipline,
-                town, country, gender, round_mode):
-
+    def load_feeds(cls, sport=None):
         if sport is not None:
             try:
                 id = sport_by_name[sport].topic_id
@@ -209,10 +209,18 @@ class MatchMeta(ListFeedModel):
                 pass
 
         else:
-            cls.logger.warning('TODO check feeds with only discipline')
+            for sport in SPORTS_CONFIG:
+                if sport.topic_id is not None:
+                    cls.load_feed(sport.topic_id)
 
-        cls.load_olympia_feed(1757)
-        cls.load_olympia_feed(548)
+        for id in cls.olympia_feeds:
+            cls.load_olympia_feed(id)
+
+    @classmethod
+    def _search(cls, base_filter, sport, discipline,
+                town, country, gender, round_mode):
+
+        cls.load_feeds(sport)
 
         filter = base_filter.copy()
 
