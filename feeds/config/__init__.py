@@ -27,6 +27,9 @@ with open(BASE_DIR / 'discipline_aliases.yml', 'rb') as f:
 with open(BASE_DIR / 'sports_config.yml', 'rb') as f:
     SPORTS_CONFIG = [DotDict(sport) for sport in yaml.load(f)]
 
+with open(BASE_DIR / 'german_athletes_olympia.yml', 'rb') as f:
+    GERMAN_ATHLETES_OLYMPIA = [DotDict(athlete) for athlete in yaml.load(f)]
+
 for sport in SPORTS_CONFIG:
     sport.result_type = ResultType(sport.result_type.lower())
 
