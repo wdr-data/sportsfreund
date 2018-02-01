@@ -100,7 +100,7 @@ class Match(FeedModel):
 
     @property
     def lst_podium(self):
-        winner_results = self.results[:3]
+        winner_results = [r for r in self.results[:3] if r.rank in (1, 2, 3)]
         winner_teams = [winner.team for winner in winner_results]
 
         for r in winner_results:
@@ -127,13 +127,13 @@ class Match(FeedModel):
             else 'https://i.imgur.com/Bu05xF6.jpg'
         )]
 
-        for i, (winner_team, winner_result) in enumerate(zip(winner_teams, winner_results)):
+        for winner_team, winner_result in zip(winner_teams, winner_results):
             if 'medals' in self.meta and self.meta.medals == 'complete':
-                title = f'{Match.medal(i + 1)} '
-                image_url = Match.medal_pic(i + 1)
+                title = f'{Match.medal(winner_result.rank)} '
+                image_url = Match.medal_pic(winner_result.rank)
 
             else:
-                title = f'{i+1}. '
+                title = f'{winner_result.rank}. '
                 image_url = None
 
             title += f'{winner_team.name}, {flag(winner_team.country.iso)}' \
@@ -152,7 +152,7 @@ class Match(FeedModel):
         conf = sport_by_name[self.meta.sport]
 
         if conf.result_type is ResultType.TIME and result.match_result:
-            if result.rank == 1:
+            if result.rank == self.winner_result.rank:
                 point_str = result.match_result
             else:
                 point_str = result.match_result - self.winner_result.match_result
@@ -162,7 +162,7 @@ class Match(FeedModel):
 
             point_str = Match.fmt_millis(point_str, digits=conf.result_digits)
 
-            if result.rank != 1:
+            if result.rank != self.winner_result.rank:
                 point_str = '+' + point_str
 
         elif conf.result_type is ResultType.POINTS and result.match_result:
