@@ -208,7 +208,7 @@
       article: das
 
 - name: Nordische Kombination
-  topic_id: None
+  topic_id: 1827
   result_type: TIME
   result_digits: 1
   competition_term: Rennen
@@ -267,7 +267,7 @@
       article: das
 
 - name: Ski Langlauf
-  topic_id: None
+  topic_id: 1764
   result_type: Time
   result_digits: 1
   competition_term: Rennen
