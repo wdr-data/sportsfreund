@@ -116,6 +116,7 @@ class MatchMeta(ListFeedModel):
                             '%Y-%m-%d %H:%M'
                         )
 
+                        ma['topic_id'] = topic_id
                         ma['event'] = cls.Event.WORLDCUP.value
 
                         cls.collection.replace_one({'id': ma['id']}, ma, upsert=True)
@@ -204,6 +205,7 @@ class MatchMeta(ListFeedModel):
                                 '%Y-%m-%d %H:%M'
                             )
 
+                            ma['topic_id'] = id
                             ma['event'] = cls.Event.OLYMPIA_18.value
 
                             cls.collection.replace_one({'id': ma['id']}, ma, upsert=True)
