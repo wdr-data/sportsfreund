@@ -245,8 +245,8 @@ def result_game(event, match):
     home = results[0]
     away = results[1]
     if len(results) == 2:
-        reply += f'{home.team.name}{flag(away.team.county.iso)}  {home.match_result}:' \
-                 f'{away.match_result}  {flag(away.team.county.iso)}{away.team.name}'
+        reply += f'{home.team.name}{flag(away.team.country.iso)}  {home.match_result}:' \
+                 f'{away.match_result}  {flag(away.team.country.iso)}{away.team.name}'
     else:
         reply += 'Sorry, aber da muss ich nochmal in meine Datenbank schauen.'
         logger.debug(f'More than two oponents in a tournament match {match.id}')
