@@ -219,16 +219,16 @@ def result_by_country(event, payload):
 
 def send_result(event, match):
 
-    if 'medals' in match.meta and match.meta.medals == 'complete' or match.meta.event != 'owg18':
+    if match.sport == 'Eishockey' or match.sport == 'Curling':
+        result_game(event, match)
+        return
 
-        if match.sport == 'Eishockey' or match.sport == 'Curling':
-            result_game(event, match)
-        else:
-            event.send_list(
+    if 'medals' in match.meta and match.meta.medals == 'complete' or match.meta.event != 'owg18':
+        event.send_list(
                 match.lst_podium,
                 top_element_style='large',
                 button=match.btn_podium
-            )
+        )
         return
 
     result_total(event, {'result_total': match.id, 'step': 'round_mode'})
