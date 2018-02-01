@@ -100,6 +100,7 @@ def medal_list(event, payload):
             for m in medals[10:])
 
         event.send_text(f'{country_rank}')
+        event.send_text(f'Alle anderen teilnehmenden Länder haben noch keine Medaillen gewonnen.')
 
 
 handlers= [
