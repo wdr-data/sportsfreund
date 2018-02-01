@@ -38,7 +38,9 @@ class MedalsTable(ListFeedModel):
         except:
             pass
 
-        filter = base_filter.copy()
+        filter = {}
+        filter['id'] = {'$exists': True}
+        filter.update(base_filter)
 
         if country is not None:
             filter['country.name'] = country
@@ -94,4 +96,4 @@ class MedalsTable(ListFeedModel):
                                       {'second': {'$ne': 0}},
                                       {'third': {'$ne': 0}}]})
 
-        return [cls(**result) for result in cursor[:cursor.count()-1]]
+        return [cls(**result) for result in cursor]
