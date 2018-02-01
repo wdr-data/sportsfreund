@@ -93,4 +93,8 @@ def parse_intent(data):
     name = data['name']
     questions = [obj['data'][0]['text'] for obj in data['userSays']]
     answers = data['responses'][0]['messages'][0]['speech']
+
+    if isinstance(answers, str):
+        answers = [answers]
+
     return name, questions, answers
