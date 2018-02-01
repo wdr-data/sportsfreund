@@ -181,6 +181,7 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
 
         reply += f"{match_meta.sport}, "
 
+        """
         type = discipline_config(match_meta.sport, match_meta.discipline_short).competition_type
         if type == 'ROBIN' or type == 'TOURNAMENT':
                 home = match_meta.home
@@ -188,8 +189,9 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
                 reply += f"{match_meta.discipline_short}{gender}"
                 reply += f'\n{home.name}{flag(home.country.iso)}:' \
                          f'{flag(away.country.iso)}{away.name}'
-        else:
-                reply += f"{match_meta.discipline_short}{gender} in {match_meta.town}"
+        else: \
+        """
+        reply += f"{match_meta.discipline_short}{gender} in {match_meta.town}"
 
         if match_meta.get('event') != 'owg18': # owg = olympic_winter_games
             reply += f" {flag(match_meta.venue.country.iso)} {match_meta.venue.country.code}"
