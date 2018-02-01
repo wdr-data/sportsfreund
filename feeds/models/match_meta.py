@@ -51,6 +51,10 @@ class MatchMeta(ListFeedModel):
             return None
 
     @classmethod
+    def by_round_id(cls, round_id):
+        return cls.query(round_id=round_id)
+
+    @classmethod
     def transform(cls, obj, topic_id, now):
         # Single-element list at top level
         sp = obj[0]  # sport object
@@ -148,8 +152,10 @@ class MatchMeta(ListFeedModel):
 
                             if isinstance(config, dict) and 'rounds' in config:
                                 ma['round_mode'] = ro['name']
+                                ma['round_id'] = ro['id']
                             else:
                                 ma['round_mode'] = None
+                                ma['round_id'] = None
 
                             if 'match_meta' in ma:
                                 for element in ma['match_meta']:
