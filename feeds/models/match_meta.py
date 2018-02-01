@@ -34,6 +34,27 @@ class MatchMeta(ListFeedModel):
         except ValueError:
             pass
 
+    def __getattr__(self, item):
+        try:
+            return super().__getattr__(item)
+        except KeyError:
+            if item == 'venue':
+                return {
+                    "id": "9999",
+                    "name": "Great Hall",
+                    "town": {
+                        "id": "4999",
+                        "name": "veng wa'DIch",
+                    },
+                    "country": {
+                        "id": "999",
+                        "name": "Qo'noS",
+                        "code": "TNG",
+                        "iso": "🏳️‍🌈",
+                    },
+                }
+
+
     @property
     def town(self):
         return self.venue.town.name
