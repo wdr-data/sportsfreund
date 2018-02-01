@@ -124,10 +124,51 @@
   competition_term: Spiel
   article: das
   disciplines:
-    - name: Olympia
+    - name: Gruppe A
       rounds: True
       competition_type: TOURNAMENT
       article: das
+    - name: Gruppe B
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Gruppe C
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Viertelfinale
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Halbfinale
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Finale
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Qualifikationsrunde
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: 3. Platz
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: 7. Platz
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: 5. Platz
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Platzierungsrunde
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+
 
 - name: Bob
   topic_id: null
@@ -151,7 +192,27 @@
   competition_term: Spiel
   article: das
   disciplines:
-    - name: Olympia
+    - name: Round Robin
+      rounds: True
+      competition_type: ROBIN
+      article: das
+    - name: Tie-breaker
+      rounds: True
+      competition_type: ROBIN
+      article: das
+    - name: Viertelfinale
+      rounds: True
+      competition_type: ROBIN
+      article: das
+    - name: Halbfinale
+      rounds: True
+      competition_type: ROBIN
+      article: das
+    - name: 3. Platz
+      rounds: True
+      competition_type: ROBIN
+      article: das
+    - name: Finale
       rounds: True
       competition_type: ROBIN
       article: das
