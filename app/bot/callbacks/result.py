@@ -219,7 +219,7 @@ def result_by_country(event, payload):
 
 def send_result(event, match):
 
-    if match.sport == 'Eishockey' or match.sport == 'Curling':
+    if match.meta.sport == 'Eishockey' or match.meta.sport == 'Curling':
         result_game(event, match)
         return
 
