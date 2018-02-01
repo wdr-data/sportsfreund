@@ -1,13 +1,20 @@
 from feeds.models.medal import Medal
+from feeds.models.medals_table import MedalsTable
 from feeds.models.match import Match
+from lib.response import button_postback
+from ..handlers.payloadhandler import PayloadHandler
 
 from itertools import zip_longest
 from datetime import datetime
+
+from feeds.models.team import Team
+from lib.flag import flag
 
 
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return zip_longest(*args, fillvalue=fillvalue)
+
 
 def medals(event, parameters, **kwargs):
     sport = parameters.get('sport')
@@ -21,34 +28,81 @@ def medals(event, parameters, **kwargs):
         medals = Medal.search_date(date=date, sport=sport,
                                    discipline=discipline, gender=gender, country=country)
     else:
-        medals = Medal.search_last(sport=sport, discipline=discipline,
-                                   gender=gender, country=country)
+        medals = [Medal.search_last(sport=sport, discipline=discipline,
+                                   gender=gender, country=country)]
 
     if not medals:
         event.send_text('In diesem Zeitraum hat kein Event stattgefunden '
                         'oder es wurde noch nicht beendet')
         return
 
-    elif len(medals) > 9:
-        event.send_text('Ich habe zu viele Medaillentscheidungen zu deiner Suchanfrage gefunden, '
-                        'als dass ich sie jetzt alle anzeigen könnte. Schränke deine Frage ein, '
-                        'z.B. nach Sportart, Datum oder Herren/Damen.')
-
     else:
-        medalsets = grouper(medals, 3)
-        for set in medalsets:
+        for medal in medals:
             winner = '\n'.join(
                 '{i} {winner}'.format(
                     i=Match.medal(i + 1),
                     winner=' '.join([member.team.name,
-                                     member.team.country.code]))
-                for i, member in enumerate(set))
+                                     flag(Team.by_id(member.team.id).country.iso)]))
+                for i, member in enumerate(medal.ranking))
 
-            event.send(f'Medaillen für {sport} {discipline} {gender} am {date}: \n'
-                       f'{winner}'.format(
-                sport = set.sport,
-                discipline = set.discipline_short,
-                gender = set.gender,
-                date = set.end_date,
-                winner = winner,
-            ))
+            event.send_text(
+                'Medaillen für {sport}{discipline} {gender} am {date}: \n\n{winner}'.format(
+                    sport=medal.sport,
+                    discipline=f' {medal.discipline_short}' if medal.discipline_short else '',
+                    gender=medal.gender_name,
+                    date=medal.end_date.strftime('%d.%m.%Y'),
+                    winner=winner,
+                )
+            )
+
+        if len(medals) > 3:
+            event.send_text(
+                'Ich habe zu viele Medaillentscheidungen zu deiner Suchanfrage gefunden, '
+                'als dass ich sie jetzt alle anzeigen könnte. Schränke deine Frage ein, '
+                'z.B. nach Sportart, Datum oder Herren/Damen.')
+
+def medals_table(event, parameters, **kwargs):
+    country = parameters.get('country')
+
+    if country:
+        medals = MedalsTable.by_country(country=country)
+
+        event.send_text(
+            f'{country} im Medaillenspiegel:\nPlatz {medals.rank}\n'
+            f'{str(medals.first)} Gold {Match.medal(1)}\n'
+            f'{str(medals.second)} Silber {Match.medal(2)}\n'
+            f'{str(medals.third)} Bronze {Match.medal(3)}'
+        )
+
+    else:
+        medals = MedalsTable.top(number=10)
+
+        if medals:
+            country_rank = '\n'.join(
+                f'{str(m.rank)}. {m.country.name}:'
+                f'{Match.medal(1)} {m.first} '
+                f'{Match.medal(2)} {m.second} '
+                f'{Match.medal(3)} {m.third}'
+            for m in medals)
+
+            event.send_buttons(f'{country_rank}',
+                            buttons=[button_postback('Und der Rest?', ['medal_list'])])
+
+def medal_list(event, payload):
+    medals = MedalsTable.with_medals()
+
+    if medals:
+        country_rank = '\n'.join(
+            f'{str(m.rank)}. {m.country.name}:'
+            f'{Match.medal(1)} {m.first} '
+            f'{Match.medal(2)} {m.second} '
+            f'{Match.medal(3)} {m.third}'
+            for m in medals[10:])
+
+        event.send_text(f'{country_rank}')
+        event.send_text(f'Alle anderen teilnehmenden Länder haben noch keine Medaillen gewonnen.')
+
+
+handlers= [
+    PayloadHandler(medal_list, ['medal_list']),
+]

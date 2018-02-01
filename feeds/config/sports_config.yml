@@ -81,7 +81,7 @@
       article: das
 
 - name: Skeleton
-  topic_id: None
+  topic_id: null
   result_type: TIME
   result_digits: 2
   competition_term: Rennen
@@ -93,7 +93,7 @@
       article: das
 
 - name: Ski Freestyle
-  topic_id: None
+  topic_id: null
   result_type: POINTS
   result_digits: 1
   competition_term: Event
@@ -118,20 +118,62 @@
 
 
 - name: Eishockey
-  topic_id: None
+  topic_id: null
   result_type: POINTS
   result_digits: 1
   competition_term: Spiel
   article: das
   disciplines:
-    - name: Olympia
+    - name: Gruppe A
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Gruppe B
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Gruppe C
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Viertelfinale
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Halbfinale
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Finale
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Qualifikationsrunde
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: 3. Platz
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: 7. Platz
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: 5. Platz
+      rounds: True
+      competition_type: TOURNAMENT
+      article: das
+    - name: Platzierungsrunde
+      rounds: True
       competition_type: TOURNAMENT
       article: das
 
+
 - name: Bob
-  topic_id: None
-  result_type: POINTS
-  result_digits: 1
+  topic_id: null
+  result_type: TIME
+  result_digits: 2
   competition_term: Rennen
   article: das
   disciplines:
@@ -144,18 +186,39 @@
       article: das
 
 - name: Curling
-  topic_id: None
+  topic_id: null
   result_type: POINTS
   result_digits: 1
   competition_term: Spiel
   article: das
   disciplines:
-    - name: Olympia
+    - name: Round Robin
+      rounds: True
+      competition_type: ROBIN
+      article: das
+    - name: Tie-breaker
+      rounds: True
+      competition_type: ROBIN
+      article: das
+    - name: Viertelfinale
+      rounds: True
+      competition_type: ROBIN
+      article: das
+    - name: Halbfinale
+      rounds: True
+      competition_type: ROBIN
+      article: das
+    - name: 3. Platz
+      rounds: True
+      competition_type: ROBIN
+      article: das
+    - name: Finale
+      rounds: True
       competition_type: ROBIN
       article: das
 
 - name: Eiskunstlauf
-  topic_id: None
+  topic_id: null
   result_type: POINTS
   result_digits: 1
   competition_term: Event
@@ -179,7 +242,7 @@
       article: das
 
 - name: Eisschnelllauf
-  topic_id: None
+  topic_id: null
   result_type: POINTS
   result_digits: 1
   competition_term: Rennen
@@ -206,8 +269,8 @@
       article: das
 
 - name: Nordische Kombination
-  topic_id: None
-  result_type: POINTS
+  topic_id: 1827
+  result_type: TIME
   result_digits: 1
   competition_term: Rennen
   article: das
@@ -223,9 +286,9 @@
       article: das
 
 - name: Rodeln
-  topic_id: None
+  topic_id: null
   result_type: TIME
-  result_digits: 2
+  result_digits: 3
   competition_term: Rennen
   article: das
   disciplines:
@@ -241,7 +304,7 @@
       article: der
 
 - name: Shorttrack
-  topic_id: None
+  topic_id: null
   result_type: TIME
   result_digits: 1
   competition_term: Rennen
@@ -265,7 +328,7 @@
       article: das
 
 - name: Ski Langlauf
-  topic_id: None
+  topic_id: 1764
   result_type: Time
   result_digits: 1
   competition_term: Rennen
@@ -292,7 +355,7 @@
       article: das
 
 - name: Snowboard
-  topic_id: None
+  topic_id: null
   result_type: POINTS
   result_digits: 1
   competition_term: Event

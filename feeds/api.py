@@ -72,6 +72,15 @@ def medals(**kwargs):
     return api_request('medals', kwargs)
 
 
+def medals_table(**kwargs):
+    """
+
+    :param to: Topic ID
+    :return:
+    """
+    return api_request('medals-table', kwargs)
+
+
 def match(**kwargs):
     """
 
@@ -88,6 +97,15 @@ def team(**kwargs):
     :return:
     """
     return api_request('team', kwargs)
+
+
+def person(**kwargs):
+    """
+
+    :param pe: Person ID
+    :return:
+    """
+    return api_request('person', kwargs)
 
 
 def season(**kwargs):

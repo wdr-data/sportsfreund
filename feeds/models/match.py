@@ -100,7 +100,7 @@ class Match(FeedModel):
 
     @property
     def lst_podium(self):
-        winner_results = self.results[:3]
+        winner_results = [r for r in self.results[:3] if r.rank in (1, 2, 3)]
         winner_teams = [winner.team for winner in winner_results]
 
         for r in winner_results:
@@ -110,35 +110,41 @@ class Match(FeedModel):
         date = datetime.strptime(self.match_date, '%Y-%m-%d')
 
         config = discipline_config(self.meta.sport, self.meta.discipline_short)
-        if isinstance(config, dict) and 'rounds' in config and config['rounds']:
+        if isinstance(config, dict) and 'rounds' in config and config['rounds'] \
+                and self.meta.event == MatchMeta.Event.OLYMPIA_18:
             header_text = f'++ {self.meta.round_mode} ++ '
         else:
             header_text = ''
 
-        header_text += f'{self.meta.sport}, {self.meta.discipline_short}, {self.meta.gender_name}' \
-                       f' in {self.venue.town.name} {day_name[date.weekday()]},' \
-                       f' {date.strftime("%d.%m.%Y")} um {self.match_time} Uhr'
+        header_text += f'{self.meta.sport}, {self.meta.discipline_short}, {self.meta.gender_name}'
+        header_sbtl = f'{day_name[date.weekday()]}, {date.strftime("%d.%m.%Y")} ' \
+                      f'um {self.match_time} Uhr in {self.venue.town.name}'
 
         header = [list_element(
             header_text,
-            image_url='https://i.imgur.com/DnWwUM5.jpg' if self.meta.sport == 'Ski Alpin'
+            header_sbtl,
+            image_url='https://i.imgur.com/7ZgRGvd.jpg' if self.meta.sport == 'Ski Alpin'
             else 'https://i.imgur.com/Bu05xF6.jpg'
         )]
 
-        for i, (winner_team, winner_result) in enumerate(zip(winner_teams, winner_results)):
+        for winner_team, winner_result in zip(winner_teams, winner_results):
             if 'medals' in self.meta and self.meta.medals == 'complete':
-                reply = f'{Match.medal(i + 1)} '
+                title = f'{Match.medal(winner_result.rank)} '
+                image_url = Match.medal_pic(winner_result.rank)
 
             else:
-                reply = f'{i+1}. '
+                title = f'{winner_result.rank}. '
+                image_url = None
 
-            reply += f'{winner_team.name}, {flag(winner_team.country.iso)} ' \
-                     f'{winner_team.country.code} {self.txt_points(winner_result)}'
+            title += f'{winner_team.name}, {flag(winner_team.country.iso)}' \
+                     f' {winner_team.country.code} '
+            subtl = f'{self.txt_points(winner_result)}'
 
             header.append(
                 list_element(
-                    reply,
-                    image_url=Match.medal_pic(i + 1)))
+                    title,
+                    subtl,
+                    image_url=image_url))
 
         return header
 
@@ -146,7 +152,7 @@ class Match(FeedModel):
         conf = sport_by_name[self.meta.sport]
 
         if conf.result_type is ResultType.TIME and result.match_result:
-            if result.rank == 1:
+            if result.rank == self.winner_result.rank:
                 point_str = result.match_result
             else:
                 point_str = result.match_result - self.winner_result.match_result
@@ -156,7 +162,7 @@ class Match(FeedModel):
 
             point_str = Match.fmt_millis(point_str, digits=conf.result_digits)
 
-            if result.rank != 1:
+            if result.rank != self.winner_result.rank:
                 point_str = '+' + point_str
 
         elif conf.result_type is ResultType.POINTS and result.match_result:
@@ -170,7 +176,7 @@ class Match(FeedModel):
 
     @property
     def btn_podium(self):
-        return button_postback('Mehr Platzierungen', {'result_details': self.id})
+        return button_postback('Mehr Platzierungen', {'result_total': self.id, 'step': 'top_10'})
 
     @property
     def txt_podium(self):
@@ -192,6 +198,9 @@ class Match(FeedModel):
             2: '🥈',
             3: '🥉'
         }
+        for i in range(4, 150):
+            medals[i] = str(i)
+
         return medals[rank]
 
     @staticmethod

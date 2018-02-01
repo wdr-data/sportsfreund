@@ -6,7 +6,7 @@ import random
 
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
-from feeds.config import supported_sports, sport_by_name
+from feeds.config import supported_sports, sport_by_name, discipline_config
 from lib.flag import flag
 from .result import api_podium
 
@@ -179,10 +179,21 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
         else:
             reply = f'{match_meta.match_time} Uhr - '
 
-        reply = reply + f"{match_meta.sport}, " \
-                        f"{match_meta.discipline_short}{gender} in {match_meta.town}"
+        reply += f"{match_meta.sport}, "
 
-        if match_meta.get('event') != 'owg18': # owg = olympic_winter_games
+        """
+        type = discipline_config(match_meta.sport, match_meta.discipline_short).competition_type
+        if type == 'ROBIN' or type == 'TOURNAMENT':
+                home = match_meta.home
+                away = match_meta.away
+                reply += f"{match_meta.discipline_short}{gender}"
+                reply += f'\n{home.name}{flag(home.country.iso)}:' \
+                         f'{flag(away.country.iso)}{away.name}'
+        else: \
+        """
+        reply += f"{match_meta.discipline_short}{gender} in {match_meta.town}"
+
+        if match_meta.get('event') != MatchMeta.Event.OLYMPIA_18:
             reply += f" {flag(match_meta.venue.country.iso)} {match_meta.venue.country.code}"
 
         reply += '.'

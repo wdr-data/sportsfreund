@@ -103,12 +103,12 @@ services:
     volumes:
       - redis_data:/data
   localtunnel:
-    image: efrecon/localtunnel
+    image: wdrdata/localtunnel
     env_file: .env
     restart: always
     depends_on:
       - web
-    command: --port 8080 --subdomain ${TUNNEL_NAME}
+    command: --port 8080 --subdomain ${TUNNEL_NAME} --host https://lt.infra.wdr.cloud
     network_mode: "host"
   worker_dashboard:
     build:
