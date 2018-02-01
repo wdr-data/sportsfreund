@@ -33,7 +33,8 @@ class Send(Task):
         logger.debug("JSON Payload: " + json.dumps(payload))
 
         headers = {'Content-Type': 'application/json'}
-        r = requests.post("https://graph.facebook.com/v2.6/me/messages?access_token=" + PAGE_TOKEN,
+        r = requests.post("https://graph.facebook.com/v2.6/me/messages",
+                          params={'access_token': PAGE_TOKEN},
                           data=json.dumps(payload),
                           headers=headers)
         response = r.content.decode()

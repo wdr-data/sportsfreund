@@ -39,7 +39,8 @@ def upload_attachment(url, type=None, retries=3):
     for i in range(retries):
         try:
             r = requests.post(
-                "https://graph.facebook.com/v2.6/me/message_attachments?access_token=" + FB_PAGE_TOKEN,
+                "https://graph.facebook.com/v2.6/me/message_attachments",
+                params={'access_token': FB_PAGE_TOKEN},
                 data=json.dumps(payload),
                 headers=headers)
             return json.loads(r.content.decode())['attachment_id']
