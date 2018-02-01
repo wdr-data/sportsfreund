@@ -153,17 +153,16 @@ def result_total(event, payload):
     config = discipline_config(match.meta.sport, match.meta.discipline_short)
 
     if isinstance(config, dict) and 'rounds' in config and config['rounds']:
-        date = datetime.strptime(match.match_date, '%Y-%m-%d')
         reply = f'++ {match.meta.round_mode} ++ {match.meta.sport}, ' \
                 f'{match.meta.discipline_short}, {match.meta.gender_name}'
 
         if step == 'top_10':
-            reply += f'\n{day_name[date.weekday()]},' \
-                     f' {date.strftime("%d.%m.%Y")} ' \
+            reply += f'\n{day_name[match.datetime.weekday()]},' \
+                     f' {match.datetime.strftime("%d.%m.%Y")} ' \
                      f'um {match.match_time} Uhr in {match.venue.town.name}'
         elif step == 'round_mode':
-            reply += f'\n{day_name[date.weekday()]},' \
-                     f' {date.strftime("%d.%m.%Y")} ' \
+            reply += f'\n{day_name[match.datetime.weekday()]},' \
+                     f' {match.datetime.strftime("%d.%m.%Y")} ' \
                      f'um {match.match_time} Uhr in {match.venue.town.name}'
     else:
         reply = f'Hier die {result_kind} zu {match.meta.sport} {match.meta.discipline_short} ' \
@@ -240,10 +239,9 @@ def send_result(event, match):
 
 def result_game(event, match):
 
-    date = datetime.strptime(match.match_date, '%Y-%m-%d')
     reply = f'{match.meta.sport}, {match.meta.gender_name} ++ {match.meta.round_mode} ++ '
-    reply += f'\n{day_name[date.weekday()]}, ' \
-             f'{date.strftime("%d.%m.%Y")} um {match.match_time} Uhr\n'
+    reply += f'\n{day_name[match.datetime.weekday()]}, ' \
+             f'{match.datetime.strftime("%d.%m.%Y")} um {match.match_time} Uhr\n'
 
     results = match.results
     home = results[0]
