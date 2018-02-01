@@ -6,13 +6,13 @@ from pymongo import ASCENDING, DESCENDING
 from lib.mongodb import db
 from .model import ListFeedModel
 from .. import api
-from feeds.config import sport_by_name
 
 
 FEED_PARAMS = {
     548: {'df': '2014-02-07-00-00', 'dt': '2014-02-23-00-00'},  # Sotchi
     1757: {'df': '2018-02-09-00-00', 'dt': '2018-02-26-00-00'},  # PyeongChang
 }
+
 
 class Medal(ListFeedModel):
     collection = db.medals
@@ -24,10 +24,9 @@ class Medal(ListFeedModel):
         kwargs['dt'] = FEED_PARAMS[int(kwargs[cls.api_id_name])]['dt']
         return api.medals(**kwargs)
 
-
     def __init__(self, *args, **kwargs):
         """
-        Match metadata model. Do not create instances using this constructor, only use the
+        Medal model. Do not create instances using this constructor, only use the
         provided factory methods.
 
         @DynamicAttrs
@@ -61,7 +60,6 @@ class Medal(ListFeedModel):
 
                     cls.collection.replace_one({'id': se['id']}, se, upsert=True)
 
-
     @classmethod
     def _search(cls, base_filter, sport, discipline, gender, country, sorting=[]):
 
@@ -88,8 +86,8 @@ class Medal(ListFeedModel):
         return cls.collection.find(filter).sort(
             sorting +
             [
-                ('sport', DESCENDING),
-                ('discipline_short', DESCENDING),
+                ('sport', ASCENDING),
+                ('discipline_short', ASCENDING),
             ]
         )
 
@@ -102,7 +100,7 @@ class Medal(ListFeedModel):
         :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
         :param gender: Filter by gender (eg: male, female, mixed)
         :param country: Filter by country
-        :return: A `MatchMeta` object of the corresponding match, or `None` if no match was found
+        :return: A `Medal` object of the corresponding match, or `None` if no match was found
         """
 
         cursor = cls._search(
@@ -124,13 +122,48 @@ class Medal(ListFeedModel):
         :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
         :param gender: Filter by gender (eg: male, female, mixed)
         :param country: Filter by country
-        :return: A list of `MatchMeta` objects
+        :return: A list of `Medal` objects
         """
 
         filter = {
             'end_date': datetime(date.year, date.month, date.day)
         }
 
-        cursor = cls._search(filter, sport, discipline, gender, country).sort([("datetime", 1)])
+        cursor = cls._search(filter, sport, discipline, gender, country)
+
+        return [cls(**result) for result in cursor]
+
+    @classmethod
+    def search_range(cls, *, from_date=None, until_date=None, sport=None, discipline=None,
+                     gender=None, country=None):
+        """
+        Searches for matches on a specific day and returns details about them
+
+        :param from_date: A `datetime.date` object specifying the first date to search
+        :param until_date: A `datetime.date` object specifing the last date to search
+        :param sport: Filter by the name of the sport (eg. "Ski Alpin")
+        :param discipline: Filter by the short-name of the discipline (eg. "Slalom")
+        :param gender: Filter by gender (eg: male, female, mixed)
+        :param country: Filter by country
+        :return: A list of `Medal` objects
+        """
+
+        filter = {
+            'end_date': {},
+        }
+
+        if from_date:
+            if not isinstance(from_date, datetime):
+                from_date = datetime(from_date.year, from_date.month, from_date.day)
+            filter['end_date']['$gte'] = from_date
+
+        if until_date:
+            if not isinstance(until_date, datetime):
+                until_date = datetime(until_date.year, until_date.month, until_date.day,
+                                      hour=23, minute=59, second=59)
+            filter['end_date']['$lte'] = until_date
+
+        cursor = cls._search(
+            filter, sport, discipline, gender, country, sorting=[('end_date', ASCENDING)])
 
         return [cls(**result) for result in cursor]
