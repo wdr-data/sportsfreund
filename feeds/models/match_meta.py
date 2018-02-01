@@ -27,6 +27,8 @@ class MatchMeta(ListFeedModel):
         super().__init__(*args, **kwargs)
         try:
             self.event = self.Event(self.event)
+        except KeyError:
+            self.event = None
         except ValueError:
             pass
 
