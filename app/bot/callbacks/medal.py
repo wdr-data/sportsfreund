@@ -97,7 +97,7 @@ def medal_list(event, payload):
             f'{Match.medal(1)} {m.first} '
             f'{Match.medal(2)} {m.second} '
             f'{Match.medal(3)} {m.third}'
-            for m in medals)
+            for m in medals[10:])
 
         event.send_text(f'{country_rank}')
 
