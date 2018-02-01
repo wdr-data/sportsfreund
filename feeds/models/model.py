@@ -58,17 +58,14 @@ class FeedModel(Model):
 
         cached = cls.collection.find_one({'id': id})
 
-        if cached:
+        if cached and not clear_cache:
             cls.logger.debug('Cache hit for %s with id %s', cls.__name__, id)
 
-            if clear_cache:
-                cls.logger.debug('Force-clear cache for %s with id %s', cls.__name__, id)
-
-            elif cached['_cached_at'] + cls.cache_time < time():
-                cls.logger.debug('Cache expired for %s with id %s', cls.__name__, id)
-
-            else:
+            if cached['_cached_at'] + cls.cache_time > time():
                 return cls(**cached)
+
+            cls.logger.debug('Cache expired for %s with id %s', cls.__name__, id)
+
 
         obj = cls.api_function(**{cls.api_id_name: id})
 
