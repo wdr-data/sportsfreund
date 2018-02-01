@@ -249,9 +249,23 @@ def result_game(event, match):
     home = results[0]
     away = results[1]
     if len(results) == 2:
-        reply += f'{home.team.name} {flag(home.team.country.iso)} ' \
+        if match.meta.round_mode == 'Finale':
+            home_medal = Match.medal(1) if home.match_result > \
+                                             away.match_result else Match.medal(2)
+            away_medal = Match.medal(2) if home.match_result > \
+                                             away.match_result else Match.medal(1)
+        elif match.meta.round_mode == '3. Platz':
+            home_medal = Match.medal(3) if home.match_result > \
+                                             away.match_result else f'{Match.medal(4)}.'
+            away_medal = f'{Match.medal(4)}.' if home.match_result > \
+                                             away.match_result else Match.medal(3)
+        else:
+            home_medal = ''
+            away_medal = ''
+
+        reply += f'{home_medal} {home.team.name} {flag(home.team.country.iso)} ' \
                  f' {emoji_number(home.match_result)}➖{emoji_number(away.match_result)}' \
-                 f'  {flag(away.team.country.iso)} {away.team.name}'
+                 f'  {flag(away.team.country.iso)} {away.team.name} {away_medal}'
     else:
         reply += 'Sorry, aber da muss ich nochmal in meine Datenbank schauen.'
         logger.debug(f'More than two oponents in a tournament match {match.id}')
