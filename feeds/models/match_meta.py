@@ -200,7 +200,7 @@ class MatchMeta(ListFeedModel):
         return True
 
     @classmethod
-    def load_feeds(cls, sport=None):
+    def load_all_feeds(cls, sport=None):
         if sport is not None:
             try:
                 id = sport_by_name[sport].topic_id
@@ -220,7 +220,7 @@ class MatchMeta(ListFeedModel):
     def _search(cls, base_filter, sport, discipline,
                 town, country, gender, round_mode):
 
-        cls.load_feeds(sport)
+        cls.load_all_feeds(sport)
 
         filter = base_filter.copy()
 
