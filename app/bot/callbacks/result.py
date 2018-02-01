@@ -221,9 +221,7 @@ def send_result(event, match):
 
     if 'medals' in match.meta and match.meta.medals == 'complete' or match.meta.event != 'owg18':
 
-        type = discipline_config(match.sport, match.discipline_short).competition_type
-        if type == 'ROBIN' or type == 'TOURNAMENT':
-            # Ice Hockey Result
+        if match.sport == 'Eishockey' or match.sport == 'Curling':
             result_game(event, match)
         else:
             event.send_list(
