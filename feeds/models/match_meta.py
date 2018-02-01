@@ -217,12 +217,12 @@ class MatchMeta(ListFeedModel):
             cls.load_olympia_feed(id)
 
     @classmethod
-    def _search(cls, base_filter, sport, discipline,
-                town, country, gender, round_mode):
+    def _search(cls, base_filter=None, sport=None, discipline=None,
+                town=None, country=None, gender=None, round_mode=None):
 
         cls.load_all_feeds(sport)
 
-        filter = base_filter.copy()
+        filter = base_filter.copy() if base_filter is not None else {}
 
         if sport is not None:
             filter['sport'] = sport
