@@ -81,7 +81,7 @@
       article: das
 
 - name: Skeleton
-  topic_id: None
+  topic_id: null
   result_type: TIME
   result_digits: 2
   competition_term: Rennen
@@ -93,7 +93,7 @@
       article: das
 
 - name: Ski Freestyle
-  topic_id: None
+  topic_id: null
   result_type: POINTS
   result_digits: 1
   competition_term: Event
@@ -118,7 +118,7 @@
 
 
 - name: Eishockey
-  topic_id: None
+  topic_id: null
   result_type: POINTS
   result_digits: 1
   competition_term: Spiel
@@ -130,7 +130,7 @@
       article: das
 
 - name: Bob
-  topic_id: None
+  topic_id: null
   result_type: POINTS
   result_digits: 1
   competition_term: Rennen
@@ -145,7 +145,7 @@
       article: das
 
 - name: Curling
-  topic_id: None
+  topic_id: null
   result_type: POINTS
   result_digits: 1
   competition_term: Spiel
@@ -157,7 +157,7 @@
       article: das
 
 - name: Eiskunstlauf
-  topic_id: None
+  topic_id: null
   result_type: POINTS
   result_digits: 1
   competition_term: Event
@@ -181,7 +181,7 @@
       article: das
 
 - name: Eisschnelllauf
-  topic_id: None
+  topic_id: null
   result_type: POINTS
   result_digits: 1
   competition_term: Rennen
@@ -225,7 +225,7 @@
       article: das
 
 - name: Rodeln
-  topic_id: None
+  topic_id: null
   result_type: TIME
   result_digits: 2
   competition_term: Rennen
@@ -243,7 +243,7 @@
       article: der
 
 - name: Shorttrack
-  topic_id: None
+  topic_id: null
   result_type: TIME
   result_digits: 1
   competition_term: Rennen
@@ -294,7 +294,7 @@
       article: das
 
 - name: Snowboard
-  topic_id: None
+  topic_id: null
   result_type: POINTS
   result_digits: 1
   competition_term: Event
