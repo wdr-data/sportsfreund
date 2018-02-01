@@ -112,7 +112,6 @@ class Match(FeedModel):
         for r in winner_results:
             r.match_result = int(r.match_result)
 
-        winning_points = winner_results[0].match_result
         date = datetime.strptime(self.match_date, '%Y-%m-%d')
 
         config = discipline_config(self.meta.sport, self.meta.discipline_short)
