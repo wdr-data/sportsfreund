@@ -99,6 +99,15 @@ def team(**kwargs):
     return api_request('team', kwargs)
 
 
+def person(**kwargs):
+    """
+
+    :param pe: Person ID
+    :return:
+    """
+    return api_request('person', kwargs)
+
+
 def season(**kwargs):
     """
 
