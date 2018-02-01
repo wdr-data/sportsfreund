@@ -125,6 +125,7 @@
   article: das
   disciplines:
     - name: Olympia
+      rounds: True
       competition_type: TOURNAMENT
       article: das
 
@@ -151,6 +152,7 @@
   article: das
   disciplines:
     - name: Olympia
+      rounds: True
       competition_type: ROBIN
       article: das
 
