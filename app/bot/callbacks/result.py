@@ -243,7 +243,7 @@ def result_game(event, match):
 
     results = match.results
     home = results[0]
-    away = resutls[1]
+    away = results[1]
     if len(results) == 2:
         reply += f'{home.team.name}{flag(away.team.county.iso)}  {home.match_result}:' \
                  f'{away.match_result}  {flag(away.team.county.iso)}{away.team.name}'
