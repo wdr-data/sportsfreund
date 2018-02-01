@@ -37,6 +37,7 @@ def make_event_handler():
     handlers.extend(subscription.handlers)
     handlers.extend(result.handlers)
     handlers.extend(video.handlers)
+    handlers.extend(medal.handlers)
 
     handlers.extend([
         ApiAiHandler(greetings, 'gruss'),
@@ -91,6 +92,7 @@ def make_event_handler():
 
         # info.medal
         ApiAiHandler(medal.medals, 'info.medals.filtered'),
+        ApiAiHandler(medal.medals_table, 'info.medals.table'),
 
         # dirty
         ApiAiHandler(dirty.force_start, 'dirty.force_start'),

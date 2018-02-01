@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import random
 
 from mrq.task import Task
@@ -8,12 +8,15 @@ from backend.models import Report
 from bot.callbacks.shared import send_push, send_report
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
+from feeds.models.medal import Medal
 from feeds.models.subscription import Subscription
 from feeds.models.team import Team
 from feeds.config import sport_by_name, CompetitionType, ResultType
+from lib.flag import flag
 from lib.push import Push
 from lib.response import Replyable, SenderTypes
 from lib import queue
+from lib.mongodb import db
 
 MATCH_CHECK_INTERVAL = 60
 
@@ -157,3 +160,58 @@ class SendReport(Task):
 
         report.delivered = True
         report.save()
+
+
+class SendMedals(Task):
+
+    def run(self, params):
+        """
+        Check for new medals and send them to subscribers
+
+        :param params:
+        :return:
+        """
+
+        recent_medals = Medal.search_range(
+            from_date=date.today() - timedelta(days=1), until_date=date.today())
+        print(recent_medals)
+
+        # Filter already sent medals
+        new_medals = [m for m in recent_medals if not db.pushed_medals.find_one({'id': m.id})]
+        print(new_medals)
+
+        for m in new_medals:
+            for r in m.ranking:
+                # Filter subscribers for the sport
+                medal_subs = Subscription.query(type=Subscription.Type.MEDAL,
+                                                filter={'country': r.team.country.name})
+                result_subs = Subscription.query(type=Subscription.Type.RESULT,
+                                                 filter={'sport': m.sport})
+
+                medal_psids = set(s.psid for s in medal_subs)
+                result_psids = set(s.psid for s in result_subs)
+
+                psids = medal_psids - result_psids
+
+                for psid in psids:
+                    event = Replyable({'sender': {'id': psid}}, type=SenderTypes.FACEBOOK)
+                    winners = '\n'.join(
+                        '{i} {winner}'.format(
+                            i=Match.medal(i + 1),
+                            winner=' '.join([member.team.name,
+                                             flag(Team.by_id(member.team.id).country.iso),
+                                             member.team.country.code]))
+                        for i, member in enumerate(m.ranking))
+
+                    event.send_text(
+                        'Medaillen-Benachrichtigung für {sport}{discipline} {gender}: \n\n'
+                        '{winners}'.format(
+                            sport=m.sport,
+                            discipline=f' {m.discipline_short}' if m.discipline_short else '',
+                            gender=m.gender_name,
+                            date=m.end_date.strftime('%d.%m.%Y'),
+                            winners=winners,
+                        )
+                    )
+
+            db.pushed_medals.insert_one({'id': m.id})
