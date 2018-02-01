@@ -179,8 +179,7 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
         else:
             reply = f'{match_meta.match_time} Uhr - '
 
-
-        reply += f"{match_meta.sport}, " \
+        reply += f"{match_meta.sport}, "
 
         type = discipline_config(match_meta.sport, match_meta.discipline_short).competition_type
         if type == 'ROBIN' or type == 'TOURNAMENT':
