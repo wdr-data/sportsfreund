@@ -83,8 +83,13 @@ class Match(FeedModel):
         Returns ordered end results
         :return:
         """
+
+        config = discipline_config(self.meta.sport, self.meta.discipline_short)
+        if config is None:
+            raise ValueError(f'Sports_config does not exist for {self.meta.sport}, '
+                             f'{self.meta.discipline_short}')
         return sorted(
-            (r for r in self.match_result if r.match_result_at == '0'),
+            (r for r in self.match_result if r.match_result_at == config.result_at),
             key=(lambda r: int(r.rank)))
 
     @property
