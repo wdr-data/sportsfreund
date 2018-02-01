@@ -222,7 +222,10 @@ class MatchMeta(ListFeedModel):
 
         cls.load_all_feeds(sport)
 
-        filter = base_filter.copy() if base_filter is not None else {}
+        filter = {}
+        filter['id'] = {'$exists': True}
+        if base_filter is not None:
+            filter.update(base_filter)
 
         if sport is not None:
             filter['sport'] = sport

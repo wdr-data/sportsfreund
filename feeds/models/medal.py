@@ -69,7 +69,9 @@ class Medal(ListFeedModel):
         except:
             pass
 
-        filter = base_filter.copy()
+        filter = {}
+        filter['id'] = {'$exists': True}
+        filter.update(base_filter)
 
         if sport is not None:
             filter['sport'] = sport
