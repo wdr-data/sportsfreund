@@ -25,6 +25,10 @@ class MatchMeta(ListFeedModel):
         @DynamicAttrs
         """
         super().__init__(*args, **kwargs)
+        try:
+            self.event = self.Event(self.event)
+        except ValueError:
+            pass
 
     @property
     def town(self):

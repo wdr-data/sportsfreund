@@ -193,7 +193,7 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
         """
         reply += f"{match_meta.discipline_short}{gender} in {match_meta.town}"
 
-        if match_meta.get('event') != 'owg18': # owg = olympic_winter_games
+        if match_meta.get('event') != MatchMeta.Event.OLYMPIA_18:
             reply += f" {flag(match_meta.venue.country.iso)} {match_meta.venue.country.code}"
 
         reply += '.'

@@ -18,9 +18,6 @@ class Medal(ListFeedModel):
     collection = db.medals
     api_id_name = 'to'
 
-    class Event(Enum):
-        OLYMPIA_18 = 'owg18'
-
     @classmethod
     def api_function(cls, **kwargs):
         kwargs['df'] = FEED_PARAMS[int(kwargs[cls.api_id_name])]['df']
