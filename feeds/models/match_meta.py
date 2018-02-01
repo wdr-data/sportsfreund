@@ -152,7 +152,8 @@ class MatchMeta(ListFeedModel):
                             else:
                                 ma['round_mode'] = None
 
-                            if config.competition_type == ('ROBIN' or 'TOURNAMENT'):
+                            if config.competition_type == 'ROBIN' or \
+                                    config.competition_type == 'TOURNAMENT':
                                 match = Match.by_id(ma['id'])
                                 if 'home' in match and 'away' in match:
                                     ma['home'] = match.home
