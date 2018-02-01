@@ -30,6 +30,7 @@ def api_podium(event, parameters, **kwargs):
     town = parameters.get('town')
     country = parameters.get('country')
     gender = parameters.get('gender')
+    round_mode = parameters.get('round_mode')
 
     if date:
         date = datetime.strptime(date, '%Y-%m-%d').date()
@@ -39,26 +40,35 @@ def api_podium(event, parameters, **kwargs):
                 event.send_text('Nice try, aber wir befinden und nicht in einem Schaltjahr. 😎')
                 return
 
-        match_meta = MatchMeta.search_date(
+        match_metas = MatchMeta.search_date(
             date=date, discipline=discipline, sport=sport, town=town,
-            country=country, gender=gender)
+            country=country, gender=gender, round_mode=round_mode)
     elif period and not date:
         from_date = period.split('/')[0]
         from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
         until_date = period.split('/')[1]
         until_date = datetime.strptime(until_date, '%Y-%m-%d').date()
-        match_meta = MatchMeta.search_range(
+        match_metas = MatchMeta.search_range(
             from_date=from_date, until_date=until_date, discipline=discipline,
-            sport=sport, town=town, country=country, gender=gender)
+            sport=sport, town=town, country=country, gender=gender, round_mode=round_mode)
     elif town or country:
-        match_meta = MatchMeta.search_range(
+        match_metas = MatchMeta.search_range(
             until_date=dtdate.today(), discipline=discipline, sport=sport,
-            town=town, country=country, gender=gender)
+            town=town, country=country, gender=gender, round_mode=round_mode)
+    elif round_mode:
+        match_metas = MatchMeta.search_range(
+            until_date=dtdate.today(), discipline=discipline, sport=sport,
+            town=town, country=country, gender=gender, round_mode=round_mode)
+        if not match_metas and round_mode == 'Finale':
+            match_metas = MatchMeta.search_range(
+                until_date=dtdate.today(), discipline=discipline, sport=sport,
+                town=town, country=country, gender=gender, round_mode='Entscheidung')
     else:
-        match_meta = [MatchMeta.search_last(
-            discipline=discipline, sport=sport, town=town, country=country, gender=gender)]
+        match_metas = [MatchMeta.search_last(
+            discipline=discipline, sport=sport, town=town, country=country,
+            gender=gender, round_mode=round_mode)]
 
-    match_ids = [match.id for match in match_meta if match]
+    match_ids = [match.id for match in match_metas if match]
 
     if not match_ids:
         event.send_text('In diesem Zeitraum hat kein Event stattgefunden.')
