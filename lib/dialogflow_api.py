@@ -98,3 +98,16 @@ def parse_intent(data):
         answers = [answers]
 
     return name, questions, answers
+
+
+def add_entry(entry, entity_uuid):
+    data = [
+        {
+            "synonyms": [
+                entry,
+            ],
+            "value": entry,
+        },
+    ]
+
+    return api_call('entities', id=entity_uuid, attribute='entries', data=data, method=POST)
