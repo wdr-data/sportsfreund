@@ -129,17 +129,20 @@ class Match(FeedModel):
         )]
 
         for winner_team, winner_result in zip(winner_teams, winner_results):
+            subtl = f'{self.txt_points(winner_result)}'
+
             if 'medals' in self.meta and self.meta.medals == 'complete':
                 title = f'{Match.medal(winner_result.rank)} '
                 image_url = Match.medal_pic(winner_result.rank)
 
             else:
-                title = f'{winner_result.rank}. '
+                title = f'{winner_result.rank}. ' if subtl else ''
                 image_url = None
 
             title += f'{winner_team.name}, {flag(winner_team.country.iso)}' \
                      f' {winner_team.country.code} '
-            subtl = f'{self.txt_points(winner_result)}'
+            if not subtl:
+                subtl = f"{winner_result.rank}. Platz"
 
             header.append(
                 list_element(
