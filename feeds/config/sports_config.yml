@@ -172,8 +172,8 @@
 
 - name: Bob
   topic_id: null
-  result_type: POINTS
-  result_digits: 1
+  result_type: TIME
+  result_digits: 2
   competition_term: Rennen
   article: das
   disciplines:
@@ -288,7 +288,7 @@
 - name: Rodeln
   topic_id: null
   result_type: TIME
-  result_digits: 2
+  result_digits: 3
   competition_term: Rennen
   article: das
   disciplines:
