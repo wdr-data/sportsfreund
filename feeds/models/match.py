@@ -110,7 +110,8 @@ class Match(FeedModel):
         date = datetime.strptime(self.match_date, '%Y-%m-%d')
 
         config = discipline_config(self.meta.sport, self.meta.discipline_short)
-        if isinstance(config, dict) and 'rounds' in config and config['rounds']:
+        if isinstance(config, dict) and 'rounds' in config and config['rounds'] \
+                and self.meta.event == MatchMeta.Event.OLYMPIA_18:
             header_text = f'++ {self.meta.round_mode} ++ '
         else:
             header_text = ''
