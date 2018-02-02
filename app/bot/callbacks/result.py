@@ -137,7 +137,7 @@ def result_total(event, payload):
         result_kind = f'Top {len(results)}'
     else:
         results = match.results[11:]
-        result_kind = 'restliche Ergebnisse'
+        result_kind = 'restlichen Ergebnisse'
 
     teams = [result.team for result in results]
 
