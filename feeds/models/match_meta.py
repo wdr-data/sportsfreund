@@ -12,6 +12,7 @@ class MatchMeta(ListFeedModel):
     collection = db.matches_meta
     api_function = api.matches_by_topic_for_season
     api_id_name = 'to'
+    cache_time = 60 * 60 * 24
 
     olympia_feeds = [1757, 548]
 
