@@ -9,6 +9,7 @@ class MedalsTable(ListFeedModel):
     collection = db.medals_table
     api_function = api.medals_table
     api_id_name = 'to'
+    cache_time = 60 * 5
 
     def __init__(self, *args, **kwargs):
         """

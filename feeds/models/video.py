@@ -22,7 +22,7 @@ class Video(Model):
     """
 
     collection = db.videos
-    cache_time = 60
+    cache_time = 60 * 5
 
     @classmethod
     def by_id(cls, id: str, clear_cache: bool=False):

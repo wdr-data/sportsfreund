@@ -7,3 +7,4 @@ class Season(FeedModel):
     collection = db.seasons
     api_function = api.season
     api_id_name = 'se'
+    cache_time = 60 * 60 * 24

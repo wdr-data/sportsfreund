@@ -17,6 +17,7 @@ FEED_PARAMS = {
 class Medal(ListFeedModel):
     collection = db.medals
     api_id_name = 'to'
+    cache_time = 60 * 4
 
     @classmethod
     def api_function(cls, **kwargs):
