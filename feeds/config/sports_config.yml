@@ -201,32 +201,32 @@
   disciplines:
     - name: Round Robin
       rounds: True
-      competition_type: ROBIN
+      competition_type: TOURNAMENT
       result_at: '0'
       article: das
     - name: Tie-breaker
       rounds: True
-      competition_type: ROBIN
+      competition_type: TOURNAMENT
       result_at: '0'
       article: das
     - name: Viertelfinale
       rounds: True
-      competition_type: ROBIN
+      competition_type: TOURNAMENT
       result_at: '0'
       article: das
     - name: Halbfinale
       rounds: True
-      competition_type: ROBIN
+      competition_type: TOURNAMENT
       result_at: '0'
       article: das
     - name: 3. Platz
       rounds: True
-      competition_type: ROBIN
+      competition_type: TOURNAMENT
       result_at: '0'
       article: das
     - name: Finale
       rounds: True
-      competition_type: ROBIN
+      competition_type: TOURNAMENT
       result_at: '0'
       article: das
 
@@ -340,22 +340,22 @@
   disciplines:
     - name: Staffel
       rounds: True
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
       result_at: '0'
       article: das
     - name: 1000 m
       rounds: True
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
       result_at: '0'
       article: das
     - name: 1500 m
       rounds: True
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
       result_at: '0'
       article: das
     - name: 500 m
       rounds: True
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
       result_at: '0'
       article: das
 
@@ -415,7 +415,7 @@
       article: das
     - name: Snowboardcross
       rounds: True
-      competition_type: SINGLE
+      competition_type: TOURNAMENT
       result_at: '0'
       article: das
     - name: Big Air
@@ -458,7 +458,7 @@
       article: die
     - name: Ski Cross
       rounds: True
-      competition_type: SINGLE
+      competition_type: TOURNAMENT
       result_at: '0'
       article: die
 ...
