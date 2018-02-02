@@ -67,6 +67,10 @@ def medals_table(event, parameters, **kwargs):
     if country:
         medals = MedalsTable.by_country(country=country)
 
+        if medals.first + medals.second + medals.last == 0:
+            event.send_text(f'{country} hat keine Medaillen gewonnen.')
+            return
+
         event.send_text(
             f'{country} im Medaillenspiegel:\nPlatz {medals.rank}\n'
             f'{str(medals.first)} Gold {Match.medal(1)}\n'

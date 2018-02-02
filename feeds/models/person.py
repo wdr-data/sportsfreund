@@ -1,4 +1,7 @@
 import logging
+from os import environ
+
+from django.core.validators import URLValidator
 
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
@@ -18,6 +21,15 @@ class Person(FeedModel):
     @classmethod
     def by_id(cls, id, topic_id, additional_data=None, clear_cache=False):
         return super(Person, cls).by_id(id, clear_cache, {'to': topic_id}, additional_data)
+
+    @classmethod
+    def get_picture_url(cls, id):
+        person = cls.collection.find_one({'id': str(id)})
+        if not person:
+            raise ValueError("Person not found.")
+        url = f"{environ.get('PERSON_PICTURE_URL_BASE')}/l/{person['id']}.jpg"
+        URLValidator()(url)
+        return url
 
     @classmethod
     def transform(cls, person):
