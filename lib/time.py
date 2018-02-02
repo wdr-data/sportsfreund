@@ -11,7 +11,10 @@ def localtime_format(date, event, is_olympia=False, format="%H:%M Uhr"):
     offset = 1
 
     user_id = event['sender']['id']
-    cache = collection.find_one({'psid': user_id})
+    try:
+        cache = collection.find_one({'psid': user_id})
+    except:
+        cache = None
     if cache and cache['expires_at'] > datetime.now():
         offset = cache['offset']
     else:
