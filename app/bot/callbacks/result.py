@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from calendar import day_name
 
 from lib.model import Model
+from lib.time import localtime_format
 from ..handlers.payloadhandler import PayloadHandler
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
@@ -156,14 +157,16 @@ def result_total(event, payload):
         reply = f'++ {match.meta.round_mode} ++ {match.meta.sport}, ' \
                 f'{match.meta.discipline_short}, {match.meta.gender_name}'
 
+        is_olympia = match.meta.get('event') == MatchMeta.Event.OLYMPIA_18
+
         if step == 'top_10':
-            reply += f'\n{day_name[match.datetime.weekday()]},' \
-                     f' {match.datetime.strftime("%d.%m.%Y")} ' \
-                     f'um {match.match_time} Uhr in {match.venue.town.name}'
+            reply += f'\n{day_name[match.datetime.weekday()]}, {match.datetime.strftime("%d.%m.%Y")} ' \
+                     f'um {localtime_format(match.datetime, event, is_olympia)} ' \
+                     f'in {match.venue.town.name}'
         elif step == 'round_mode':
-            reply += f'\n{day_name[match.datetime.weekday()]},' \
-                     f' {match.datetime.strftime("%d.%m.%Y")} ' \
-                     f'um {match.match_time} Uhr in {match.venue.town.name}'
+            reply += f'\n{day_name[match.datetime.weekday()]}, {match.datetime.strftime("%d.%m.%Y")} ' \
+                     f'um {localtime_format(match.datetime, event, is_olympia)} ' \
+                     f'in {match.venue.town.name}'
     else:
         reply = f'Hier die {result_kind} zu {match.meta.sport} {match.meta.discipline_short} ' \
                 f'in {match.meta.town}, {match.meta.country}:'
@@ -240,8 +243,9 @@ def send_result(event, match):
 def result_game(event, match):
 
     reply = f'{match.meta.sport}, {match.meta.gender_name} ++ {match.meta.round_mode} ++ '
+    time = localtime_format(match.datetime, event, is_olympia=match.meta.get('event') == MatchMeta.Event.OLYMPIA_18)
     reply += f'\n{day_name[match.datetime.weekday()]}, ' \
-             f'{match.datetime.strftime("%d.%m.%Y")} um {match.match_time} Uhr\n'
+             f'{match.datetime.strftime("%d.%m.%Y")} um {time}\n'
 
     results = match.results
     home = results[0]
