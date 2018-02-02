@@ -4,6 +4,7 @@ from ..handlers.apiaihandler import ApiAiHandler
 from feeds.config import GERMAN_ATHLETES_OLYMPIA
 from feeds.models.person import Person
 
+
 def api_characteristics(event, parameters, **kwargs):
     characteristics(event, parameters)
 
@@ -31,7 +32,15 @@ def characteristics(event, payload):
         return
 
     persons = Person.query(fullname=athlete)
+
     for person in persons:
+        try:
+            person_url = Person.get_picture_url(id=person.id)
+            if person_url:
+                event.send_attachment(person_url)
+        except:
+            continue
+
         reply = f"{person.fullname} aus {', '.join([country.name for country in person.country])}"
 
         if person.get('birthday'):
