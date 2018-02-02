@@ -13,4 +13,4 @@ def get_entity_uuid(entity: Entity):
 
     for e in entities:
         if e['name'] == entity.value:
-            return e['uuid']
+            return e['id']
