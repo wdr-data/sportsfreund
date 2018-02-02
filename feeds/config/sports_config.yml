@@ -3,6 +3,7 @@
 # competition_type: SINGLE | RACE | TOURNAMENT
 
 - name: Biathlon
+  picture_url: https://i.imgur.com/XpHMpTt.png
   topic_id: 1814
   result_type: TIME
   result_digits: 1
@@ -27,6 +28,7 @@
       article: der
 
 - name: Ski Alpin
+  picture_url: https://i.imgur.com/RPpJAbn.png
   topic_id: 1773
   result_type: TIME
   result_digits: 2
@@ -53,6 +55,7 @@
       article:
 
 - name: Skispringen
+  picture_url: https://i.imgur.com/eTD5Uqh.png
   topic_id: 1789
   result_type: POINTS
   result_digits: 1
@@ -81,6 +84,7 @@
       article: das
 
 - name: Skeleton
+  picture_url: https://i.imgur.com/AvqEBPj.png
   topic_id: null
   result_type: TIME
   result_digits: 2
@@ -93,6 +97,7 @@
       article: das
 
 - name: Ski Freestyle
+  picture_url: https://i.imgur.com/wSURv4K.png
   topic_id: null
   result_type: POINTS
   result_digits: 1
@@ -118,6 +123,7 @@
 
 
 - name: Eishockey
+  picture_url: https://i.imgur.com/VvMFXD0.png
   topic_id: null
   result_type: POINTS
   result_digits: 1
@@ -171,6 +177,7 @@
 
 
 - name: Bob
+  picture_url: https://i.imgur.com/35nk83n.png
   topic_id: null
   result_type: TIME
   result_digits: 2
@@ -186,6 +193,7 @@
       article: das
 
 - name: Curling
+  picture_url: 
   topic_id: null
   result_type: POINTS
   result_digits: 1
@@ -218,6 +226,7 @@
       article: das
 
 - name: Eiskunstlauf
+  picture_url: https://i.imgur.com/lXW3RYo.png
   topic_id: null
   result_type: POINTS
   result_digits: 1
@@ -242,6 +251,7 @@
       article: das
 
 - name: Eisschnelllauf
+  picture_url: 
   topic_id: null
   result_type: POINTS
   result_digits: 1
@@ -269,6 +279,7 @@
       article: das
 
 - name: Nordische Kombination
+  picture_url: https://i.imgur.com/AoKjzhg.png
   topic_id: 1827
   result_type: TIME
   result_digits: 1
@@ -286,6 +297,7 @@
       article: das
 
 - name: Rodeln
+  picture_url: https://i.imgur.com/nhG96lr.png
   topic_id: null
   result_type: TIME
   result_digits: 3
@@ -304,6 +316,7 @@
       article: der
 
 - name: Shorttrack
+  picture_url: https://i.imgur.com/AaR8lJw.png
   topic_id: null
   result_type: TIME
   result_digits: 1
@@ -328,6 +341,7 @@
       article: das
 
 - name: Ski Langlauf
+  picture_url: https://i.imgur.com/ewbiKsx.png
   topic_id: 1764
   result_type: Time
   result_digits: 1
@@ -355,6 +369,7 @@
       article: das
 
 - name: Snowboard
+  picture_url: https://i.imgur.com/1TaYOn1.png
   topic_id: null
   result_type: POINTS
   result_digits: 1
