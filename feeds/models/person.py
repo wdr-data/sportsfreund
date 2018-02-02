@@ -23,11 +23,11 @@ class Person(FeedModel):
         return super(Person, cls).by_id(id, clear_cache, {'to': topic_id}, additional_data)
 
     @classmethod
-    def get_picture_url(cls, id, topic_id):
-        person = cls.by_id(id, topic_id)
+    def get_picture_url(cls, id):
+        person = cls.collection.find_one({'id': str(id)})
         if not person:
             raise ValueError("Person not found.")
-        url = f"{environ.get('PERSON_PICTURE_URL_BASE')}/l/{person.id}.jpg"
+        url = f"{environ.get('PERSON_PICTURE_URL_BASE')}/l/{person['id']}.jpg"
         URLValidator()(url)
         return url
 
