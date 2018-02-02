@@ -42,7 +42,7 @@ def api_podium(event, parameters, **kwargs):
 
         match_metas = MatchMeta.search_date(
             date=date, discipline=discipline, sport=sport, town=town,
-            country=country, gender=gender, round_mode=round_mode)
+            country=country, gender=gender)
     elif period and not date:
         from_date = period.split('/')[0]
         from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
@@ -50,11 +50,11 @@ def api_podium(event, parameters, **kwargs):
         until_date = datetime.strptime(until_date, '%Y-%m-%d').date()
         match_metas = MatchMeta.search_range(
             from_date=from_date, until_date=until_date, discipline=discipline,
-            sport=sport, town=town, country=country, gender=gender, round_mode=round_mode)
+            sport=sport, town=town, country=country, gender=gender)
     elif town or country:
         match_metas = MatchMeta.search_range(
             until_date=dtdate.today(), discipline=discipline, sport=sport,
-            town=town, country=country, gender=gender, round_mode=round_mode)
+            town=town, country=country, gender=gender)
     elif round_mode:
         match_metas = MatchMeta.search_range(
             until_date=dtdate.today(), discipline=discipline, sport=sport,
@@ -63,10 +63,14 @@ def api_podium(event, parameters, **kwargs):
             match_metas = MatchMeta.search_range(
                 until_date=dtdate.today(), discipline=discipline, sport=sport,
                 town=town, country=country, gender=gender, round_mode='Entscheidung')
+            if not match_metas:
+                match_metas = MatchMeta.search_range(
+                    until_date=dtdate.today(), discipline=discipline, sport=sport,
+                    town=town, country=country, gender=gender)
     else:
-        match_metas = [MatchMeta.search_last(
-            discipline=discipline, sport=sport, town=town, country=country,
-            gender=gender, round_mode=round_mode)]
+        match_metas = MatchMeta.search_range(
+            until_date=dtdate.today(), sport=sport, town=town, country=country,
+            gender=gender)
 
     match_ids = [match.id for match in match_metas if match]
 
