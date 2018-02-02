@@ -35,6 +35,21 @@ def api_subscribe(event, parameters, **kwargs):
 
         athlete = ' '.join([first_name, last_name])
 
+    # TODO: Better logic
+    try:
+        if (athlete and
+            event['message']['nlp']['result']['metadata']['intentName'].endswith('unsubscribe')):
+            payload = {
+                'target': 'athlete',
+                'filter': None,
+                'option': 'unsubscribe',
+            }
+            result_medal_change(event, payload=payload)
+            return
+
+    except:
+        pass
+
     highlight = subscription_type == 'highlight' or parameters.get('highlight')
     medal = subscription_type == 'medal'
 
@@ -88,21 +103,6 @@ def subscribe_flow(event, sport=None, discipline=None, athlete=None):
     event.send_text('Vielen Dank für deine Anmeldung. In folgender Liste siehst du alle Themen, '
               'über die ich dich automatisch informiere. Du kannst sie jederzeit ändern.')
     result_medal_subscriptions(event)
-
-
-def api_unsubscribe(event, parameters, **kwargs):
-    unsubscribe_flow(event)
-
-
-def unsubscribe_flow(event):
-    subs = Subscription.query(psid=event['sender']['id'])
-    reply = f'Du bist noch für keinen Nachrichten-Service angemeldet. Falls du dich anmelden ' \
-          f'möchtest, kannst du das hier tun.' if not subs \
-        else f'Du möchtest dich von automatischen Nachrichten abmelden - OK. ' \
-             f'In der Liste siehst du alle deine Anmeldungen. ' \
-             f'Du kannst Sie jederzeit über die Buttons ändern.'
-    event.send_text(reply)
-    send_subscriptions(event)
 
 
 def pld_subscriptions(event, payload, **kwargs):
