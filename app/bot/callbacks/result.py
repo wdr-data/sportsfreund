@@ -95,9 +95,10 @@ def result_podium(event, payload):
     if len(asked_matches)>1:
         event.send_text('Bitteschön:')
 
-    for i, match, meta, sport, discipline in\
-            enumerate(zip(asked_matches, match_metas, sport, discipline)):
-        if i > 15:
+    counter = 0
+    for  match, meta, sport, discipline in zip(asked_matches, match_metas, sport, discipline):
+        counter += 1
+        if counter > 15:
             event.send_text(f'So, ich hab hier noch {len(asked_matches)-15} Events in der Pipline.'
                             f' Schränk deine Suche bitte ein wenig ein!')
             return
