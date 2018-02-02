@@ -32,7 +32,7 @@ class Match(FeedModel):
     def transform(cls, match):
         """Make the inner 'match' object the new outer object and move 'match_result_at' in it"""
 
-        match_result_at = match['match_result_at']
+        match_result_at = match.get('match_result_at')
         round_mode = match['competition'][0]['season'][0]['round'][0]['round_mode']
         match = match['competition'][0]['season'][0]['round'][0]['match'][0]
         match['match_result_at'] = match_result_at
