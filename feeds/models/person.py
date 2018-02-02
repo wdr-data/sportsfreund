@@ -23,12 +23,15 @@ class Person(FeedModel):
         return super(Person, cls).by_id(id, clear_cache, {'to': topic_id}, additional_data)
 
     @classmethod
-    def get_picture_url(cls, id):
-        person = cls.collection.find_one({'id': str(id)})
+    def get_picture_url(cls, id, topic_id=None):
+        if topic_id is not None:
+            person = cls.by_id(id, topic_id)
+        else:
+            person = cls.collection.find_one({'id': str(id)})
         if not person:
-            raise ValueError("Person not found.")
+            return None
+
         url = f"{environ.get('PERSON_PICTURE_URL_BASE')}/l/{person['id']}.jpg"
-        URLValidator()(url)
         return url
 
     @classmethod
