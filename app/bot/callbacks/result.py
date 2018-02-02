@@ -80,17 +80,18 @@ def api_podium(event, parameters, **kwargs):
 def result_podium(event, payload):
     # payload is list of match_ids
     match_ids = payload['result_podium']
-    match_meta = [MatchMeta.by_match_id(match_id) for match_id in match_ids]
+    match_metas = [MatchMeta.by_match_id(match_id) for match_id in match_ids]
+
     asked_matches = [Match.by_id(id) for id in match_ids]
 
-    discipline = [match.discipline for match in match_meta]
+    discipline = [match.discipline for match in match_metas]
 
-    sport = [match.sport for match in match_meta]
+    sport = [match.sport for match in match_metas]
 
     if len(asked_matches)>1:
         event.send_text('Bitteschön:')
 
-    for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
+    for match, meta, sport, discipline in zip(asked_matches, match_metas, sport, discipline):
         if match.match_incident:
             if match.match_incident.id == '3' or match.match_incident.id == '4':
                 event.send_text(f'{match.match_incident.name}: '
