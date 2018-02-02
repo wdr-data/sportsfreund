@@ -3,10 +3,12 @@ import random
 from bson.objectid import ObjectId
 
 from feeds.config import supported_sports
+from feeds.models.person import Person
 from feeds.models.subscription import Subscription
 from lib.response import list_element, button_postback, quick_reply
 from ..handlers.apiaihandler import ApiAiHandler
 from ..handlers.payloadhandler import PayloadHandler
+from feeds.config import GERMAN_ATHLETES_OLYMPIA
 
 GLOBES = ('🌎', '🌏', '🌍')
 
@@ -21,6 +23,16 @@ def api_subscribe(event, parameters, **kwargs):
     athlete = None
 
     if last_name and first_name:
+
+        german_athlete_names = set((athlete.first_name, athlete.last_name)
+                                   for athlete in GERMAN_ATHLETES_OLYMPIA)
+
+        if (first_name, last_name) not in german_athlete_names:
+            if not Person.query(firstname=first_name, surname=last_name):
+                event.send_text('Diese Person ist leider noch nicht in meiner Datenbank... '
+                                'Bist du sicher, dass du dich nicht vertippt hast?')
+                return
+
         athlete = ' '.join([first_name, last_name])
 
     highlight = subscription_type == 'highlight' or parameters.get('highlight')

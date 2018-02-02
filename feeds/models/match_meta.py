@@ -12,6 +12,7 @@ class MatchMeta(ListFeedModel):
     collection = db.matches_meta
     api_function = api.matches_by_topic_for_season
     api_id_name = 'to'
+    cache_time = 60 * 60 * 24
 
     olympia_feeds = [1757, 548]
 
@@ -116,6 +117,7 @@ class MatchMeta(ListFeedModel):
                             '%Y-%m-%d %H:%M'
                         )
 
+                        ma['topic_id'] = topic_id
                         ma['event'] = cls.Event.WORLDCUP.value
 
                         cls.collection.replace_one({'id': ma['id']}, ma, upsert=True)
@@ -204,6 +206,7 @@ class MatchMeta(ListFeedModel):
                                 '%Y-%m-%d %H:%M'
                             )
 
+                            ma['topic_id'] = id
                             ma['event'] = cls.Event.OLYMPIA_18.value
 
                             cls.collection.replace_one({'id': ma['id']}, ma, upsert=True)

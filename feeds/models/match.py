@@ -20,6 +20,7 @@ class Match(FeedModel):
     collection = db.matches
     api_function = api.match
     api_id_name = 'ma'
+    cache_time = 60 * 10
 
     def __init__(self, *args, **kwargs):
 

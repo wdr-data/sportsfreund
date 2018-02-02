@@ -44,7 +44,7 @@ class FeedModel(Model):
     cache_time = 60  # 1m cache for testing
 
     @classmethod
-    def by_id(cls, id, clear_cache=False):
+    def by_id(cls, id, clear_cache=False, api_params=None, additional_data=None):
         """
         Get the Model instance by id. If it is found in the cache, it is returned from there.
         Else, a request to the feed is made, the transformation (if defined) is applied, the
@@ -66,13 +66,19 @@ class FeedModel(Model):
 
             cls.logger.debug('Cache expired for %s with id %s', cls.__name__, id)
 
+        params = {cls.api_id_name: id}
+        if api_params is not None:
+            params.update(api_params)
 
-        obj = cls.api_function(**{cls.api_id_name: id})
+        obj = cls.api_function(**params)
 
         if cls.transform:
             obj = cls.transform(obj)
 
         obj['_cached_at'] = int(time())
+
+        if additional_data is not None:
+            obj.update(additional_data)
 
         if cached:
             cls.collection.replace_one({'_id': cached['_id']}, obj)

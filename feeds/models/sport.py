@@ -7,3 +7,4 @@ class Sport(FeedModel):
     collection = db.sports
     api_function = api.sport
     api_id_name = 'sp'
+    cache_time = 60 * 60 *

@@ -8,6 +8,7 @@ from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.config import supported_sports, sport_by_name, discipline_config
 from lib.flag import flag
+from lib.time import localtime_format
 from .result import api_podium
 
 logger = logging.Logger(__name__)
@@ -141,11 +142,10 @@ def multiple_entry(event, meta):
     start_date = datetime.strptime("1990-1-1", '%Y-%m-%d')
 
     for i, match_meta in enumerate(meta):
-        match_date = datetime.strptime(match_meta.match_date, '%Y-%m-%d')
-        if start_date != match_date:
-            event.send_text(f"{day_name[match_date.weekday()]},"
-                            f" {match_date.strftime('%d.%m.%Y')}")
-            start_date = match_date
+        if start_date != match_meta.datetime:
+            event.send_text(f"{day_name[match_meta.datetime.weekday()]},"
+                            f" {match_meta.datetime.strftime('%d.%m.%Y')}")
+            start_date = match_meta.datetime
         if i == 11:
             event.send_text(f'Hier höre ich mal auf, denn in meinem Kalender sind noch {len(meta)-i} Events. '
                             f"Schränk' deine Suche doch ein wenig ein.")
@@ -162,22 +162,22 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
     if not isinstance(match_meta, MatchMeta):
         match_meta = MatchMeta.by_id(match_meta)
 
-    d_date = datetime.strptime(match_meta.match_date, '%Y-%m-%d')
-
     gender = ' der Damen' if match_meta.gender == 'female' \
         else (' der Herren' if match_meta.gender == 'male'  else '')
 
+    is_olympia = match_meta.get('event') == MatchMeta.Event.OLYMPIA_18
+
     if match_meta.match_incident:
         event.send_text(f"Ich habe gehört, der Wettkampf {match_meta.discipline} {gender}"
-                        f" in {match_meta.town}, "
-                        f"welcher am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} "
+                        f" in {match_meta.town}, welcher am "
+                        f"{day_name[match_meta.datetime.weekday()]}, {match_meta.datetime.strftime('%d.%m.%Y')} "
                         f"geplant war, sei {match_meta.match_incident.name}.")
     else:
         if not one_in_many:
-            reply = f"Am {day_name[d_date.weekday()]}, {d_date.strftime('%d.%m.%Y')} " \
-                    f"um {match_meta.match_time} Uhr: "
+            reply = f"Am {day_name[match_meta.datetime.weekday()]}, {match_meta.datetime.strftime('%d.%m.%Y')} " \
+                    f"um {localtime_format(match_meta.datetime, event, is_olympia)}: "
         else:
-            reply = f'{match_meta.match_time} Uhr - '
+            reply = f'{localtime_format(match_meta.datetime, event, is_olympia)} - '
 
         reply += f"{match_meta.sport}, "
 

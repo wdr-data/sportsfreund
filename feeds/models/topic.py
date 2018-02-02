@@ -7,3 +7,4 @@ class Topic(FeedModel):
     collection = db.topics
     api_function = api.topic
     api_id_name = 'to'
+    cache_time = 60 * 60 * 24
