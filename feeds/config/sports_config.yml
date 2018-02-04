@@ -42,6 +42,10 @@
       competition_type: SINGLE
       result_at: '0'
       article: die
+    - name: Super-G
+      competition_type: SINGLE
+      result_at: '0'
+      article: der
     - name: Super G
       competition_type: SINGLE
       result_at: '0'
