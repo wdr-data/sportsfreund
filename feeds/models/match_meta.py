@@ -18,6 +18,7 @@ class MatchMeta(ListFeedModel):
 
     class Event(Enum):
         OLYMPIA_18 = 'owg18'
+        OLYMPIA_14 = 'owg14'
         WORLDCUP = 'worldcup'
 
     def __init__(self, *args, **kwargs):
@@ -208,7 +209,10 @@ class MatchMeta(ListFeedModel):
                                 )
 
                                 ma['topic_id'] = id
-                                ma['event'] = cls.Event.OLYMPIA_18.value
+                                if id == '1757':
+                                    ma['event'] = cls.Event.OLYMPIA_18.value
+                                else:
+                                    ma['event'] = cls.Event.OLYMPIA_14.value
 
                                 cls.collection.replace_one({'id': ma['id']}, ma, upsert=True)
 
