@@ -68,9 +68,8 @@ def api_podium(event, parameters, **kwargs):
                     until_date=dtdate.today(), discipline=discipline, sport=sport,
                     town=town, country=country, gender=gender)
     else:
-        match_metas = MatchMeta.search_range(
-            until_date=dtdate.today(), sport=sport, town=town, country=country,
-            gender=gender)
+        match_metas = [MatchMeta.search_last(
+            sport=sport, discipline=discipline, town=town, country=country, gender=gender)]
 
     match_ids = [match.id for match in match_metas if match]
 
