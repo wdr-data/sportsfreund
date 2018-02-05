@@ -128,8 +128,7 @@ class Match(FeedModel):
         header = [list_element(
             header_text,
             header_sbtl,
-            image_url='https://i.imgur.com/7ZgRGvd.jpg' if self.meta.sport == 'Ski Alpin'
-            else 'https://i.imgur.com/Bu05xF6.jpg'
+            image_url=sport_by_name[self.meta.sport].picture_url
         )]
 
         for winner_team, winner_result in zip(winner_teams, winner_results):
