@@ -136,7 +136,10 @@ class Match(FeedModel):
             subtl = f'{self.txt_points(winner_result)}'
 
             from feeds.models.person import Person
-            image_url = Person.get_picture_url(winner_result.person.id, self.meta.topic_id)
+            try:
+                image_url = Person.get_picture_url(winner_result.person.id, self.meta.topic_id)
+            except:
+                image_url = None
 
             if 'medals' in self.meta and self.meta.medals == 'complete':
                 title = f'{Match.medal(winner_result.rank)} '
