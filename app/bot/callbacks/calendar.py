@@ -24,6 +24,7 @@ def api_next(event, parameters, **kwargs):
     period = parameters.get('date-period')
     country = parameters.get('country')
     gender = parameters.get('gender')
+    round_mode = parameters.get('round_mode')
 
     if period:
         from_date, until_date = period_to_dates(period)
@@ -38,11 +39,11 @@ def api_next(event, parameters, **kwargs):
 
         match_meta = MatchMeta.search_range(
             from_date=from_date, until_date=until_date, discipline=discipline, sport=sport,
-            town=town, country=country, gender=gender)
+            town=town, country=country, gender=gender, round_mode=round_mode)
 
         if not match_meta:
             match_meta = MatchMeta.search_range(
-                from_date=from_date, until_date=until_date, gender=gender)
+                from_date=from_date, until_date=until_date, gender=gender, round_mode=round_mode)
 
             if match_meta and (discipline or sport or town or country):
                 event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
@@ -64,9 +65,10 @@ def api_next(event, parameters, **kwargs):
             event.send_text('Gucken wir mal was da so los sein wird.')
             match_meta = MatchMeta.search_date(date=d_date, discipline=discipline,
                                                sport=sport, town=town, country=country,
-                                               gender=gender)
+                                               gender=gender, round_mode=round_mode)
             if not match_meta:
-                match_meta = MatchMeta.search_date(date=d_date, gender=gender)
+                match_meta = MatchMeta.search_date(date=d_date,
+                                                   gender=gender, round_mode=round_mode)
                 if match_meta and (discipline or sport or town or country):
                     event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
                                     'aber vielleicht interessiert dich ja folgendes Event:')
@@ -82,23 +84,34 @@ def api_next(event, parameters, **kwargs):
 
         return
 
-    if town or country:
+    if town or country or round_mode:
         today = date.today()
         match_meta = MatchMeta.search_range(from_date=today, discipline=discipline,
-                                            sport=sport, town=town, country=country, gender=gender)
+                                            sport=sport, town=town, country=country,
+                                            gender=gender, round_mode=round_mode)
         if not match_meta:
+            if round_mode == 'Finale' and not country or town:
+                round_mode = 'Entscheidung'
+            elif round_mode == 'Entscheidung' and not country or town:
+                round_mode = 'Finale'
+
             match_meta = MatchMeta.search_range(until_date=today, discipline=discipline,
                                                 sport=sport, town=town, country=country,
-                                                gender=gender)
-            if not match_meta:
+                                                gender=gender, round_mode=round_mode)
+            if not match_meta and (town or country):
                 event.send_text('Leider kein Event in {place}.'.format(place=town if town else country))
+            elif not match_meta and round_mode:
+                event.send_text('Deine A')
             else:
                 event.send_text('In dieser Sauson findet kein Weltcup mehr in '
                                 f'{town if town else country} statt. Dafür hab ich hier bald die '
                                 f'Ergebnisse aus {town if town else country}.')
 
         else:
-            event.send_text('Folgende Events finden in {place} statt'.format(place=town if town else country))
+            if not round_mode:
+                event.send_text('Folgende Events finden in {place} statt'.format(place=town if town else country))
+            else:
+                event.send_text(f'Folgende Events hab ich für dich:')
             multiple_entry(event, match_meta)
         return
 
@@ -116,7 +129,7 @@ def api_next(event, parameters, **kwargs):
 
     # get_match_id_by_parameter
     match_meta = MatchMeta.search_next(discipline=discipline, sport=sport,
-                                       gender=gender)
+                                       gender=gender, round_mode=round_mode)
 
     if not match_meta:
         if sport and discipline:
@@ -126,7 +139,7 @@ def api_next(event, parameters, **kwargs):
             return
 
         else:
-            event.send_text('Sorry, aber ich hab nix zu deiner Anfrage keinen '
+            event.send_text('Sorry, aber ich hab zu deiner Anfrage keinen '
                             'konkreten Wettkampf in meinem Kalender gefunden.')
             return
 
