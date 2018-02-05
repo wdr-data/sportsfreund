@@ -63,7 +63,7 @@
       result_at: '0'
       article: die
     - name: Parallel
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
       result_at: '0'
       article:
 
