@@ -98,8 +98,9 @@ def result_podium(event, payload):
     counter = 0
     for  match, meta, sport, discipline in zip(asked_matches, match_metas, sport, discipline):
         counter += 1
-        if counter > 15:
-            event.send_text(f'So, ich hab hier noch {len(asked_matches)-15} Events in der Pipline.'
+        if counter > 8:
+            event.send_text(f'So, ich hab hier noch {len(asked_matches)-15} Events in der Pipline '
+                            f'die alle auf deine Suchanfrage passen.'
                             f' Schränk deine Suche bitte ein wenig ein!')
             return
 
