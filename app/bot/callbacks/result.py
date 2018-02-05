@@ -175,8 +175,9 @@ def result_total(event, payload):
     config = discipline_config(match.meta.sport, match.meta.discipline_short)
 
     if isinstance(config, dict) and 'rounds' in config and config['rounds']:
-        reply = f'++ {match.meta.round_mode} ++ {match.meta.sport}, ' \
-                f'{match.meta.discipline_short}, {match.meta.gender_name}'
+        reply = f'{match.meta.sport}, ' \
+                f'{match.meta.discipline_short}, {match.meta.gender_name} ' \
+                f'⚡{match.meta.round_mode}⚡'
 
         is_olympia = match.meta.get('event') == MatchMeta.Event.OLYMPIA_18
 
@@ -250,7 +251,8 @@ def send_result(event, match):
         result_game(event, match)
         return
 
-    if 'medals' in match.meta and match.meta.medals == 'complete' or match.meta.event != MatchMeta.Event.OLYMPIA_18:
+    if 'medals' in match.meta and match.meta.medals == 'complete' \
+            or match.meta.event == MatchMeta.Event.WORLDCUP:
         event.send_list(
                 match.lst_podium,
                 top_element_style='large',

@@ -115,13 +115,13 @@ class Match(FeedModel):
         date = datetime.strptime(self.match_date, '%Y-%m-%d')
 
         config = discipline_config(self.meta.sport, self.meta.discipline_short)
-        if isinstance(config, dict) and 'rounds' in config and config['rounds'] \
-                and self.meta.event == MatchMeta.Event.OLYMPIA_18:
-            header_text = f'++ {self.meta.round_mode} ++ '
-        else:
-            header_text = ''
 
-        header_text += f'{self.meta.sport}, {self.meta.discipline_short}, {self.meta.gender_name}'
+        header_text = f'{self.meta.sport}, {self.meta.discipline_short}, {self.meta.gender_name}'
+
+        if isinstance(config, dict) and 'rounds' in config and config['rounds'] \
+                and self.meta.event != MatchMeta.Event.WORLDCUP:
+            header_text += f' ⚡{self.meta.round_mode}⚡'
+
         header_sbtl = f'{day_name[date.weekday()]}, {date.strftime("%d.%m.%Y")} ' \
                       f'um {self.match_time} Uhr in {self.venue.town.name}'
 
