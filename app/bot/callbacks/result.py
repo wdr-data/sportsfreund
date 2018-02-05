@@ -162,7 +162,8 @@ def result_total(event, payload):
 
     teams = [result.team for result in results]
 
-    if 'medals' in match.meta and match.meta.medals == 'complete' or match.meta.event != MatchMeta.Event.OLYMPIA_18:
+    if 'medals' in match.meta and match.meta.medals == 'complete' or \
+            match.meta.event == MatchMeta.Event.WORLDCUP:
         top_ten = '\n'.join(
             f'{match.medal(int(r.rank))}. {t.name} {flag(t.country.iso)}'
             f' {t.country.code} {match.txt_points(r)}'
@@ -232,7 +233,8 @@ def result_by_country(event, payload):
     teams = [result.team for result in results]
     country = teams[0].country
 
-    if 'medals' in match.meta and match.meta.medals == 'complete' or match.meta.event != MatchMeta.Event.OLYMPIA_18:
+    if 'medals' in match.meta and match.meta.medals == 'complete' \
+            or match.meta.event == MatchMeta.Event.WORLDCUP:
         athletes_by_country = '\n'.join(
             f'{match.medal(int(r.rank))}. {t.name} {match.txt_points(r)}'
             for r, t in zip(results, teams))
