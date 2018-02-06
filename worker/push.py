@@ -57,7 +57,12 @@ class UpdateMatch(Task):
         :return:
         """
         match_id = params['match_id']
-        match = Match.by_id(match_id, clear_cache=True)
+        try:
+            match = Match.by_id(match_id, clear_cache=True)
+        except ValueError:
+            queue.remove_scheduled("push.UpdateMatch", params, interval=MATCH_CHECK_INTERVAL)
+            return
+
         disciplines = sport_by_name[match.meta.sport].disciplines
 
         for discipline in disciplines:
