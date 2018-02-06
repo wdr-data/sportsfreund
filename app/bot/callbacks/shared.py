@@ -224,16 +224,9 @@ def send_report(event, report, state=None):
     next_state = None
 
     if state == 'headline':
-        reply = report.headline
-        button_text = "Los geht's"
-        next_state = 'intro'
-        event.send_buttons(reply,
-                           buttons=[button_postback(button_text,
-                                                    {'report': report.id, 'next_state': next_state})
-                                    ])
-        return
+        reply_headline = report.headline
+        event.send_text(reply_headline)
 
-    elif state == 'intro':
         reply = report.text
 
         if report.fragments.count():
@@ -243,6 +236,14 @@ def send_report(event, report, state=None):
         if report.attachment_id:
             media = report.attachment_id
             url = report.media
+            event.send_attachment_by_id(str(media), guess_attachment_type(str(url)))
+
+        button_text = "Los geht's"
+        event.send_buttons(reply,
+                           buttons=[button_postback(button_text,
+                                                    {'report': report.id, 'next_state': next_state})
+                                    ])
+        return
 
     elif report.fragments.count() > state:
         fragments = report.fragments.order_by('id')
@@ -273,6 +274,5 @@ def send_report(event, report, state=None):
         if next_state is not None and len(reply_split) - 1 == i:
             quick_replies = [more_button] if next_state is not None else None
             event.send_text(r, quick_replies=quick_replies)
-
         else:
             event.send_text(r)
