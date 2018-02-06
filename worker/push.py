@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta, date
 import random
 
@@ -143,7 +144,10 @@ class SendHighlight(Task):
         for sub in subs:
             event = Replyable({'sender': {'id': sub.psid}}, type=SenderTypes.FACEBOOK)
 
-            send_push(event, push, report_nr=None, state=None)
+            try:
+                send_push(event, push, report_nr=None, state=None)
+            except:
+                logging.exception('Sending highlights push failed')
 
         push.delivered = True
         push.save()
