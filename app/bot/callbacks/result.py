@@ -98,7 +98,7 @@ def result_podium(event, payload):
     for  match, meta, sport, discipline in zip(asked_matches, match_metas, sport, discipline):
         counter += 1
         if counter > 8:
-            event.send_text(f'So, ich hab hier noch {len(asked_matches)-15} Events in der Pipline '
+            event.send_text(f'So, ich hab hier noch {len(asked_matches)-8} Events in der Pipline '
                             f'die alle auf deine Suchanfrage passen.'
                             f' Schränk deine Suche bitte ein wenig ein!')
             return
@@ -176,7 +176,7 @@ def result_total(event, payload):
 
     if isinstance(config, dict) and 'rounds' in config and config['rounds']:
         reply = f'{match.meta.sport}, ' \
-                f'{match.meta.discipline_short}, {match.meta.gender_name} ' \
+                f'{match.meta.discipline_short}, {match.meta.gender_name}\n' \
                 f'⚡{match.meta.round_mode}⚡'
 
         is_olympia = match.meta.get('event') == MatchMeta.Event.OLYMPIA_18
