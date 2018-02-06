@@ -254,13 +254,14 @@ def send_result(event, match):
 
     if 'medals' in match.meta or match.meta.event == MatchMeta.Event.WORLDCUP:
         if match.meta.event == MatchMeta.Event.WORLDCUP or match.meta.medals == 'complete':
-            button = match.btn.podium
+            button = match.btn_podium
         else:
             button = None
+
         event.send_list(
                 match.lst_podium,
                 top_element_style='large',
-                button=None
+                button=button
         )
         return
 
