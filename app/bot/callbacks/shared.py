@@ -238,9 +238,8 @@ def send_report(event, report, state=None):
             url = report.media
             event.send_attachment_by_id(str(media), guess_attachment_type(str(url)))
 
-        button_text = "Los geht's"
         event.send_buttons(reply,
-                           buttons=[button_postback(button_text,
+                           buttons=[button_postback(button_title,
                                                     {'report': report.id, 'next_state': next_state})
                                     ])
         return
