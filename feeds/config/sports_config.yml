@@ -11,7 +11,7 @@
   pictogram: url
   disciplines:
     - name: Einzel
-      competition_type: RACE
+      competition_type: SINGLE
       result_at: '0'
       article: das
     - name: Staffel
@@ -192,6 +192,7 @@
       result_at: '0'
       article: das
     - name: Viererbob
+      rounds: True
       competition_type: SINGLE
       result_at: '0'
       article: das
@@ -264,8 +265,8 @@
 
 - name: Eisschnelllauf
   topic_id: null
-  result_type: POINTS
-  result_digits: 1
+  result_type: TIME
+  result_digits: 2
   competition_term: Rennen
   article: das
   disciplines:
@@ -288,7 +289,22 @@
       competition_type: SINGLE
       result_at: '0'
       article: das
-    - name: Teamwettbewerb
+    - name: 5000 m
+      rounds: True
+      competition_type: SINGLE
+      result_at: '0'
+      article: das
+    - name: 500 m
+      rounds: True
+      competition_type: SINGLE
+      result_at: '0'
+      article: das
+    - name: 1000 m
+      rounds: True
+      competition_type: SINGLE
+      result_at: '0'
+      article: das
+    - name: 3000 m
       rounds: True
       competition_type: SINGLE
       result_at: '0'
@@ -372,7 +388,7 @@
   disciplines:
     - name: Sprint
       rounds: True
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
       result_at: '0'
       article: das
     - name: Staffel
@@ -419,7 +435,7 @@
       article: das
     - name: Snowboardcross
       rounds: True
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
       result_at: '0'
       article: das
     - name: Big Air
@@ -448,7 +464,7 @@
     - name: Buckelpiste
       rounds: True
       competition_type: SINGLE
-      result_at: '0'
+      result_at: '3'
       article: die
     - name: Halfpipe
       rounds: True
@@ -462,7 +478,7 @@
       article: die
     - name: Ski Cross
       rounds: True
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
       result_at: '0'
       article: die
 ...
