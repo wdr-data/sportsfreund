@@ -141,8 +141,10 @@ class Match(FeedModel):
             except:
                 image_url = None
 
-            if 'medals' in self.meta and self.meta.medals == 'complete':
+            if 'medals' in self.meta and (self.meta.medals == 'complete'or self.meta.medals == 'gold_silver'):
                 title = f'{Match.medal(winner_result.rank)} '
+            elif 'medals' in self.meta and self.meta.medals == 'bronze_winner':
+                title = f'{Match.medal(winner_result.rank+2)} '
             else:
                 title = f'{winner_result.rank}. ' if subtl else ''
 

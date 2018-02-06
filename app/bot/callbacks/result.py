@@ -12,7 +12,7 @@ from feeds.config import discipline_config
 from feeds.config import supported_sports, sport_by_name
 from lib.flag import flag
 from lib.emoij_number import emoji_number
-from lib.response import button_postback, quick_reply
+from lib.response import button_postback, quick_reply, list_element
 
 logger = logging.Logger(__name__)
 
@@ -252,25 +252,29 @@ def send_result(event, match):
         result_game(event, match)
         return
 
-    if 'medals' in match.meta and match.meta.medals == 'complete' \
-            or match.meta.event == MatchMeta.Event.WORLDCUP:
+    if 'medals' in match.meta or match.meta.event == MatchMeta.Event.WORLDCUP:
+        if match.meta.event == MatchMeta.Event.WORLDCUP or match.meta.medals == 'complete':
+            button = match.btn.podium
+        else:
+            button = None
         event.send_list(
                 match.lst_podium,
                 top_element_style='large',
-                button=match.btn_podium
+                button=None
         )
         return
+
 
     result_total(event, {'result_total': match.id, 'step': 'round_mode'})
 
 
 def result_game(event, match):
-
-    reply = f'{match.meta.sport}, {match.meta.gender_name} ++ {match.meta.round_mode} ++ '
+    year = match.datetime.strftime("%Y")
+    reply_title = f'{match.meta.sport}, {match.meta.gender_name} ⚡{match.meta.round_mode}⚡'
     time = localtime_format(match.datetime, event, is_olympia=match.meta.get('event') == MatchMeta.Event.OLYMPIA_18)
-    reply += f'\n{day_name[match.datetime.weekday()]}, ' \
+    reply_sbtl = f'{day_name[match.datetime.weekday()]}, ' \
              f'{match.datetime.strftime("%d.%m.%Y")} um {time}\n'
-
+    reply = reply_title + '\n' + reply_sbtl
     results = match.results
     home = results[0]
     away = results[1]
@@ -280,26 +284,56 @@ def result_game(event, match):
                                              away.match_result else Match.medal(2)
             away_medal = Match.medal(2) if home.match_result > \
                                              away.match_result else Match.medal(1)
+            first = f'Olympiasieger {year}'
+            medal_first = Match.medal(1)
+            second = f'Zweiter der Olympischen Spiele {year}'
+            medal_second = Match.medal(2)
         elif match.meta.round_mode == '3. Platz':
             home_medal = Match.medal(3) if home.match_result > \
                                              away.match_result else f'{Match.medal(4)}.'
             away_medal = f'{Match.medal(4)}.' if home.match_result > \
                                              away.match_result else Match.medal(3)
+            first = f'Dritter der Olympischen Spiele {year}'
+            medal_first = Match.medal(3)
+            second = f'Vierter der Olympischen Spiele {year}'
+            medal_second = f'{Match.medal(4)}.'
         else:
             home_medal = ''
             away_medal = ''
 
-        reply += f'{home_medal} {home.team.name} {flag(home.team.country.iso)} ' \
-                 f' {emoji_number(home.match_result)}➖{emoji_number(away.match_result)}' \
-                 f'  {flag(away.team.country.iso)} {away.team.name} {away_medal}'
-    else:
-        reply += 'Sorry, aber da muss ich nochmal in meine Datenbank schauen.'
-        logger.debug(f'More than two oponents in a tournament match {match.id}')
-        return
-    if match.match_incident:
-        reply += f'\n++ Entscheidung fiel {match.match_incident.name} ++ '
+        reply_game = f'{home.team.name} {flag(home.team.country.iso)} ' \
+                     f' {emoji_number(home.match_result)}➖{emoji_number(away.match_result)}' \
+                     f'  {flag(away.team.country.iso)} {away.team.name}'
+        reply += f'{home_medal} {reply_game} {away_medal}'
+        if match.match_incident:
+            incident = f'++ Entscheidung fiel {match.match_incident.name} ++ '
+            reply += f'\n{incident}'
+        else:
+            incident = f'{match.meta.round_mode}'
 
-    event.send_text(reply)
+        if match.meta.round_mode != 'Finale' and match.meta.round_mode != '3. Platz':
+            event.send_text(reply)
+
+        else:
+            winner = home if home.match_result > away.match_result else away
+            loser = away if home == winner else home
+            list_medal =[
+                list_element(reply_title,
+                             reply_sbtl,
+                             image_url='https://i.imgur.com/7ZgRGvd.jpg'
+                ),
+                list_element(f'{medal_first} {winner.team.name} {flag(winner.team.country.iso)}',
+                             f'{first}'),
+                list_element(f'{medal_second} {loser.team.name} {flag(loser.team.country.iso)}',
+                             f'{second}'),
+                list_element(f'{reply_game}',
+                             f'{incident}')
+            ]
+            event.send_list(list_medal,
+                            top_element_style='large'
+                            )
+    else:
+        result_total(event, match)
 
 
 handlers = [
