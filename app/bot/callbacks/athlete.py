@@ -1,5 +1,14 @@
 from datetime import datetime
+from time import sleep
 
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.text import slugify
+
+from backend.models import Story
+
+from feeds.models.subscription import Subscription
+from lib.facebook import guess_attachment_type
+from lib.response import button_postback
 from ..handlers.apiaihandler import ApiAiHandler
 from feeds.config import GERMAN_ATHLETES_OLYMPIA
 from feeds.models.person import Person
@@ -10,6 +19,7 @@ def api_characteristics(event, parameters, **kwargs):
 
 
 def characteristics(event, payload):
+    sender_id = event['sender']['id']
     first_name = payload.get('first_name')
     last_name = payload.get('last_name')
     athlete = None
@@ -32,14 +42,30 @@ def characteristics(event, payload):
         return
 
     persons = Person.query(fullname=athlete)
+    subs = Subscription.query(filter={'athlete': athlete},
+                              type=Subscription.Type.RESULT, psid=sender_id)
 
     for person in persons:
+        story_exist = False
+        story_reply = ''
         try:
-            person_url = Person.get_picture_url(id=person.id)
-            if person_url:
-                event.send_attachment(person_url)
-        except:
-            continue
+            slug = slugify(person.fullname)
+            story = Story.objects.get(slug=slug)
+            story_reply += story.text
+            if story.attachment_id:
+                media = story.attachment_id
+                url = story.media
+                event.send_attachment_by_id(str(media), guess_attachment_type(str(url)))
+            story_exist = True
+            pass
+        except ObjectDoesNotExist:
+            try:
+                person_url = Person.get_picture_url(id=person.id)
+                if person_url:
+                    event.send_attachment(person_url)
+                    sleep(1)
+            except:
+                continue
 
         reply = f"{person.fullname} aus {', '.join([country.name for country in person.country])}"
 
@@ -48,15 +74,29 @@ def characteristics(event, payload):
             reply += f"\nGeburtstag: {birthday_str}"
         if person.get('height') and int(person.get('height')) > 0:
             height = int(person.get('height'))/100
-            reply += f"\nGröße: {height:,2f} m"
+            reply += "\nGröße: %.2f m" %height
         if person.get('weight') and int(person.get('weight')) > 0:
             reply += f"\nGewicht: {person.get('weight')} kg"
         if person.get('sport'):
             reply += f"\nSportart{'en' if len(person.sport) > 1 else ''}: " \
                      f"{', '.join([sport.get('name', '') for sport in person.sport])}"
 
-        event.send_text(reply)
+        if story_exist:
+            event.send_text(reply)
+            reply = story_reply
 
+        if subs:
+            button_title = 'Abmelden: Sportler'
+            button_option = 'unsubscribe'
+        else:
+            button_title = 'Anmelden: Sportler'
+            button_option = 'subscribe'
+
+        event.send_buttons(reply,
+                         buttons=[button_postback(button_title,
+                                                  {"target": "athlete",
+                                                   "filter": person.fullname,
+                                                   "option": button_option})])
 
 handlers = [
     ApiAiHandler(api_characteristics, 'athletes.who-is'),
