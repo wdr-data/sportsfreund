@@ -204,7 +204,7 @@
       article: das
 
 - name: Curling
-  picture_url:
+  picture_url: https://i.imgur.com/ZzBSXSj.png
   topic_id: null
   result_type: POINTS
   result_digits: 1
@@ -272,7 +272,7 @@
       article: das
 
 - name: Eisschnelllauf
-  picture_url:
+  picture_url: https://i.imgur.com/dGK1QZQ.png
   topic_id: null
   result_type: TIME
   result_digits: 2
