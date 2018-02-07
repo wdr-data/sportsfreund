@@ -8,7 +8,7 @@ django.setup()
 MONGODB_JOBS = os.environ.get('MONGODB_URI')
 REDIS = os.environ.get('REDIS_URL')
 
-GREENLETS = 4
+GREENLETS = 10
 
 WORKER_CLASS = "worker.BotWorker"
 SCHEDULER = True
