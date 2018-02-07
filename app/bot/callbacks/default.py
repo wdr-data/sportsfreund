@@ -133,9 +133,9 @@ def push(event, parameters, **kwargs):
     if not date:
         push = get_push(force_latest=True)
         if push:
-            schema(push, event)
+            send_push(event, push=push.id, report_nr=None, state='Intro')
         else:
-            reply = 'Keine Pushes gefunden.'
+            reply = 'Keine Highlights gefunden.'
             event.send_text(reply)
 
     else:
