@@ -393,7 +393,7 @@
 
 - name: Ski Langlauf
   picture_url: https://i.imgur.com/ewbiKsx.png
-  topic_id: null
+  topic_id: 1764
   result_type: Time
   result_digits: 1
   competition_term: Rennen
@@ -428,6 +428,23 @@
       competition_type: RACE
       result_at: '0'
       article: das
+    - name: Freistil
+      competition_type: SINGLE
+      result_at: '0'
+      article: das
+    - name: 10km
+      competition_type: SINGLE
+      result_at: '0'
+      article: das
+    - name: 15km
+      competition_type: SINGLE
+      result_at: '0'
+      article: das
+    - name: Verfolgung
+      competition_type: RACE
+      result_at: '0'
+      article: das
+
 
 - name: Snowboard
   picture_url: https://i.imgur.com/1TaYOn1.png
@@ -457,7 +474,7 @@
       competition_type: SINGLE
       result_at: '3'
       article: das
-    - name: Parallel Riesenslalom
+    - name: Parallel
       rounds: True
       competition_type: TOURNAMENT
       result_at: '3'
