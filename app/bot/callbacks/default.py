@@ -133,6 +133,8 @@ def push(event, parameters, **kwargs):
     if not date:
         push = get_push(force_latest=True)
         if push:
+            event.send_text(f"Hier die Highlights vom"
+                            f" {push.pub_date.strftime('%d.%m.%Y %H:%M')}Uhr:")
             send_push(event, push=push, report_nr=None, state=None)
         else:
             reply = 'Keine Highlights gefunden.'
