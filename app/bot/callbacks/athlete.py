@@ -47,9 +47,10 @@ def characteristics(event, payload):
             birthday_str = datetime.strptime(person.get('birthday'), '%Y-%m-%d').strftime('%d.%m.%Y')
             reply += f"\nGeburtstag: {birthday_str}"
         if person.get('height') and int(person.get('height')) > 0:
-            reply += f"\nGröße: {person.get('height')}"
+            height = int(person.get('height'))/100
+            reply += f"\nGröße: {height:,2f} m"
         if person.get('weight') and int(person.get('weight')) > 0:
-            reply += f"\nGewicht: {person.get('weight')}"
+            reply += f"\nGewicht: {person.get('weight')} kg"
         if person.get('sport'):
             reply += f"\nSportart{'en' if len(person.sport) > 1 else ''}: " \
                      f"{', '.join([sport.get('name', '') for sport in person.sport])}"

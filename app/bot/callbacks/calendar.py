@@ -103,7 +103,7 @@ def api_next(event, parameters, **kwargs):
             elif not match_meta and round_mode:
                 event.send_text('Deine A')
             else:
-                event.send_text('In dieser Sauson findet kein Weltcup mehr in '
+                event.send_text('In dieser Saison findet kein Weltcup mehr in '
                                 f'{town if town else country} statt. Dafür hab ich hier bald die '
                                 f'Ergebnisse aus {town if town else country}.')
 
