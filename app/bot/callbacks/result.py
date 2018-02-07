@@ -321,7 +321,7 @@ def result_game(event, match):
             list_medal =[
                 list_element(reply_title,
                              reply_sbtl,
-                             image_url='https://i.imgur.com/7ZgRGvd.jpg'
+                             image_url=sport_by_name[match.meta.sport].picture_url
                 ),
                 list_element(f'{medal_first} {winner.team.name} {flag(winner.team.country.iso)}',
                              f'{first}'),
