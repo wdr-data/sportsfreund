@@ -393,7 +393,7 @@
 
 - name: Ski Langlauf
   picture_url: https://i.imgur.com/ewbiKsx.png
-  topic_id: 1764
+  topic_id: null
   result_type: Time
   result_digits: 1
   competition_term: Rennen
