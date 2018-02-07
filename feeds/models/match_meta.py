@@ -18,6 +18,7 @@ class MatchMeta(ListFeedModel):
 
     class Event(Enum):
         OLYMPIA_18 = 'owg18'
+        OLYMPIA_14 = 'owg14'
         WORLDCUP = 'worldcup'
 
     def __init__(self, *args, **kwargs):
@@ -156,60 +157,64 @@ class MatchMeta(ListFeedModel):
         now = int(time())
 
         for sp in obj:
-            for co in sp['competition']:
-                for se in co['season']:
-                    for ro in se['round']:
-                        for ma in ro['match']:
-                            ma['sport'] = sp['name']
-                            ma['sport_id'] = sp['id']
-                            ma['season'] = se['name']
-                            ma['season_id'] = se['id']
-                            ma['competition'] = ro['name']
-                            ma['competition_id'] = ro['id']
-                            ma['gender'] = co['gender']
-                            ma['discipline'] = co['name']
-                            if co['shortname'] == 'Olympia':
-                                ma['discipline_short'] = DISCIPLINE_ALIASES.get(ro['name'],
-                                                                                ro['name'])
-                            else:
-                                ma['discipline_short'] = DISCIPLINE_ALIASES.get(co['shortname'],
-                                                                            co['shortname'])
-                            ma['_cached_at'] = now
-                            ma['match_incident'] = ma.get('match_incident')
+            if sp['name'] != 'Olympia':
+                for co in sp['competition']:
+                    for se in co['season']:
+                        for ro in se['round']:
+                            for ma in ro['match']:
+                                ma['sport'] = sp['name']
+                                ma['sport_id'] = sp['id']
+                                ma['season'] = se['name']
+                                ma['season_id'] = se['id']
+                                ma['competition'] = ro['name']
+                                ma['competition_id'] = ro['id']
+                                ma['gender'] = co['gender']
+                                ma['discipline'] = co['name']
+                                if co['shortname'] == 'Olympia':
+                                    ma['discipline_short'] = DISCIPLINE_ALIASES.get(ro['name'],
+                                                                                    ro['name'])
+                                else:
+                                    ma['discipline_short'] = DISCIPLINE_ALIASES.get(co['shortname'],
+                                                                                co['shortname'])
+                                ma['_cached_at'] = now
+                                ma['match_incident'] = ma.get('match_incident')
 
-                            ma['round'] = ro['name']
+                                ma['round'] = ro['name']
 
-                            config = discipline_config(ma['sport'], ma['discipline_short'])
+                                config = discipline_config(ma['sport'], ma['discipline_short'])
 
-                            if isinstance(config, dict) and 'rounds' in config:
-                                ma['round_mode'] = ro['name']
-                                ma['round_id'] = ro['id']
-                            else:
-                                ma['round_mode'] = None
-                                ma['round_id'] = None
+                                if isinstance(config, dict) and 'rounds' in config:
+                                    ma['round_mode'] = ro['name']
+                                    ma['round_id'] = ro['id']
+                                else:
+                                    ma['round_mode'] = None
+                                    ma['round_id'] = None
 
-                            if 'match_meta' in ma:
-                                for element in ma['match_meta']:
-                                    if 'kind' in element and element['kind'] == 'medals':
-                                        ma['medals'] = element['content']
-                            else:
-                                ma['medals'] = None
+                                if 'match_meta' in ma:
+                                    for element in ma['match_meta']:
+                                        if 'kind' in element and element['kind'] == 'medals':
+                                            ma['medals'] = element['content']
+                                else:
+                                    ma['medals'] = None
 
-                            if ma['match_time'] == 'unknown':
-                                ma['match_time'] = 'unbekannt'
-                                datetime_str = '%s %s' % (ma['match_date'], '23:59')
-                            else:
-                                datetime_str = '%s %s' % (ma['match_date'], ma['match_time'])
+                                if ma['match_time'] == 'unknown':
+                                    ma['match_time'] = 'unbekannt'
+                                    datetime_str = '%s %s' % (ma['match_date'], '23:59')
+                                else:
+                                    datetime_str = '%s %s' % (ma['match_date'], ma['match_time'])
 
-                            ma['datetime'] = datetime.strptime(
-                                datetime_str,
-                                '%Y-%m-%d %H:%M'
-                            )
+                                ma['datetime'] = datetime.strptime(
+                                    datetime_str,
+                                    '%Y-%m-%d %H:%M'
+                                )
 
-                            ma['topic_id'] = id
-                            ma['event'] = cls.Event.OLYMPIA_18.value
+                                ma['topic_id'] = id
+                                if id == '1757':
+                                    ma['event'] = cls.Event.OLYMPIA_18.value
+                                else:
+                                    ma['event'] = cls.Event.OLYMPIA_14.value
 
-                            cls.collection.replace_one({'id': ma['id']}, ma, upsert=True)
+                                cls.collection.replace_one({'id': ma['id']}, ma, upsert=True)
 
         cls.logger.info('%s match metas in db', cls.collection.count())
 

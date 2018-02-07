@@ -12,7 +12,7 @@ from feeds.config import discipline_config
 from feeds.config import supported_sports, sport_by_name
 from lib.flag import flag
 from lib.emoij_number import emoji_number
-from lib.response import button_postback, quick_reply
+from lib.response import button_postback, quick_reply, list_element
 
 logger = logging.Logger(__name__)
 
@@ -30,6 +30,7 @@ def api_podium(event, parameters, **kwargs):
     town = parameters.get('town')
     country = parameters.get('country')
     gender = parameters.get('gender')
+    round_mode = parameters.get('round_mode')
 
     if date:
         date = datetime.strptime(date, '%Y-%m-%d').date()
@@ -39,7 +40,7 @@ def api_podium(event, parameters, **kwargs):
                 event.send_text('Nice try, aber wir befinden und nicht in einem Schaltjahr. 😎')
                 return
 
-        match_meta = MatchMeta.search_date(
+        match_metas = MatchMeta.search_date(
             date=date, discipline=discipline, sport=sport, town=town,
             country=country, gender=gender)
     elif period and not date:
@@ -47,18 +48,30 @@ def api_podium(event, parameters, **kwargs):
         from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
         until_date = period.split('/')[1]
         until_date = datetime.strptime(until_date, '%Y-%m-%d').date()
-        match_meta = MatchMeta.search_range(
+        match_metas = MatchMeta.search_range(
             from_date=from_date, until_date=until_date, discipline=discipline,
             sport=sport, town=town, country=country, gender=gender)
     elif town or country:
-        match_meta = MatchMeta.search_range(
+        match_metas = MatchMeta.search_range(
             until_date=dtdate.today(), discipline=discipline, sport=sport,
             town=town, country=country, gender=gender)
+    elif round_mode:
+        match_metas = MatchMeta.search_range(
+            until_date=dtdate.today(), discipline=discipline, sport=sport,
+            town=town, country=country, gender=gender, round_mode=round_mode)
+        if not match_metas and round_mode == 'Finale':
+            match_metas = MatchMeta.search_range(
+                until_date=dtdate.today(), discipline=discipline, sport=sport,
+                town=town, country=country, gender=gender, round_mode='Entscheidung')
+            if not match_metas:
+                match_metas = MatchMeta.search_range(
+                    until_date=dtdate.today(), discipline=discipline, sport=sport,
+                    town=town, country=country, gender=gender)
     else:
-        match_meta = [MatchMeta.search_last(
-            discipline=discipline, sport=sport, town=town, country=country, gender=gender)]
+        match_metas = [MatchMeta.search_last(
+            sport=sport, discipline=discipline, town=town, country=country, gender=gender)]
 
-    match_ids = [match.id for match in match_meta if match]
+    match_ids = [match.id for match in match_metas if match]
 
     if not match_ids:
         event.send_text('In diesem Zeitraum hat kein Event stattgefunden.')
@@ -70,17 +83,26 @@ def api_podium(event, parameters, **kwargs):
 def result_podium(event, payload):
     # payload is list of match_ids
     match_ids = payload['result_podium']
-    match_meta = [MatchMeta.by_match_id(match_id) for match_id in match_ids]
+    match_metas = [MatchMeta.by_match_id(match_id) for match_id in match_ids]
+
     asked_matches = [Match.by_id(id) for id in match_ids]
 
-    discipline = [match.discipline for match in match_meta]
+    discipline = [match.discipline for match in match_metas]
 
-    sport = [match.sport for match in match_meta]
+    sport = [match.sport for match in match_metas]
 
     if len(asked_matches)>1:
         event.send_text('Bitteschön:')
 
-    for match, meta, sport, discipline in zip(asked_matches, match_meta, sport, discipline):
+    counter = 0
+    for  match, meta, sport, discipline in zip(asked_matches, match_metas, sport, discipline):
+        counter += 1
+        if counter > 8:
+            event.send_text(f'So, ich hab hier noch {len(asked_matches)-8} Events in der Pipline '
+                            f'die alle auf deine Suchanfrage passen.'
+                            f' Schränk deine Suche bitte ein wenig ein!')
+            return
+
         if match.match_incident:
             if match.match_incident.id == '3' or match.match_incident.id == '4':
                 event.send_text(f'{match.match_incident.name}: '
@@ -89,9 +111,7 @@ def result_podium(event, payload):
             else:
                 send_result(event, match)
         elif match.finished:
-
             send_result(event, match)
-
 
         else:
             event.send_text(f'Das Event {sport} {meta.discipline_short} in '
@@ -141,7 +161,7 @@ def result_total(event, payload):
 
     teams = [result.team for result in results]
 
-    if 'medals' in match.meta and match.meta.medals == 'complete' or match.meta.event != MatchMeta.Event.OLYMPIA_18:
+    if 'medals' in match.meta and match.meta.medals == 'complete':
         top_ten = '\n'.join(
             f'{match.medal(int(r.rank))}. {t.name} {flag(t.country.iso)}'
             f' {t.country.code} {match.txt_points(r)}'
@@ -154,8 +174,9 @@ def result_total(event, payload):
     config = discipline_config(match.meta.sport, match.meta.discipline_short)
 
     if isinstance(config, dict) and 'rounds' in config and config['rounds']:
-        reply = f'++ {match.meta.round_mode} ++ {match.meta.sport}, ' \
-                f'{match.meta.discipline_short}, {match.meta.gender_name}'
+        reply = f'{match.meta.sport}, ' \
+                f'{match.meta.discipline_short}, {match.meta.gender_name}\n' \
+                f'⚡{match.meta.round_mode}⚡'
 
         is_olympia = match.meta.get('event') == MatchMeta.Event.OLYMPIA_18
 
@@ -210,7 +231,7 @@ def result_by_country(event, payload):
     teams = [result.team for result in results]
     country = teams[0].country
 
-    if 'medals' in match.meta and match.meta.medals == 'complete' or match.meta.event != MatchMeta.Event.OLYMPIA_18:
+    if 'medals' in match.meta and match.meta.medals == 'complete':
         athletes_by_country = '\n'.join(
             f'{match.medal(int(r.rank))}. {t.name} {match.txt_points(r)}'
             for r, t in zip(results, teams))
@@ -229,24 +250,30 @@ def send_result(event, match):
         result_game(event, match)
         return
 
-    if 'medals' in match.meta and match.meta.medals == 'complete' or match.meta.event != MatchMeta.Event.OLYMPIA_18:
+    if 'medals' in match.meta or match.meta.event == MatchMeta.Event.WORLDCUP:
+        if match.meta.event == MatchMeta.Event.WORLDCUP or match.meta.medals == 'complete':
+            button = match.btn_podium
+        else:
+            button = None
+
         event.send_list(
                 match.lst_podium,
                 top_element_style='large',
-                button=match.btn_podium
+                button=button
         )
         return
+
 
     result_total(event, {'result_total': match.id, 'step': 'round_mode'})
 
 
 def result_game(event, match):
-
-    reply = f'{match.meta.sport}, {match.meta.gender_name} ++ {match.meta.round_mode} ++ '
+    year = match.datetime.strftime("%Y")
+    reply_title = f'{match.meta.sport}, {match.meta.gender_name} ⚡{match.meta.round_mode}⚡'
     time = localtime_format(match.datetime, event, is_olympia=match.meta.get('event') == MatchMeta.Event.OLYMPIA_18)
-    reply += f'\n{day_name[match.datetime.weekday()]}, ' \
+    reply_sbtl = f'{day_name[match.datetime.weekday()]}, ' \
              f'{match.datetime.strftime("%d.%m.%Y")} um {time}\n'
-
+    reply = reply_title + '\n' + reply_sbtl
     results = match.results
     home = results[0]
     away = results[1]
@@ -256,26 +283,56 @@ def result_game(event, match):
                                              away.match_result else Match.medal(2)
             away_medal = Match.medal(2) if home.match_result > \
                                              away.match_result else Match.medal(1)
+            first = f'Olympiasieger {year}'
+            medal_first = Match.medal(1)
+            second = f'Zweiter der Olympischen Spiele {year}'
+            medal_second = Match.medal(2)
         elif match.meta.round_mode == '3. Platz':
             home_medal = Match.medal(3) if home.match_result > \
                                              away.match_result else f'{Match.medal(4)}.'
             away_medal = f'{Match.medal(4)}.' if home.match_result > \
                                              away.match_result else Match.medal(3)
+            first = f'Dritter der Olympischen Spiele {year}'
+            medal_first = Match.medal(3)
+            second = f'Vierter der Olympischen Spiele {year}'
+            medal_second = f'{Match.medal(4)}.'
         else:
             home_medal = ''
             away_medal = ''
 
-        reply += f'{home_medal} {home.team.name} {flag(home.team.country.iso)} ' \
-                 f' {emoji_number(home.match_result)}➖{emoji_number(away.match_result)}' \
-                 f'  {flag(away.team.country.iso)} {away.team.name} {away_medal}'
-    else:
-        reply += 'Sorry, aber da muss ich nochmal in meine Datenbank schauen.'
-        logger.debug(f'More than two oponents in a tournament match {match.id}')
-        return
-    if match.match_incident:
-        reply += f'\n++ Entscheidung fiel {match.match_incident.name} ++ '
+        reply_game = f'{home.team.name} {flag(home.team.country.iso)} ' \
+                     f' {emoji_number(home.match_result)}➖{emoji_number(away.match_result)}' \
+                     f'  {flag(away.team.country.iso)} {away.team.name}'
+        reply += f'{home_medal} {reply_game} {away_medal}'
+        if match.match_incident:
+            incident = f'++ Entscheidung fiel {match.match_incident.name} ++ '
+            reply += f'\n{incident}'
+        else:
+            incident = f'{match.meta.round_mode}'
 
-    event.send_text(reply)
+        if match.meta.round_mode != 'Finale' and match.meta.round_mode != '3. Platz':
+            event.send_text(reply)
+
+        else:
+            winner = home if home.match_result > away.match_result else away
+            loser = away if home == winner else home
+            list_medal =[
+                list_element(reply_title,
+                             reply_sbtl,
+                             image_url=sport_by_name[match.meta.sport].picture_url
+                ),
+                list_element(f'{medal_first} {winner.team.name} {flag(winner.team.country.iso)}',
+                             f'{first}'),
+                list_element(f'{medal_second} {loser.team.name} {flag(loser.team.country.iso)}',
+                             f'{second}'),
+                list_element(f'{reply_game}',
+                             f'{incident}')
+            ]
+            event.send_list(list_medal,
+                            top_element_style='large'
+                            )
+    else:
+        result_total(event, match)
 
 
 handlers = [

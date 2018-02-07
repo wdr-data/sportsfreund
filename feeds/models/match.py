@@ -32,7 +32,7 @@ class Match(FeedModel):
     def transform(cls, match):
         """Make the inner 'match' object the new outer object and move 'match_result_at' in it"""
 
-        match_result_at = match['match_result_at']
+        match_result_at = match.get('match_result_at')
         round_mode = match['competition'][0]['season'][0]['round'][0]['round_mode']
         match = match['competition'][0]['season'][0]['round'][0]['match'][0]
         match['match_result_at'] = match_result_at
@@ -83,8 +83,13 @@ class Match(FeedModel):
         Returns ordered end results
         :return:
         """
+
+        config = discipline_config(self.meta.sport, self.meta.discipline_short)
+        if config is None:
+            raise ValueError(f'Sports_config does not exist for {self.meta.sport}, '
+                             f'{self.meta.discipline_short}')
         return sorted(
-            (r for r in self.match_result if r.match_result_at == '0'),
+            (r for r in self.match_result if r.match_result_at == config.result_at),
             key=(lambda r: int(r.rank)))
 
     @property
@@ -107,35 +112,38 @@ class Match(FeedModel):
         for r in winner_results:
             r.match_result = int(r.match_result)
 
-        winning_points = winner_results[0].match_result
         date = datetime.strptime(self.match_date, '%Y-%m-%d')
 
         config = discipline_config(self.meta.sport, self.meta.discipline_short)
-        if isinstance(config, dict) and 'rounds' in config and config['rounds'] \
-                and self.meta.event == MatchMeta.Event.OLYMPIA_18:
-            header_text = f'++ {self.meta.round_mode} ++ '
-        else:
-            header_text = ''
 
-        header_text += f'{self.meta.sport}, {self.meta.discipline_short}, {self.meta.gender_name}'
+        header_text = f'{self.meta.sport}, {self.meta.discipline_short}, {self.meta.gender_name}'
+
+        if isinstance(config, dict) and 'rounds' in config and config['rounds'] \
+                and self.meta.event != MatchMeta.Event.WORLDCUP:
+            header_text += f' ⚡{self.meta.round_mode}⚡'
+
         header_sbtl = f'{day_name[date.weekday()]}, {date.strftime("%d.%m.%Y")} ' \
                       f'um {self.match_time} Uhr in {self.venue.town.name}'
 
         header = [list_element(
             header_text,
             header_sbtl,
-            image_url='https://i.imgur.com/7ZgRGvd.jpg' if self.meta.sport == 'Ski Alpin'
-            else 'https://i.imgur.com/Bu05xF6.jpg'
+            image_url=sport_by_name[self.meta.sport].picture_url
         )]
 
         for winner_team, winner_result in zip(winner_teams, winner_results):
             subtl = f'{self.txt_points(winner_result)}'
 
             from feeds.models.person import Person
-            image_url = Person.get_picture_url(winner_result.person.id, self.meta.topic_id)
+            try:
+                image_url = Person.get_picture_url(winner_result.person.id, self.meta.topic_id)
+            except:
+                image_url = None
 
-            if 'medals' in self.meta and self.meta.medals == 'complete':
+            if 'medals' in self.meta and (self.meta.medals == 'complete'or self.meta.medals == 'gold_silver'):
                 title = f'{Match.medal(winner_result.rank)} '
+            elif 'medals' in self.meta and self.meta.medals == 'bronze_winner':
+                title = f'{Match.medal(winner_result.rank+2)} '
             else:
                 title = f'{winner_result.rank}. ' if subtl else ''
 

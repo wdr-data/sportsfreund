@@ -3,6 +3,7 @@
 # competition_type: SINGLE | RACE | TOURNAMENT
 
 - name: Biathlon
+  picture_url: https://i.imgur.com/XpHMpTt.png
   topic_id: 1814
   result_type: TIME
   result_digits: 1
@@ -12,21 +13,27 @@
   disciplines:
     - name: Einzel
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Staffel
       competition_type: RACE
+      result_at: '0'
       article: die
     - name: Massenstart
       competition_type: RACE
+      result_at: '0'
       article: der
     - name: Verfolgung
       competition_type: RACE
+      result_at: '0'
       article: die
     - name: Sprint
       competition_type: SINGLE
+      result_at: '0'
       article: der
 
 - name: Ski Alpin
+  picture_url: https://i.imgur.com/RPpJAbn.png
   topic_id: 1773
   result_type: TIME
   result_digits: 2
@@ -35,24 +42,35 @@
   disciplines:
     - name: Abfahrt
       competition_type: SINGLE
+      result_at: '0'
       article: die
+    - name: Super-G
+      competition_type: SINGLE
+      result_at: '0'
+      article: der
     - name: Super G
       competition_type: SINGLE
+      result_at: '0'
       article: der
     - name: Riesenslalom
       competition_type: SINGLE
+      result_at: '0'
       article: der
     - name: Slalom
       competition_type: SINGLE
+      result_at: '0'
       article: der
     - name: Kombination
       competition_type: SINGLE
+      result_at: '0'
       article: die
     - name: Parallel
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
+      result_at: '0'
       article:
 
 - name: Skispringen
+  picture_url: https://i.imgur.com/eTD5Uqh.png
   topic_id: 1789
   result_type: POINTS
   result_digits: 1
@@ -62,25 +80,32 @@
     - name: Großschanze
       rounds: True
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Normalschanze
       rounds: True
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Flugschanze
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Team Normalschanze
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Teamspringen
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Team Normalschanze
       competition_type: SINGLE
+      result_at: '0'
       article: das
 
 - name: Skeleton
+  picture_url: https://i.imgur.com/AvqEBPj.png
   topic_id: null
   result_type: TIME
   result_digits: 2
@@ -90,34 +115,12 @@
     - name: Skeleton
       rounds: True
       competition_type: SINGLE
+      result_at: '0'
       article: das
-
-- name: Ski Freestyle
-  topic_id: null
-  result_type: POINTS
-  result_digits: 1
-  competition_term: Event
-  article: das
-  disciplines:
-    - name: Aerials
-      rounds: True
-      competition_type: SINGLE
-      article: das
-    - name: Buckelpiste
-      rounds: True
-      competition_type: SINGLE
-      article: die
-    - name: Halfpipe
-      rounds: True
-      competition_type: SINGLE
-      article: die
-    - name: Slopestyle
-      rounds: True
-      competition_type: SINGLE
-      article: die
 
 
 - name: Eishockey
+  picture_url: https://i.imgur.com/VvMFXD0.png
   topic_id: null
   result_type: POINTS
   result_digits: 1
@@ -127,50 +130,62 @@
     - name: Gruppe A
       rounds: True
       competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: Gruppe B
       rounds: True
       competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: Gruppe C
       rounds: True
       competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: Viertelfinale
       rounds: True
       competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: Halbfinale
       rounds: True
       competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: Finale
       rounds: True
       competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: Qualifikationsrunde
       rounds: True
       competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: 3. Platz
       rounds: True
       competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: 7. Platz
       rounds: True
       competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: 5. Platz
       rounds: True
       competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: Platzierungsrunde
       rounds: True
       competition_type: TOURNAMENT
+      result_at: '0'
       article: das
 
 
 - name: Bob
+  picture_url: https://i.imgur.com/35nk83n.png
   topic_id: null
   result_type: TIME
   result_digits: 2
@@ -180,12 +195,16 @@
     - name: Zweierbob
       rounds: True
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Viererbob
+      rounds: True
       competition_type: SINGLE
+      result_at: '0'
       article: das
 
 - name: Curling
+  picture_url: https://i.imgur.com/8yL0Eg8.png
   topic_id: null
   result_type: POINTS
   result_digits: 1
@@ -194,30 +213,37 @@
   disciplines:
     - name: Round Robin
       rounds: True
-      competition_type: ROBIN
+      competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: Tie-breaker
       rounds: True
-      competition_type: ROBIN
+      competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: Viertelfinale
       rounds: True
-      competition_type: ROBIN
+      competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: Halbfinale
       rounds: True
-      competition_type: ROBIN
+      competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: 3. Platz
       rounds: True
-      competition_type: ROBIN
+      competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: Finale
       rounds: True
-      competition_type: ROBIN
+      competition_type: TOURNAMENT
+      result_at: '0'
       article: das
 
 - name: Eiskunstlauf
+  picture_url: https://i.imgur.com/lXW3RYo.png
   topic_id: null
   result_type: POINTS
   result_digits: 1
@@ -227,48 +253,74 @@
     - name: Einzel
       rounds: True
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Teamwettbewerb
       rounds: True
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Eistanz
       rounds: True
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Paarlauf
       rounds: True
       competition_type: SINGLE
+      result_at: '0'
       article: das
 
 - name: Eisschnelllauf
+  picture_url: https://i.imgur.com/dGK1QZQ.png
   topic_id: null
-  result_type: POINTS
-  result_digits: 1
+  result_type: TIME
+  result_digits: 2
   competition_term: Rennen
   article: das
   disciplines:
     - name: Teamverfolgung
       rounds: True
       competition_type: TOURNAMENT
+      result_at: '0'
       article: das
     - name: 10000 m
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: 1500 m
       rounds: True
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Teamwettbewerb
       rounds: True
       competition_type: SINGLE
+      result_at: '0'
       article: das
-    - name: Teamwettbewerb
+    - name: 5000 m
       rounds: True
       competition_type: SINGLE
+      result_at: '0'
+      article: das
+    - name: 500 m
+      rounds: True
+      competition_type: SINGLE
+      result_at: '0'
+      article: das
+    - name: 1000 m
+      rounds: True
+      competition_type: SINGLE
+      result_at: '0'
+      article: das
+    - name: 3000 m
+      rounds: True
+      competition_type: SINGLE
+      result_at: '0'
       article: das
 
 - name: Nordische Kombination
+  picture_url: https://i.imgur.com/AoKjzhg.png
   topic_id: 1827
   result_type: TIME
   result_digits: 1
@@ -277,15 +329,19 @@
   disciplines:
     - name: Normalschanze
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Großschanze
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Team
       competition_type: SINGLE
+      result_at: '0'
       article: das
 
 - name: Rodeln
+  picture_url: https://i.imgur.com/nhG96lr.png
   topic_id: null
   result_type: TIME
   result_digits: 3
@@ -295,15 +351,19 @@
     - name: Einsitzer
       rounds: True
       competition_type: SINGLE
+      result_at: '0'
       article: der
     - name: Doppelsitzer
       competition_type: SINGLE
+      result_at: '0'
       article: der
     - name: Teamwettbewerb
       competition_type: SINGLE
+      result_at: '0'
       article: der
 
 - name: Shorttrack
+  picture_url: https://i.imgur.com/AaR8lJw.png
   topic_id: null
   result_type: TIME
   result_digits: 1
@@ -312,23 +372,28 @@
   disciplines:
     - name: Staffel
       rounds: True
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: 1000 m
       rounds: True
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: 1500 m
       rounds: True
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: 500 m
       rounds: True
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
+      result_at: '0'
       article: das
 
 - name: Ski Langlauf
-  topic_id: 1764
+  picture_url: https://i.imgur.com/ewbiKsx.png
+  topic_id: null
   result_type: Time
   result_digits: 1
   competition_term: Rennen
@@ -336,25 +401,36 @@
   disciplines:
     - name: Sprint
       rounds: True
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Staffel
       competition_type: RACE
+      result_at: '0'
       article: das
     - name: Skating
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Skiathlon
-      competition_type: TOURNAMENT
+      competition_type: RACE
+      result_at: '0'
       article: das
     - name: Skating
       competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: 50km
       competition_type: RACE
+      result_at: '0'
+      article: das
+    - name: 30km
+      competition_type: RACE
+      result_at: '0'
       article: das
 
 - name: Snowboard
+  picture_url: https://i.imgur.com/1TaYOn1.png
   topic_id: null
   result_type: POINTS
   result_digits: 1
@@ -364,17 +440,60 @@
     - name: Halfpipe
       rounds: True
       competition_type: SINGLE
+      result_at: '3'
       article: das
     - name: Slopestyle
       rounds: True
       competition_type: SINGLE
+      result_at: '3'
       article: das
     - name: Snowboardcross
       rounds: True
-      competition_type: TOURNAMENT
+      competition_type: SINGLE
+      result_at: '0'
       article: das
     - name: Big Air
       rounds: True
       competition_type: SINGLE
+      result_at: '3'
       article: das
+    - name: Parallel Riesenslalom
+      rounds: True
+      competition_type: TOURNAMENT
+      result_at: '3'
+      article: das
+
+- name: Ski Freestyle
+  picture_url: https://i.imgur.com/wSURv4K.png
+  topic_id: null
+  result_type: POINTS
+  result_digits: 1
+  competition_term: Event
+  article: das
+  disciplines:
+    - name: Aerials
+      rounds: True
+      competition_type: SINGLE
+      result_at: '3'
+      article: das
+    - name: Buckelpiste
+      rounds: True
+      competition_type: SINGLE
+      result_at: '3'
+      article: die
+    - name: Halfpipe
+      rounds: True
+      competition_type: SINGLE
+      result_at: '3'
+      article: die
+    - name: Slopestyle
+      rounds: True
+      competition_type: SINGLE
+      result_at: '3'
+      article: die
+    - name: Ski Cross
+      rounds: True
+      competition_type: SINGLE
+      result_at: '0'
+      article: die
 ...
