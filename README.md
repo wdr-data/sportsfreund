@@ -1,12 +1,22 @@
 # Sportsfreund - Facebook Messenger Bot
 
 ## Über Sportsfreund
-TODO
+Ich bin Sportsfreund, der Wintersport-Dienst der Sportschau. Ich bin für die Olympischen Winterspiele in PyeonChang entwickelt worden. Du kannst mich im Facebook-Messenger nutzen.
+[sportsfreund.sportschau](m.me/sportsfreund.sportschau)
+
+### Nachrichten erhalten
+Ich schicke tägliche Highlights, Ergebnisse zu einer Sportart, Neuigkeiten zu Sportlern oder Medaillen und melde mich, wenn ein Livestream deiner Lieblingssportart startet. Du kannst dir die Sportsfreund-Nachrichten nach deinen Wünschen zusammenstellen und dich jederzeit anmelden und abmelden. Schreibe mir  'Anmelden für ...' und eine Sportart, einen Sportlernamen oder ein Land.
+
+### Etwas fragen
+Rufe meine Informationen selbst ab, indem du mir eine Nachricht schickst. Ich kenne über 2000 aktive Sportler. Oder frage zum Beispiel ‘Wann ist der nächste Ski-Wettkampf’, ‘Ergebnisse Biathlon’, ‘Ski Alpin Video’.
 
 ## Team
-TODO
+Redaktion: Willem de Haan, Nadine Mosch (MDR), Sebastian Göllner, David Vorholt (WDR) 
+Umsetzung: Lisa Achenbach, Patricia Ennenbach, Jannes Höke, Christian Jörres, Marcus Weiner (WDR)
+Grafik: Lisa Strieder (ARD.de)
+Daten-Feeds: Heimspiel
 
-[**Impressum**](http://www1.wdr.de/impressum/index.html)
+[**Impressum**](http://www.sportschau.de/impressum/index.html)
 
 ## Nutzung
 
