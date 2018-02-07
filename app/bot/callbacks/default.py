@@ -133,7 +133,7 @@ def push(event, parameters, **kwargs):
     if not date:
         push = get_push(force_latest=True)
         if push:
-            send_push(event, push=push.id, report_nr=None, state=None)
+            send_push(event, push=push, report_nr=None, state=None)
         else:
             reply = 'Keine Highlights gefunden.'
             event.send_text(reply)
