@@ -12,7 +12,7 @@ GREENLETS = 5
 # Check if running on Heroku
 HEROKU_RAM = os.environ.get('DYNO_RAM')
 if HEROKU_RAM is not None:
-    GREENLETS = int(HEROKU_RAM) / 512 * 15
+    GREENLETS = int(HEROKU_RAM) / 512 * 10
 
 WORKER_CLASS = "worker.BotWorker"
 SCHEDULER = True
