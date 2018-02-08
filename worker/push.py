@@ -1,7 +1,4 @@
 from datetime import datetime, timedelta, date
-import random
-
-from mrq.task import Task
 from mrq.context import log
 
 from backend.models import HIGHLIGHT_CHECK_INTERVAL, Push as PushModel

@@ -4,7 +4,6 @@ import logging
 
 import gevent
 import requests
-from mrq.task import Task
 
 from lib.attachment import Attachment
 from lib.facebook import upload_attachment, guess_attachment_type
