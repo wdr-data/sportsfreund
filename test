@@ -3,6 +3,12 @@ import os
 import pytest
 import sys
 
+# Setup django for using models in tests
+import django
+sys.path.append('app')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "main.settings")
+django.setup()
+
 args = ['--tap-stream'] if os.environ.get('CI') else []
 args.extend(sys.argv[1:])
 
