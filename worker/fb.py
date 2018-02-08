@@ -17,6 +17,19 @@ logger = logging.getLogger(__name__)
 PAGE_TOKEN = os.environ.get('FB_PAGE_TOKEN', 'na')
 
 
+class FacebookError(Exception):
+    def __init__(self, error):
+        super()
+        self.message = error.get('message')
+        self.type = error.get('type')
+        self.code = error.get('code')
+        self.subcode = error.get('error_subcode')
+        self.fbtrace = error.get('fbtrace_id')
+
+    def __str__(self):
+        return self.message
+
+
 class Send(BaseTask):
 
     def run(self, params):
@@ -44,7 +57,7 @@ class Send(BaseTask):
 
         error = json.loads(response).get('error')
         if error:
-            raise Exception(error)
+            raise FacebookError(error)
         else:
             UserSentTracking.set_sent(payload['recipient']['id'], id)
 
