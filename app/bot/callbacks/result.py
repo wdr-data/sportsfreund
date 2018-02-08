@@ -21,6 +21,10 @@ def api_winner(event, parameters, **kwargs):
     api_podium(event, parameters)
 
 
+def btn_podium(event, payload):
+    sport = payload.get('podium')
+    api_podium(event, parameters={'sport': sport})
+
 
 def api_podium(event, parameters, **kwargs):
     sport = parameters.get('sport')
@@ -336,6 +340,7 @@ def result_game(event, match):
 
 
 handlers = [
+    PayloadHandler(btn_podium, ['podium']),
     PayloadHandler(result_details, ['result_details']),
     PayloadHandler(result_by_country, ['result_by_country', 'match_id']),
     PayloadHandler(result_total, ['result_total', 'step']),
