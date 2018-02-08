@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from fuzzywuzzy import fuzz, process
 
+from .subscription import send_subscriptions
 from lib.facebook import guess_attachment_type
 from lib.response import (button_postback, quick_reply, generic_element,
                           button_web_url, button_share)
@@ -57,26 +58,9 @@ def korea_standard_time(event, **kwargs):
     event.send_text(reply)
 
 def get_started(event, **kwargs):
-    event.send_text('Hallo, ich bin der Wintersport-Dienst der Sportschau. ⛷')
+    story(event, slug='onboarding', fragment_nr=None)
     sleep(4)
-    event.send_text(f'Im Moment liefere ich Infos zu diesen Sportarten: \n- Ski Alpin\n'
-                    f'- Biathlon\n- Skispringen\n'
-                    f'Mehr zu mir und meinen Funktionen bekommst du jederzeit, '
-                    f'wenn du unten auf das Menü klickst.')
-    sleep(4)
-    event.send_text(f'Schreib mir eine Nachricht und mein Code versucht, eine möglichst passende '
-                    f'Antwort darauf zu finden. Aber ich kenne mich nur mit Wintersport aus und '
-                    f'kann ein bisschen quatschen. '
-                    f'Schreib zum Beispiel: \n- Wann ist das nächste Skispringen?\n'
-                    f'- Ergebnisse Biathlon\n- Ski Alpin Video')
-    sleep(4)
-    event.send_buttons(
-        f'Ich kann mich auch automatisch bei dir melden, wenn es etwas Neues gibt. '
-        f'Hier kannst du dich anmelden:',
-        buttons=[
-            button_postback('Nachrichten erhalten',
-                            ['send_subscriptions'])]
-    )
+    send_subscriptions(event)
 
 
 def start_message(event, payload, **kwargs):
