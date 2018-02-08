@@ -263,7 +263,7 @@ def story_payload(event, payload, **kwargs):
     story(event, payload['story'], payload['fragment'])
 
 
-def story(event, slug, fragment_nr):
+def story(event, slug, fragment_nr, get_back=False):
     reply = ''
     media = ''
     url = ''
@@ -335,3 +335,6 @@ def story(event, slug, fragment_nr):
 
     else:
         event.send_text(reply)
+
+    if get_back:
+        return
