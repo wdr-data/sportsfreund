@@ -9,7 +9,7 @@
   result_digits: 1
   competition_term: Rennen
   article: das
-  pictogram: url
+  slug: biathlon-regeln
   disciplines:
     - name: Einzel
       competition_type: SINGLE
@@ -39,6 +39,7 @@
   result_digits: 2
   competition_term: Rennen
   article: das
+  slug: ski-alpin-regeln
   disciplines:
     - name: Abfahrt
       competition_type: SINGLE
@@ -76,6 +77,7 @@
   result_digits: 1
   competition_term: Springen
   article: das
+  slug: skispringen-regeln
   disciplines:
     - name: Großschanze
       rounds: True
@@ -111,6 +113,7 @@
   result_digits: 2
   competition_term: Rennen
   article: das
+  slug: skeleton-regeln
   disciplines:
     - name: Skeleton
       rounds: True
@@ -126,6 +129,7 @@
   result_digits: 1
   competition_term: Spiel
   article: das
+  slug: eishockey-regeln
   disciplines:
     - name: Gruppe A
       rounds: True
@@ -191,6 +195,7 @@
   result_digits: 2
   competition_term: Rennen
   article: das
+  slug: bob-regeln
   disciplines:
     - name: Zweierbob
       rounds: True
@@ -210,6 +215,7 @@
   result_digits: 1
   competition_term: Spiel
   article: das
+  slug: regeln-curling
   disciplines:
     - name: Round Robin
       rounds: True
@@ -249,6 +255,7 @@
   result_digits: 1
   competition_term: Event
   article: das
+  slug: eiskunstlauf-regeln
   disciplines:
     - name: Einzel
       rounds: True
@@ -278,6 +285,7 @@
   result_digits: 2
   competition_term: Rennen
   article: das
+  slug: eisschnelllauf-regeln
   disciplines:
     - name: Teamverfolgung
       rounds: True
@@ -326,6 +334,7 @@
   result_digits: 1
   competition_term: Rennen
   article: das
+  slug: nordische-kombination-regeln
   disciplines:
     - name: Normalschanze
       competition_type: SINGLE
@@ -347,6 +356,7 @@
   result_digits: 3
   competition_term: Rennen
   article: das
+  slug: rennrodeln-regeln
   disciplines:
     - name: Einsitzer
       rounds: True
@@ -369,6 +379,7 @@
   result_digits: 1
   competition_term: Rennen
   article: das
+  slug: short-track-regeln
   disciplines:
     - name: Staffel
       rounds: True
@@ -398,6 +409,7 @@
   result_digits: 1
   competition_term: Rennen
   article: das
+  slug: langlauf-regeln
   disciplines:
     - name: Sprint
       rounds: True
@@ -453,6 +465,7 @@
   result_digits: 1
   competition_term: Event
   article: das
+  slug: snowboard-regeln
   disciplines:
     - name: Halfpipe
       rounds: True
@@ -487,6 +500,7 @@
   result_digits: 1
   competition_term: Event
   article: das
+  slug: freestyle-regeln
   disciplines:
     - name: Aerials
       rounds: True
