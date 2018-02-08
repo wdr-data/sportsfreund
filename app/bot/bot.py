@@ -39,6 +39,7 @@ def make_event_handler():
     handlers.extend(video.handlers)
     handlers.extend(medal.handlers)
     handlers.extend(athlete.handlers)
+    handlers.extend(calendar.handlers)
 
     handlers.extend([
         ApiAiHandler(greetings, 'gruss'),
