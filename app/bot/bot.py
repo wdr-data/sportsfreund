@@ -8,7 +8,7 @@ from lib.config import FB_PAGE_TOKEN
 from lib.response import Replyable
 # dirty
 from .callbacks import dirty
-from .callbacks import result, calendar, olympia, subscription, video, medal, athlete
+from .callbacks import result, calendar, olympia, subscription, video, medal, athlete, sport
 from .callbacks import testing
 from .callbacks.default import (
     get_started, greetings, push, push_step, subscribe, unsubscribe, share_bot,
@@ -75,8 +75,8 @@ def make_event_handler():
         PayloadHandler(story_payload, ['story', 'fragment']),
 
         # info.general
-        # ApiAiHandler(general.api_sport,'info.general.sport'),
-        # ApiAiHandler(general.api_discipline,'info.general.discipline'),
+        ApiAiHandler(sport.api_sport,'info.general.sport'),
+        # ApiAiHandler(sport.api_discipline,'info.general.discipline'),
         ApiAiHandler(calendar.api_next, 'info.general.sport'),
         ApiAiHandler(calendar.api_next, 'info.general.discipline'),
 
