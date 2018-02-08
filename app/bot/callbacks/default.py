@@ -58,7 +58,7 @@ def korea_standard_time(event, **kwargs):
     event.send_text(reply)
 
 def get_started(event, **kwargs):
-    story(event, slug='onboarding', fragment_nr=None, subscribe=True)
+    story(event, slug='onboarding', fragment_nr=None)
 
 
 def share_bot(event, **kwargs):
@@ -241,7 +241,7 @@ def story_payload(event, payload, **kwargs):
     story(event, payload['story'], payload['fragment'])
 
 
-def story(event, slug, fragment_nr, subscribe=False):
+def story(event, slug, fragment_nr):
     reply = ''
     media = ''
     url = ''
@@ -313,6 +313,5 @@ def story(event, slug, fragment_nr, subscribe=False):
 
     else:
         event.send_text(reply)
-
-        if subscribe:
+        if slug == 'onboarding':
             send_subscriptions(event)
