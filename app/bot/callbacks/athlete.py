@@ -118,5 +118,5 @@ def characteristics(event, payload):
         event.send_text('Zu dieser Person liegen mir keine Daten vor.')
 
 handlers = [
-    ApiAiHandler(api_characteristics, 'athletes.who-is'),
+    ApiAiHandler(api_characteristics, 'athletes.who-is', follow_up=True),
 ]
