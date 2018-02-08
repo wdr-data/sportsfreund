@@ -4,7 +4,8 @@ from lib import queue
 
 
 def get_person(*args, **kwargs):
-    queue.queue_job("person.load_persons", {})
+    #queue.queue_job("person.load_persons", {})
+    pass
 
 
 class Migration(migrations.Migration):
