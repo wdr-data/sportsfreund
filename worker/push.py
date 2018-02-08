@@ -1,8 +1,8 @@
-import logging
 from datetime import datetime, timedelta, date
 import random
 
 from mrq.task import Task
+from mrq.context import log
 
 from backend.models import HIGHLIGHT_CHECK_INTERVAL, Push as PushModel
 from backend.models import Report
@@ -147,8 +147,11 @@ class SendHighlight(BaseTask):
 
             try:
                 send_push(event, push, report_nr=None, state=None)
-            except:
-                logging.exception('Sending highlights push failed')
+            except Exception as e:
+                text = f"Sending highlights push to {event['sender']['id']} failed"
+                log.exception(text)
+                self.raven.user_context({'event': event, 'push': push})
+                self.raven.captureException(e)
 
         push.delivered = True
         push.save()
