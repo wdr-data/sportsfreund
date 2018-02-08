@@ -250,7 +250,7 @@ def send_result(event, match):
         result_game(event, match)
         return
 
-    if 'medals' in match.meta or match.meta.event == MatchMeta.Event.WORLDCUP:
+    if 'medals' in match.meta and match.meta.medals or match.meta.event == MatchMeta.Event.WORLDCUP:
         if match.meta.event == MatchMeta.Event.WORLDCUP or match.meta.medals == 'complete':
             button = match.btn_podium
         else:
