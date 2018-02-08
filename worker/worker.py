@@ -4,7 +4,7 @@ import gevent
 from mrq.scheduler import _hash_task
 from mrq.worker import Worker
 from mrq.task import Task
-from raven import Client
+#from raven import Client
 
 
 class BotWorker(Worker):
@@ -33,12 +33,12 @@ class BotWorker(Worker):
 class BaseTask(Task):
     def __init__(self):
         super()
-        RAVEN_DSN = os.environ.get('SENTRY_URL')
-        self.raven = Client(RAVEN_DSN) if RAVEN_DSN is not None else Client()
+        #RAVEN_DSN = os.environ.get('SENTRY_URL')
+        #self.raven = Client(RAVEN_DSN) if RAVEN_DSN is not None else Client()
 
     def run_wrapped(self, params):
         try:
             return self.run(params)
         except Exception as e:
-            self.raven.captureException()
+            #self.raven.captureException()
             raise e

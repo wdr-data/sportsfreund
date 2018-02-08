@@ -147,8 +147,8 @@ class SendHighlight(BaseTask):
             except Exception as e:
                 text = f"Sending highlights push to {event['sender']['id']} failed"
                 log.exception(text)
-                self.raven.user_context({'event': event, 'push': push})
-                self.raven.captureException(e)
+                #self.raven.user_context({'event': event, 'push': push})
+                #self.raven.captureException(e)
 
         push.delivered = True
         push.save()
