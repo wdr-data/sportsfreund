@@ -19,11 +19,12 @@ from lib.push import Push
 from lib.response import Replyable, SenderTypes
 from lib import queue
 from lib.mongodb import db
+from worker import BaseTask
 
 MATCH_CHECK_INTERVAL = 60
 
 
-class UpdateSchedule(Task):
+class UpdateSchedule(BaseTask):
 
     def run(self, params):
         """
@@ -48,7 +49,7 @@ class UpdateSchedule(Task):
                                 interval=MATCH_CHECK_INTERVAL)
 
 
-class UpdateMatch(Task):
+class UpdateMatch(BaseTask):
 
     def run(self, params):
         """
@@ -62,7 +63,7 @@ class UpdateMatch(Task):
             match = Match.by_id(match_id, clear_cache=True)
         except ValueError:
             queue.remove_scheduled("push.UpdateMatch", params, interval=MATCH_CHECK_INTERVAL)
-            return
+            raise
 
         disciplines = sport_by_name[match.meta.sport].disciplines
 
@@ -131,7 +132,7 @@ class UpdateMatch(Task):
             event.send_text(f'{athlete} belegt Platz {str(athlete_result.rank)} mit {result}.')
 
 
-class SendHighlight(Task):
+class SendHighlight(BaseTask):
 
     def run(self, params):
 
@@ -153,7 +154,7 @@ class SendHighlight(Task):
         push.save()
 
 
-class SendReport(Task):
+class SendReport(BaseTask):
 
     def run(self, params):
 
@@ -173,7 +174,7 @@ class SendReport(Task):
         report.save()
 
 
-class SendMedals(Task):
+class SendMedals(BaseTask):
 
     def run(self, params):
         """

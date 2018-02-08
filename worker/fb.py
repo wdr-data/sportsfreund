@@ -10,13 +10,14 @@ from lib.attachment import Attachment
 from lib.facebook import upload_attachment, guess_attachment_type
 from lib.response import Replyable, SenderTypes
 from lib.sent_tracking import UserSentTracking
+from worker import BaseTask
 
 logger = logging.getLogger(__name__)
 
 PAGE_TOKEN = os.environ.get('FB_PAGE_TOKEN', 'na')
 
 
-class Send(Task):
+class Send(BaseTask):
 
     def run(self, params):
         """Sends a payload via the graph API"""
@@ -48,7 +49,7 @@ class Send(Task):
             UserSentTracking.set_sent(payload['recipient']['id'], id)
 
 
-class SendAttachment(Task):
+class SendAttachment(BaseTask):
 
     def run(self, params):
         """Sends a payload via the graph API"""
