@@ -29,5 +29,5 @@ def api_asking(event, parameters, **kwargs):
 
 
 handlers = [
-    ApiAiHandler(api_asking, 'video.asking'),
+    #ApiAiHandler(api_asking, 'video.asking'),
 ]

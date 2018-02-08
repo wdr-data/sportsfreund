@@ -11,7 +11,7 @@ from .callbacks import dirty
 from .callbacks import result, calendar, olympia, subscription, video, medal, athlete
 from .callbacks import testing
 from .callbacks.default import (
-    get_started, start_message, greetings, push, push_step, subscribe, unsubscribe, share_bot,
+    get_started, greetings, push, push_step, subscribe, unsubscribe, share_bot,
     apiai_fulfillment, wiki, countdown, korea_standard_time, story, story_payload, report,
     report_step, how_to, privacy, about_bot, company_details)
 from .handlers.apiaihandler import ApiAiHandler
@@ -45,7 +45,6 @@ def make_event_handler():
         PayloadHandler(greetings, ['gruss']),
 
         PayloadHandler(get_started, ['start']),
-        PayloadHandler(start_message, ['start_message']),
 
         ApiAiHandler(subscribe, 'anmelden'),
         PayloadHandler(subscribe, ['subscribe']),
