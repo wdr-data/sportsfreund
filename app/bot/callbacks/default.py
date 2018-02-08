@@ -58,30 +58,8 @@ def korea_standard_time(event, **kwargs):
     event.send_text(reply)
 
 def get_started(event, **kwargs):
-    story(event, slug='onboarding', fragment_nr=None)
-    sleep(4)
-    send_subscriptions(event)
+    story(event, slug='onboarding', fragment_nr=None, subscribe=True)
 
-
-def start_message(event, payload, **kwargs):
-    state = payload.get('start_message')
-
-    if state == 'step_one':
-        reply = """
-Wenn Du mich etwas fragen möchtest, schreib mir eine Nachricht. Du kannst zum Beispiel schreiben: 'Wer hat beim Ski-Alpin gewonnen?' oder 'Ski-Alpin Ergebnis'
-"""
-        event.send_buttons(reply,
-                     buttons=[
-                        #button_postback('Ergebnis letztes Rennen', {'start_message': 'step_two'}),
-                        button_postback("Was gibt's noch?", {'start_message': 'step_two'}),
-
-                     ])
-    elif state == 'step_two':
-        reply = """
-Unten neben der Texteingabe gibt es ein Menü. Da findet Ihr mehr Infos zu mir und meinen Funktionen.
-Abonniert meine Highlights und Ihr bekommt - zurzeit noch unregelmäßig - Ergebnisse, Fun-Facts
-und die stärksten Geschichten des Wintersports bequem per Messenger Nachricht."""
-        event.send_text(reply)
 
 def share_bot(event, **kwargs):
     reply = "Teile den Sportsfreund mit deinen Freunden!"
@@ -263,7 +241,7 @@ def story_payload(event, payload, **kwargs):
     story(event, payload['story'], payload['fragment'])
 
 
-def story(event, slug, fragment_nr, get_back=False):
+def story(event, slug, fragment_nr, subscribe=False):
     reply = ''
     media = ''
     url = ''
@@ -336,5 +314,5 @@ def story(event, slug, fragment_nr, get_back=False):
     else:
         event.send_text(reply)
 
-    if get_back:
-        return
+        if subscribe:
+            send_subscriptions(event)
