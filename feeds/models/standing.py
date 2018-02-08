@@ -9,28 +9,34 @@ locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
 
 
 class Standing(FeedModel):
-    collection = db.standing
+    collection = db.standings
     api_function = api.standing
     api_id_name = 'se'
+    cache_time = 60*5
 
-    season_feeds = {'Curling': [24752, 24753, 24754],
-                    'Eishockey': [24732, 24733]}
+    season_feeds = [24752, 24753, 24754, 24732, 24733]
 
     id = str(id)
+
+    @classmethod
+    def by_season_round(cls, season_id, round_name):
+        export = []
+        season = cls.query(instance_id=season_id)[0]
+        for obj in season['standing']:
+            if obj['round']['name'] == round_name:
+                export.append(obj)
+
+        return export
+
     @classmethod
     def transform(cls, standing):
-        for round in standing:
-            standing = round
-            standing['season'] = id
+        round = standing['standing']
+        standing['standing'] = round
+
         return standing
 
     @classmethod
-    def load_standings(cls, round=sport):
-        if sport is not None:
-            for ids in season_feeds[sport]:
-                cls.load_feed(id)
-        else:
-            for sport in season_feeds.items:
-                for ids in season_feeds[sport]:
-                    cls.load_feed(id)
+    def load_standings(cls):
+        for id in cls.season_feeds:
+            cls.by_id(id)
 

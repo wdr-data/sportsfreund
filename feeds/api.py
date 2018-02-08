@@ -151,3 +151,12 @@ def venue(**kwargs):
     :return:
     """
     return api_request('venue', kwargs)
+
+
+def standing(**kwargs):
+    """
+
+    :param se: Season ID
+    :return:
+    """
+    return api_request('standing', kwargs)

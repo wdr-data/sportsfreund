@@ -76,6 +76,7 @@ class FeedModel(Model):
             obj = cls.transform(obj)
 
         obj['_cached_at'] = int(time())
+        obj['instance_id'] = id
 
         if additional_data is not None:
             obj.update(additional_data)
