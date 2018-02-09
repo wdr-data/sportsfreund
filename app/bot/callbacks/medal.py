@@ -102,7 +102,7 @@ def medals_table(event, parameters, **kwargs):
 
             event.send_buttons(f'{country_rank}',
                             buttons=[button_postback('Und der Rest?',
-                                                     [{'medal_list': olympic_event}])])
+                                                     {'medal_list': olympic_event})])
 
 def medal_list(event, payload):
     olympic_event = payload.get('medal_list')
