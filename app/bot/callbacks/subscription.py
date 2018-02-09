@@ -266,6 +266,12 @@ def list_available_sports(subs, type):
     return [sport for sport in supported_sports if sport not in filter_list]
 
 
+def send_literal_no_sports_left(event):
+    event.send_text(f'Du bist bereits für alle möglichen Sportarten '
+                    f'angemeldet. Du scheinst ja genau so ein '
+                    f'Wintersport Nerd zu sein wie ich 🤓')
+
+
 def result_medal_change(event, payload, **kwargs):
     sender_id = event['sender']['id']
     option = payload['option']
@@ -313,9 +319,7 @@ def result_medal_change(event, payload, **kwargs):
             if target == 'sport':
                 sports = list_available_sports(subs, Subscription.Type.RESULT)
                 if not sports:
-                    event.send_text(f'Du bist bereits für alle möglichen Sportarten '
-                                               f'angemeldet. Du scheinst ja genau so ein '
-                                               f'Wintersport Nerd zu sein wie ich 🤓')
+                    send_literal_no_sports_left(event)
                 else:
                     quickreplies = [quick_reply(sport, {'target': target,
                                                         'filter': sport,
