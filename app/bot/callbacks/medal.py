@@ -101,9 +101,14 @@ def medals_table(event, parameters, **kwargs):
                 f'{Match.medal(3)} {m.third}'
             for m in medals)
 
+        if len(MedalsTable.with_medals()) > 10:
             event.send_buttons(f'{country_rank}',
                             buttons=[button_postback('Und der Rest?',
                                                      {'medal_list': olympic_event})])
+        else:
+            reply = country_rank,
+            reply += '\nAlle anderen teilnehmenden Länder haben noch keine Medaillen gewonnen.'
+            event.send_text(reply)
 
 def medal_list(event, payload):
     olympic_event = payload.get('medal_list')
