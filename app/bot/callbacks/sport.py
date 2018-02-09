@@ -20,12 +20,21 @@ def api_sport(event, parameters,**kwargs):
     today = date.today().strftime("%Y-%m-%d")
 
     result = MatchMeta.search_last(sport=sport)
+    person_image = None
+
+    if result.get('winner_team'):
+        winner = result.winner_team
+        winner_person = Person.query(fullname=winner.name)
+        subtitle_result = f'gewonnen hat {result.winner_team.name}, {flag(winner.country.iso)} ' \
+                          f'{winner.country.code}'
+        try:
+            person_image = Person.get_picture_url(winner_person[0].id)
+        except:
+            pass
+    else:
+        subtitle_result = 'Schau dir jetzt das gesamte Ergebnis an...'
+
     calendar = MatchMeta.search_next(sport=sport)
-    winner = Person.query(fullname=result.winner_team.name)
-    try:
-        person_image = Person.get_picture_url(winner[0].id)
-    except:
-        person_image = None
 
     try:
         report = get_latest_report(sport=sport)
@@ -43,8 +52,7 @@ def api_sport(event, parameters,**kwargs):
         elements.append(
             list_element(f'Ergebnis: {result.discipline_short}, {result.gender_name} vom '
                          f'{result.datetime.strftime("%d.%m.%Y")}',
-                         f'gewonnen hat {result.winner_team.name}, '
-                         f'{flag(result.winner_team.country.iso)} {result.winner_team.country.code}',
+                         subtitle_result,
                          image_url=person_image,
                          buttons=[button_postback('Gesamtes Ergebnis', {'podium': sport})],
                          ))
@@ -62,19 +70,20 @@ def api_sport(event, parameters,**kwargs):
 
     if report:
         elements.append(
-            list_element(report.headline, report.text, buttons=[button_postback('Lesen...',
-                                                                                {'story': report.slug,
-                                                                                 'fragment': None})]))
+            list_element(report.headline, report.text,
+                         image_url=report.media.url if story.get('media') else None,
+                         buttons=[button_postback('Lesen...',
+                                                  {'story': report.slug,
+                                                   'fragment': None})]))
 
     if story:
         elements.append(
             list_element(story.name, story.text,
-                         image_url=story.media.url,
+                         image_url=story.media.url if story.get('media') else None,
                          buttons=[button_postback('Lesen...',
                                                   {'story': story.slug, 'fragment': None})]))
 
     subs = Subscription.query(filter={'sport': sport},
-                              image_url=story.media.url,
                               type=Subscription.Type.RESULT, psid=sender_id)
     if subs:
         button_title = 'Abmelden'
