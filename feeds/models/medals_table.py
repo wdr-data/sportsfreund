@@ -1,5 +1,6 @@
 from pymongo import DESCENDING
 
+from feeds.models.match_meta import MatchMeta
 from .. import api
 from lib.mongodb import db
 from .model import ListFeedModel
@@ -28,16 +29,15 @@ class MedalsTable(ListFeedModel):
             co['second'] = int(co['second'])
             co['third'] = int(co['third'])
             co['rank'] = i
+            co['topic_id'] = topic_id
             cls.collection.replace_one({'id': co['id']}, co, upsert=True)
             i+=1
 
     @classmethod
-    def _search(cls, base_filter, country=None, sorting=[]):
+    def _search(cls, base_filter, country=None, topic_id=None, sorting=[]):
 
-        try:
-            cls.load_feed(548)
-        except:
-            pass
+        for id in MatchMeta.olympia_feeds:
+            cls.load_feed(id)
 
         filter = {}
         filter['id'] = {'$exists': True}
@@ -45,6 +45,11 @@ class MedalsTable(ListFeedModel):
 
         if country is not None:
             filter['country.name'] = country
+
+        if topic_id is not None:
+            filter['topic_id'] = topic_id
+        else:
+            filter['topic_id'] = '1757'
 
         return cls.collection.find(filter).sort(
             sorting +
@@ -56,8 +61,9 @@ class MedalsTable(ListFeedModel):
             ]
         )
 
+
     @classmethod
-    def by_country(cls, *, country=None):
+    def by_country(cls, *, country=None, topic_id=None):
         """
         Searches the last match and returns details about it
 
@@ -65,7 +71,7 @@ class MedalsTable(ListFeedModel):
         :return: A `MatchMeta` object, or `None` if nothing was found
         """
 
-        cursor = cls._search({}, country).limit(1)
+        cursor = cls._search({}, country, topic_id).limit(1)
 
         if cursor and cursor.count():
             result = cursor.next()
@@ -73,7 +79,7 @@ class MedalsTable(ListFeedModel):
             return cls(**result)
 
     @classmethod
-    def top(cls, *, number):
+    def top(cls, *, number, topic_id=None):
         """
         Searches the last match and returns details about it
 
@@ -81,12 +87,12 @@ class MedalsTable(ListFeedModel):
         :return: A `MatchMeta` object, or `None` if nothing was found
         """
 
-        cursor = cls._search({}).limit(number)
+        cursor = cls._search({}, topic_id).limit(number)
 
         return [cls(**result) for result in cursor]
 
     @classmethod
-    def with_medals(cls):
+    def with_medals(cls, topic_id=None):
         """
         Searches the all countries with min. one medal and returns details about it
 
@@ -95,6 +101,6 @@ class MedalsTable(ListFeedModel):
 
         cursor = cls._search({'$or': [{'first': {'$ne': 0}},
                                       {'second': {'$ne': 0}},
-                                      {'third': {'$ne': 0}}]})
+                                      {'third': {'$ne': 0}}]}, topic_id=topic_id)
 
         return [cls(**result) for result in cursor]
