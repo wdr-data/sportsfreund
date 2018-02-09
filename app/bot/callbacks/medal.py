@@ -106,7 +106,7 @@ def medals_table(event, parameters, **kwargs):
                             buttons=[button_postback('Und der Rest?',
                                                      {'medal_list': olympic_event})])
         else:
-            reply = country_rank,
+            reply = country_rank
             reply += '\nAlle anderen teilnehmenden Länder haben noch keine Medaillen gewonnen.'
             event.send_text(reply)
 
