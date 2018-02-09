@@ -4,6 +4,7 @@ from calendar import day_name
 from time import sleep
 import random
 
+from ..handlers.payloadhandler import PayloadHandler
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.config import supported_sports, sport_by_name, discipline_config
@@ -14,6 +15,11 @@ from .result import api_podium
 logger = logging.Logger(__name__)
 
 match = Match()
+
+
+def btn_event_today(event, payload):
+    date = payload.get('event_today')
+    api_next(event, parameters={'date': date})
 
 
 def api_next(event, parameters, **kwargs):
@@ -219,3 +225,7 @@ def period_to_dates(period):
     until_date = period.split('/')[1]
     until_date = datetime.strptime(until_date, '%Y-%m-%d').date()
     return from_date, until_date
+
+handlers = [
+    PayloadHandler(btn_event_today, ['event_today']),
+    ]

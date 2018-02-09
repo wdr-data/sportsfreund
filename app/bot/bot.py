@@ -8,12 +8,13 @@ from lib.config import FB_PAGE_TOKEN
 from lib.response import Replyable
 # dirty
 from .callbacks import dirty
-from .callbacks import result, calendar, olympia, subscription, video, medal, athlete
+from .callbacks import result, calendar, olympia, \
+    subscription, video, medal, athlete, standing, sport
 from .callbacks import testing
 from .callbacks.default import (
     get_started, greetings, push, push_step, subscribe, unsubscribe, share_bot,
     apiai_fulfillment, wiki, countdown, korea_standard_time, story, story_payload, report,
-    report_step, how_to, privacy, about_bot, company_details)
+    report_step, how_to, privacy, about_bot, company_details, btn_send_report)
 from .handlers.apiaihandler import ApiAiHandler
 from .handlers.payloadhandler import PayloadHandler
 from .handlers.texthandler import TextHandler
@@ -39,6 +40,8 @@ def make_event_handler():
     handlers.extend(video.handlers)
     handlers.extend(medal.handlers)
     handlers.extend(athlete.handlers)
+    handlers.extend(standing.handlers)
+    handlers.extend(calendar.handlers)
 
     handlers.extend([
         ApiAiHandler(greetings, 'gruss'),
@@ -64,6 +67,7 @@ def make_event_handler():
         PayloadHandler(push_step, ['push', 'report', 'next_state']),
 
         ApiAiHandler(report, 'push.report'),
+        PayloadHandler(btn_send_report, ['report_sport', 'report_discipline']),
         PayloadHandler(report_step, ['report', 'next_state']),
 
         ApiAiHandler(korea_standard_time, 'korea_standard_time'),
@@ -74,9 +78,9 @@ def make_event_handler():
         PayloadHandler(story_payload, ['story', 'fragment']),
 
         # info.general
-        # ApiAiHandler(general.api_sport,'info.general.sport'),
-        # ApiAiHandler(general.api_discipline,'info.general.discipline'),
-        ApiAiHandler(calendar.api_next, 'info.general.sport'),
+        ApiAiHandler(sport.api_sport,'info.general.sport', follow_up=True),
+        # ApiAiHandler(sport.api_discipline,'info.general.discipline'),
+        # ApiAiHandler(calendar.api_next, 'info.general.sport'),
         ApiAiHandler(calendar.api_next, 'info.general.discipline'),
 
         # info.match.result

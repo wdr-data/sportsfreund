@@ -32,4 +32,4 @@ ENV LOG_LEVEL=info
 ENV GUNICORN_ARGS ""
 
 ENTRYPOINT ["sh", "-c"]
-CMD ["gunicorn -b :$PORT -k 'eventlet' main.wsgi --capture-output --log-file - --log-level $LOG_LEVEL $GUNICORN_ARGS"]
+CMD ["gunicorn -b :$PORT -k 'gevent' main.wsgi --capture-output --log-file - --log-level $LOG_LEVEL $GUNICORN_ARGS"]

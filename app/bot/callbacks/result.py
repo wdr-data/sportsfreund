@@ -21,6 +21,10 @@ def api_winner(event, parameters, **kwargs):
     api_podium(event, parameters)
 
 
+def btn_podium(event, payload):
+    sport = payload.get('podium')
+    api_podium(event, parameters={'sport': sport})
+
 
 def api_podium(event, parameters, **kwargs):
     sport = parameters.get('sport')
@@ -68,8 +72,13 @@ def api_podium(event, parameters, **kwargs):
                     until_date=dtdate.today(), discipline=discipline, sport=sport,
                     town=town, country=country, gender=gender)
     else:
+
         match_metas = [MatchMeta.search_last(
             sport=sport, discipline=discipline, town=town, country=country, gender=gender)]
+        reply = 'Hier das Letzte Event in meiner Datenbank:'
+        if match_metas[0].event != MatchMeta.Event.OLYMPIA_18:
+            reply += '\n🚨Aus PyeongChang 🇰🇷 liegen noch keine aktuellen Ergebnisse vor!🚨'
+        event.send_text(reply)
 
     match_ids = [match.id for match in match_metas if match]
 
@@ -269,7 +278,11 @@ def send_result(event, match):
 
 def result_game(event, match):
     year = match.datetime.strftime("%Y")
-    reply_title = f'{match.meta.sport}, {match.meta.gender_name} ⚡{match.meta.round_mode}⚡'
+    if match.meta.sport == 'Curling':
+        reply_title = '🥌 '
+    else:
+        reply_title = ''
+    reply_title += f'{match.meta.sport}, {match.meta.gender_name} ⚡{match.meta.round_mode}⚡'
     time = localtime_format(match.datetime, event, is_olympia=match.meta.get('event') == MatchMeta.Event.OLYMPIA_18)
     reply_sbtl = f'{day_name[match.datetime.weekday()]}, ' \
              f'{match.datetime.strftime("%d.%m.%Y")} um {time}\n'
@@ -311,7 +324,20 @@ def result_game(event, match):
             incident = f'{match.meta.round_mode}'
 
         if match.meta.round_mode != 'Finale' and match.meta.round_mode != '3. Platz':
-            event.send_text(reply)
+            if match.meta.round_mode in ['Gruppe A', 'Gruppe B', 'Gruppe C', 'Round Robin']:
+                event.send_buttons(reply,
+                                   buttons=[
+                                       button_postback(f'Tabelle {match.meta.round_mode}',
+                                                       {'sport': match.meta.sport,
+                                                        'season_id': match.meta.season_id,
+                                                        'round_name': match.meta.round_mode,
+                                                        'gender': match.meta.gender}
+                                                       )
+                                   ]
+
+                )
+            else:
+                event.send_text(reply)
 
         else:
             winner = home if home.match_result > away.match_result else away
@@ -336,6 +362,7 @@ def result_game(event, match):
 
 
 handlers = [
+    PayloadHandler(btn_podium, ['podium']),
     PayloadHandler(result_details, ['result_details']),
     PayloadHandler(result_by_country, ['result_by_country', 'match_id']),
     PayloadHandler(result_total, ['result_total', 'step']),

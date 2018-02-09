@@ -1,7 +1,7 @@
 from random import random
 
 from lib.testing import ExpectedReply, event
-from ..general import api_discipline
+from ..sport import api_discipline
 
 
 def test_api_discipline(event):

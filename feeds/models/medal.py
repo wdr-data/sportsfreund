@@ -57,6 +57,8 @@ class Medal(ListFeedModel):
                     se['gender'] = co['gender']
                     se['start_date'] = datetime.strptime(se['start'], '%Y-%m-%d')
                     se['end_date'] = datetime.strptime(se['end'], '%Y-%m-%d')
+
+                    se['topic_id'] = topic_id
                     se['_cached_at'] = now
 
                     cls.collection.replace_one({'id': se['id']}, se, upsert=True)
