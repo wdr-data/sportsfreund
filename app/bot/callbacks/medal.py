@@ -71,8 +71,9 @@ def medals_table(event, parameters, **kwargs):
         else:
             medals = MedalsTable.by_country(country=country)
 
-        if medals.first + medals.second + medals.third == 0:
-            event.send_text(f'{country} hat keine Medaillen gewonnen.')
+        if not medals:
+            event.send_text(f'{country} hat noch keine Medaillen gewonnen. '
+                            f'Mal sehen wie sich das entwickelt... 🤞🏼')
             return
 
         event.send_text(
@@ -85,12 +86,14 @@ def medals_table(event, parameters, **kwargs):
     else:
         if olympic_event == 'owg14':
             medals = MedalsTable.top(number=10, topic_id='548')
+            total_medals = MedalsTable.with_medals(topic_id='548')
         else:
             if not MedalsTable.with_medals():
                 event.send_text('Noch hat bei den Olympischen Winterspielen in PyeongChang niemand '
                                 'eine Medaille gewonnen. Es bleibt spannend...')
                 return
             medals = MedalsTable.top(number=10)
+            total_medals = MedalsTable.with_medals()
 
         if medals:
             country_rank = '\n'.join(
@@ -100,9 +103,14 @@ def medals_table(event, parameters, **kwargs):
                 f'{Match.medal(3)} {m.third}'
             for m in medals)
 
+        if len(total_medals) > 10:
             event.send_buttons(f'{country_rank}',
                             buttons=[button_postback('Und der Rest?',
-                                                     [{'medal_list': olympic_event}])])
+                                                     {'medal_list': olympic_event})])
+        else:
+            reply = country_rank
+            reply += '\nAlle anderen teilnehmenden Länder haben noch keine Medaillen gewonnen.'
+            event.send_text(reply)
 
 def medal_list(event, payload):
     olympic_event = payload.get('medal_list')

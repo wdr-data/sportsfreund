@@ -243,6 +243,7 @@ class StoryAdmin(admin.ModelAdmin):
     search_fields = ['name', 'slug']
     list_display = ('name', 'slug')
     inlines = (StoryFragmentAdminInline, )
+    ordering = ('slug',)
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)

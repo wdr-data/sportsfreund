@@ -71,7 +71,7 @@ class MedalsTable(ListFeedModel):
         :return: A `MatchMeta` object, or `None` if nothing was found
         """
 
-        cursor = cls._search({}, country, topic_id).limit(1)
+        cursor = cls._search({}, country=country, topic_id=topic_id).limit(1)
 
         if cursor and cursor.count():
             result = cursor.next()
@@ -87,7 +87,7 @@ class MedalsTable(ListFeedModel):
         :return: A `MatchMeta` object, or `None` if nothing was found
         """
 
-        cursor = cls._search({}, topic_id).limit(number)
+        cursor = cls._search({}, topic_id=topic_id).limit(number)
 
         return [cls(**result) for result in cursor]
 

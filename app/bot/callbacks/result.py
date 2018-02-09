@@ -75,9 +75,15 @@ def api_podium(event, parameters, **kwargs):
 
         match_metas = [MatchMeta.search_last(
             sport=sport, discipline=discipline, town=town, country=country, gender=gender)]
-        reply = 'Hier das Letzte Event in meiner Datenbank:'
+        reply = ''
         if match_metas[0].event != MatchMeta.Event.OLYMPIA_18:
-            reply += '\n🚨Aus PyeongChang 🇰🇷 liegen noch keine aktuellen Ergebnisse vor!🚨'
+            reply += '🚨Aus PyeongChang 🇰🇷 liegen noch keine aktuellen Ergebnisse vor!🚨' \
+                     'Aber hier ist das letzte {event_title}:'.format(
+                event_title='Weltcup Ergebnis' if match_metas[0].event.value == 'worldcup' else
+                'Ergebnis aus Sotschi'
+            )
+        else:
+            reply += 'Hier das Letzte Event in meiner Datenbank:'
         event.send_text(reply)
 
     match_ids = [match.id for match in match_metas if match]
