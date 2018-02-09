@@ -71,8 +71,9 @@ def medals_table(event, parameters, **kwargs):
         else:
             medals = MedalsTable.by_country(country=country)
 
-        if medals.first + medals.second + medals.third == 0:
-            event.send_text(f'{country} hat keine Medaillen gewonnen.')
+        if not medals:
+            event.send_text(f'{country} hat noch keine Medaillen gewonnen. '
+                            f'Mal sehen wie sich das entwickelt... 🤞🏼')
             return
 
         event.send_text(
