@@ -315,7 +315,20 @@ def result_game(event, match):
             incident = f'{match.meta.round_mode}'
 
         if match.meta.round_mode != 'Finale' and match.meta.round_mode != '3. Platz':
-            event.send_text(reply)
+            if match.meta.round_mode in ['Gruppe A', 'Gruppe B', 'Gruppe C', 'Round Robin']:
+                event.send_buttons(reply,
+                                   buttons=[
+                                       button_postback(f'Tabelle {match.meta.round_mode}',
+                                                       {'sport': match.meta.sport,
+                                                        'season_id': match.meta.season_id,
+                                                        'round_name': match.meta.round_mode,
+                                                        'gender': match.meta.gender}
+                                                       )
+                                   ]
+
+                )
+            else:
+                event.send_text(reply)
 
         else:
             winner = home if home.match_result > away.match_result else away

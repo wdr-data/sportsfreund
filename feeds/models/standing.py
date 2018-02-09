@@ -15,11 +15,11 @@ class Standing(FeedModel):
     cache_time = 60*5
 
     season_feeds = [24752, 24753, 24754, 24732, 24733]
-
     id = str(id)
 
     @classmethod
     def by_season_round(cls, season_id, round_name):
+        cls.by_id(season_id, clear_cache=True)
         export = []
         season = cls.query(instance_id=season_id)[0]
         for obj in season['standing']:
