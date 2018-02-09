@@ -36,6 +36,6 @@ def localtime_format(date, event, is_olympia=False, format="%H:%M Uhr"):
 
     if is_olympia:
         korean_time = date + timedelta(hours=9)
-        timestring += f" ({korean_time.strftime(format)} in Südkorea)"
+        timestring += f" ({korean_time.strftime(format)} in 🇰🇷KOR)"
 
     return timestring

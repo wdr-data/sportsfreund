@@ -40,20 +40,19 @@ def api_match_standing(event, parameters, **kwargs):
                      )
         return
 
-
     if not sport and not round_mode:
         event.send_text(f'Eishockey oder Curling?')
         return
     elif sport and round_mode and not gender:
-        buttons = [button_postback('Herren',
-                                   {'sport': sport,
-                                    'round_name': round_mode,
-                                    'gender': 'male'}
-                                   ),
-                   button_postback('Damen',
+        buttons = [button_postback('Damen',
                                    {'sport': sport,
                                     'round_name': round_mode,
                                     'gender': 'female'}
+                                   ),
+                   button_postback('Herren',
+                                   {'sport': sport,
+                                    'round_name': round_mode,
+                                    'gender': 'male'}
                                    )
                    ]
         if sport == 'Curling':
@@ -90,24 +89,24 @@ def api_match_standing(event, parameters, **kwargs):
         event.send_buttons(f'Schau dir die Tabelle im Eishockey der {gender} an',
                             buttons=buttons)
         return
-
-    get_standing(event, {'sport': sport,
-                         'round_name': round_mode,
-                         'gender': gender}
-                         )
+    else:
+        get_standing(event, {'sport': sport,
+                             'round_name': round_mode,
+                             'gender': gender}
+                             )
 
 def get_standing(event, payload):
     sport = payload['sport']
     gender = payload['gender']
     round_name = payload['round_name']
-
     meta = MatchMeta.search_next(sport=sport, gender=gender, round_mode=round_name)
+
     if meta:
         season_id = meta.season_id
         send_standing(event, {'season_id': season_id, 'round_name': round_name,
                               'sport': sport, 'gender': meta.gender_name})
     else:
-        event.send_text('Die Kombination funktioniert so nicht.')
+        event.send_text(f'Die Kombination aus {sport} und {round_name} funktioniert so nicht.')
         return
 
 
@@ -117,17 +116,24 @@ def send_standing(event, payload):
     sport = payload['sport']
     gender = payload['gender']
 
+    if gender == 'female':
+        gender = 'Damen'
+    if gender == 'male':
+        gender = 'Herren'
+    if gender == 'mixed':
+        gender = 'Mixed'
+
     standing = Standing.by_season_round(season_id, round_name)
     if sport == 'Curling':
         reply = '🥌 '
     else:
         reply = ''
-    reply += f'{round_name}, {sport} {gender}\n'
+    reply += f'{sport}, {gender}, {round_name}\n'
     for m in standing:
         reply += f"\n{m['rank']}. {m['team']['name']} {flag(m['team']['country']['iso'])} " \
                  f" {m['win']}|{m['matches']} " \
                  f" {'+' if int(m['difference'])>0 else ''}{m['difference']}"
-
+    reply += '\n\n* Siege | Spiele  Differenz'
     event.send_text(reply)
 
 
