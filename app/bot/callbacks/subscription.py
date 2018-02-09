@@ -260,6 +260,12 @@ def result_medal_subscriptions(event, **kwargs):
     event.send_list(elements)
 
 
+def list_available_sports(subs, type):
+    filter_list = [Subscription.describe_filter(sub.filter)
+                   for sub in subs if sub.target is Subscription.Target.SPORT and sub.type is type]
+    return [sport for sport in supported_sports if sport not in filter_list]
+
+
 def result_medal_change(event, payload, **kwargs):
     sender_id = event['sender']['id']
     option = payload['option']
@@ -305,9 +311,7 @@ def result_medal_change(event, payload, **kwargs):
     elif option == 'subscribe':
         if not filter_arg:
             if target == 'sport':
-                filter_list = [Subscription.describe_filter(sub.filter)
-                               for sub in subs if sub.target is Subscription.Target.SPORT]
-                sports = [sport for sport in supported_sports if sport not in filter_list]
+                sports = list_available_sports(subs, Subscription.Type.RESULT)
                 if not sports:
                     event.send_text(f'Du bist bereits für alle möglichen Sportarten '
                                                f'angemeldet. Du scheinst ja genau so ein '
