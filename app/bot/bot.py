@@ -78,7 +78,7 @@ def make_event_handler():
         PayloadHandler(story_payload, ['story', 'fragment']),
 
         # info.general
-        ApiAiHandler(sport.api_sport,'info.general.sport'),
+        ApiAiHandler(sport.api_sport,'info.general.sport', follow_up=True),
         # ApiAiHandler(sport.api_discipline,'info.general.discipline'),
         # ApiAiHandler(calendar.api_next, 'info.general.sport'),
         ApiAiHandler(calendar.api_next, 'info.general.discipline'),
