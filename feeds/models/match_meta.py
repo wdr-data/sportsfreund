@@ -157,7 +157,7 @@ class MatchMeta(ListFeedModel):
         now = int(time())
 
         for sp in obj:
-            if sp['name'] != 'Olympia':
+            if sp['name'] in sport_by_name:
                 for co in sp['competition']:
                     for se in co['season']:
                         for ro in se['round']:
