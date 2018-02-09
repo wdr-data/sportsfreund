@@ -140,7 +140,7 @@ def report(event, parameters, **kwargs):
     report = get_latest_report(sport=sport, discipline=discipline)
 
     if report:
-        send_report(event, report, 'intro')
+        send_report(event, report, 'headline')
     else:
         reply = 'Keine Meldung gefunden.'
         event.send_text(reply)
