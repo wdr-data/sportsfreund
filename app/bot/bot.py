@@ -14,7 +14,7 @@ from .callbacks import testing
 from .callbacks.default import (
     get_started, greetings, push, push_step, subscribe, unsubscribe, share_bot,
     apiai_fulfillment, wiki, countdown, korea_standard_time, story, story_payload, report,
-    report_step, how_to, privacy, about_bot, company_details)
+    report_step, how_to, privacy, about_bot, company_details, btn_send_report)
 from .handlers.apiaihandler import ApiAiHandler
 from .handlers.payloadhandler import PayloadHandler
 from .handlers.texthandler import TextHandler
@@ -67,6 +67,7 @@ def make_event_handler():
         PayloadHandler(push_step, ['push', 'report', 'next_state']),
 
         ApiAiHandler(report, 'push.report'),
+        PayloadHandler(btn_send_report, ['send_report']),
         PayloadHandler(report_step, ['report', 'next_state']),
 
         ApiAiHandler(korea_standard_time, 'korea_standard_time'),

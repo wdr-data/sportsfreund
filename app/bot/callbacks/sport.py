@@ -72,9 +72,7 @@ def api_sport(event, parameters,**kwargs):
         elements.append(
             list_element(report.headline, report.text,
                          image_url=report.media.url if str(report.media) else None,
-                         buttons=[button_postback('Lesen...',
-                                                  {'story': report.slug,
-                                                   'fragment': None})]))
+                         buttons=[button_postback('Lesen...', {'send_report': report})]))
 
     if story:
         elements.append(
