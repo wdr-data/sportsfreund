@@ -112,10 +112,14 @@ def send_standing(event, payload):
     gender = payload['gender']
 
     standing = Standing.by_season_round(season_id, round_name)
-    reply = f'{round_name}, {sport} {gender}\n'
+    if sport == 'Curling':
+        reply = '🥌 '
+    else:
+        reply = ''
+    reply += f'{round_name}, {sport} {gender}\n'
     for m in standing:
         reply += f"\n{m['rank']}. {m['team']['name']} {flag(m['team']['country']['iso'])} " \
-                 f" {m['win']}/{m['matches']} " \
+                 f" {m['win']}|{m['matches']} " \
                  f" {'+' if int(m['difference'])>0 else ''}{m['difference']}"
 
     event.send_text(reply)

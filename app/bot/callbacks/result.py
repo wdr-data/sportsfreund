@@ -273,7 +273,11 @@ def send_result(event, match):
 
 def result_game(event, match):
     year = match.datetime.strftime("%Y")
-    reply_title = f'{match.meta.sport}, {match.meta.gender_name} ⚡{match.meta.round_mode}⚡'
+    if match.meta.sport == 'Curling':
+        reply_title = '🥌 '
+    else:
+        reply_title = ''
+    reply_title += f'{match.meta.sport}, {match.meta.gender_name} ⚡{match.meta.round_mode}⚡'
     time = localtime_format(match.datetime, event, is_olympia=match.meta.get('event') == MatchMeta.Event.OLYMPIA_18)
     reply_sbtl = f'{day_name[match.datetime.weekday()]}, ' \
              f'{match.datetime.strftime("%d.%m.%Y")} um {time}\n'
