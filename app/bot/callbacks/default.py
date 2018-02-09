@@ -11,7 +11,7 @@ from fuzzywuzzy import fuzz, process
 from .subscription import send_subscriptions
 from lib.facebook import guess_attachment_type
 from lib.response import (button_postback, quick_reply, generic_element,
-                          button_web_url, button_share)
+                          button_web_url, button_share, button_url)
 from .shared import get_push, schema, send_push, get_pushes_by_date, get_latest_report, send_report
 
 logger = logging.getLogger(__name__)
@@ -319,6 +319,19 @@ def story(event, slug, fragment_nr):
         event.send_text(reply, quick_replies=quick_replies)
 
     else:
+        if slug == 'novi-erklart-sudkorea':
+            button = button_url('Auf zu Novi 🤖',
+                                url='http://m.me/getnovibot?ref=korea2')
+            event.send_buttons(reply,
+                               buttons=[button])
+            return
+        if slug == 'novi-erklart-korea-konflikt':
+            button = button_url('#novierklärt 🤖',
+                                url='http://m.me/getnovibot?ref=korea1')
+            event.send_buttons(reply,
+                               buttons=[button])
+            return
+
         event.send_text(reply)
         if slug == 'onboarding':
             send_subscriptions(event)
