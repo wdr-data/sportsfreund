@@ -71,7 +71,7 @@ def api_sport(event, parameters,**kwargs):
     if report:
         elements.append(
             list_element(report.headline, report.text,
-                         image_url=report.media.url if report.get('media') else None,
+                         image_url=report.media.url if str(report.media) else None,
                          buttons=[button_postback('Lesen...',
                                                   {'story': report.slug,
                                                    'fragment': None})]))
@@ -79,7 +79,7 @@ def api_sport(event, parameters,**kwargs):
     if story:
         elements.append(
             list_element(story.name, story.text,
-                         image_url=story.media.url if story.get('media') else None,
+                         image_url=story.media.url if str(story.media) else None,
                          buttons=[button_postback('Lesen...',
                                                   {'story': story.slug, 'fragment': None})]))
 
