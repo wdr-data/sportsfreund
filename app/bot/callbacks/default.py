@@ -130,8 +130,7 @@ def btn_send_report(event, payload, **kwargs):
     sport = payload.get('report_sport')
     discipline = payload.get('report_discipline')
 
-    if report:
-        report(event, parameters={'sport': sport, 'discipline': discipline})
+    report(event, parameters={'sport': sport, 'discipline': discipline})
 
 
 def report(event, parameters, **kwargs):
