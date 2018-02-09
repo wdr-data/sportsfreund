@@ -127,10 +127,11 @@ def push_step(event, payload, **kwargs):
 
 
 def btn_send_report(event, payload, **kwargs):
-    report = payload['send_report']
+    sport = payload.get('report_sport')
+    discipline = payload.get('report_discipline')
 
     if report:
-        send_report(event, report, 'headline')
+        report(event, parameters={'sport': sport, 'discipline': discipline})
 
 
 def report(event, parameters, **kwargs):

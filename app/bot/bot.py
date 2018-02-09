@@ -67,7 +67,7 @@ def make_event_handler():
         PayloadHandler(push_step, ['push', 'report', 'next_state']),
 
         ApiAiHandler(report, 'push.report'),
-        PayloadHandler(btn_send_report, ['send_report']),
+        PayloadHandler(btn_send_report, ['report_sport', 'report_discipline']),
         PayloadHandler(report_step, ['report', 'next_state']),
 
         ApiAiHandler(korea_standard_time, 'korea_standard_time'),
