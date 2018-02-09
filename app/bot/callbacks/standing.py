@@ -30,10 +30,21 @@ def api_match_standing(event, parameters, **kwargs):
         sport = 'Curling'
         round_mode = 'Round Robin'
 
+    if sport == 'Eishockey' and not round_mode and not gender:
+        gender = 'female'
+
+    if sport and gender and round_mode:
+        get_standing(event, {'sport': sport,
+                             'round_name': round_mode,
+                             'gender': gender}
+                     )
+        return
+
+
     if not sport and not round_mode:
         event.send_text(f'Eishockey oder Curling?')
         return
-    elif sport and not gender:
+    elif sport and round_mode and not gender:
         buttons = [button_postback('Herren',
                                    {'sport': sport,
                                     'round_name': round_mode,
@@ -51,15 +62,10 @@ def api_match_standing(event, parameters, **kwargs):
                                             'round_name': round_mode,
                                             'gender': 'mixed'}
                                            ))
-            return
-        elif sport == 'Eishockey' and round_mode:
-            event.send_buttons('Welche Tabelle möchtest du sehen?',
-                               buttons=buttons
-            )
-            return
-        else:
-            event.send_text('Damen oder Herren?')
-            return
+
+        event.send_buttons('Welche Tabelle möchtest du sehen?',
+                            buttons=buttons
+                            )
 
     elif sport and gender and not round_mode:
         if sport == 'Curling':
@@ -71,24 +77,24 @@ def api_match_standing(event, parameters, **kwargs):
                                         'gender': gender}),
                        button_postback('Gruppe B',
                                        {'sport': sport,
-                                        'round_name': 'Gruppe A',
+                                        'round_name': 'Gruppe B',
                                         'gender': gender}),
                        ]
             if gender == 'male':
                 buttons.append(
                     button_postback('Gruppe C',
                                     {'sport': sport,
-                                     'round_name': 'Gruppe A',
+                                     'round_name': 'Gruppe C',
                                      'gender': gender})
                 )
-            event.send_buttons(f'Schau dir die Tabelle im Eishockey der {gender} an',
-                               buttons=buttons)
+        event.send_buttons(f'Schau dir die Tabelle im Eishockey der {gender} an',
+                            buttons=buttons)
         return
 
-    get_standing(event,{'sport': sport,
-                        'round_name': round_mode,
-                        'gender': gender}
-                        )
+    get_standing(event, {'sport': sport,
+                         'round_name': round_mode,
+                         'gender': gender}
+                         )
 
 def get_standing(event, payload):
     sport = payload['sport']
