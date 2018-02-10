@@ -1,16 +1,20 @@
 from datetime import datetime, timedelta, date
+
+import os
 from mrq.context import log
 
 from backend.models import HIGHLIGHT_CHECK_INTERVAL, Push as PushModel
 from backend.models import Report
 from bot.callbacks.shared import send_push, send_report
 from bot.callbacks.result import send_result
+
+from feeds.models.livestream import Livestream
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.models.medal import Medal
 from feeds.models.subscription import Subscription
 from feeds.models.team import Team
-from feeds.config import sport_by_name, CompetitionType, ResultType
+from feeds.config import sport_by_name, CompetitionType, ResultType, supported_sports
 from lib.flag import flag
 from lib.push import Push
 from lib.response import Replyable, SenderTypes
@@ -19,12 +23,14 @@ from lib.mongodb import db
 from worker import BaseTask
 
 MATCH_CHECK_INTERVAL = 60
+LIVESTREAM_CHECK_INTERVAL = 5 * 60
 
 
 class UpdateSchedule(BaseTask):
 
     def run(self, params):
         self.schedule_matches()
+        self.schedule_livestreams()
 
     def schedule_matches(self):
         """
@@ -47,6 +53,16 @@ class UpdateSchedule(BaseTask):
                                 {'match_id': m.id, 'start_time': m.datetime},
                                 start_at=m.datetime,
                                 interval=MATCH_CHECK_INTERVAL)
+
+    def schedule_livestreams(self):
+        streams = [s for s in Livestream.next_events()
+                   if s.get('sport-name') in supported_sports and int(s.get('channel')) < 4]
+
+        for stream in streams:
+            queue.add_scheduled("push.UpdateLivestream",
+                                {'stream_id': stream.id},
+                                start_at=stream.start,
+                                interval=LIVESTREAM_CHECK_INTERVAL)
 
 
 class UpdateMatch(BaseTask):
@@ -130,6 +146,43 @@ class UpdateMatch(BaseTask):
             event.send_text(f'{meta.sport} {meta.discipline} in {meta.town} wurde soeben beendet. '
                             f'Wollen wir mal sehen, wie {athlete} abgeschnitten hat...')
             event.send_text(f'{athlete} belegt Platz {str(athlete_result.rank)} mit {result}.')
+
+
+class UpdateLivestream(BaseTask):
+
+    def run(self, params):
+        Livestream.load_feed(clear_cache=True)
+        stream = Livestream.collection.find_one({'id': params['stream_id']})
+        if not stream:
+            log.warning(f"Stream not found: {params['stream_id']}")
+            self.remove(params)
+
+        if not (stream.get('sport-name') in supported_sports):
+            log.warning(f"Sport for stream not supported: {params['stream_id']}")
+
+        if stream['start'] > datetime.now():
+            return  # run again in interval
+
+        self.remove(params)
+
+        if stream['start'] < datetime.now() - timedelta(minutes=15):
+            return  # discard if started more than 15 minutes ago
+
+        subs = Subscription.query(type=Subscription.Type.LIVESTREAM,
+                                  target=Subscription.Target.SPORT,
+                                  filter={'sport': stream['sport-name']})
+        for sub in subs:
+            self.send_livestream(stream, sub.psid)
+
+    def send_livestream(self, stream, psid):
+        event = Replyable({'sender': {'id': psid}}, type=SenderTypes.FACEBOOK)
+        event.send_text(f"📺 Live-Sport für dich: {stream['sport-name']}")
+        if 'title' in stream:
+            event.send_text(stream['title'])
+        event.send_text(f"Auf Kanal {str(int(stream['channel']) + 1)}: {os.environ['LIVESTREAM_CENTER']}")
+
+    def remove(self, params):
+        queue.remove_scheduled('push.UpdateLivestream', params, interval=LIVESTREAM_CHECK_INTERVAL)
 
 
 class SendHighlight(BaseTask):
