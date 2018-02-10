@@ -10,7 +10,7 @@ import iso8601
 from lib.model import CachedListModel
 from lib.mongodb import db
 
-FIELDS = ['sport-id', 'sport-name', 'title', 'moderator', 'event-start', 'event-end', 'channel', 'start', 'end']
+FIELDS = ['sport-id', 'sport-name', 'title', 'moderator', 'event-start', 'event-end', 'channel', 'start', 'end', 'copy']
 
 
 class Livestream(CachedListModel):
