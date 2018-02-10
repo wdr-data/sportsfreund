@@ -1,3 +1,4 @@
+import logging
 import locale
 
 from pymongo import ASCENDING
@@ -36,7 +37,7 @@ class Standing(ListFeedModel):
         try:
             cls.load_standings()
         except:
-            pass
+            logging.exception('Loading standings failed')
 
         filter = {}
         filter['id'] = {'$exists': True}
