@@ -8,7 +8,7 @@ from lib.config import FB_PAGE_TOKEN
 from lib.response import Replyable
 # dirty
 from .callbacks import dirty
-from .callbacks import result, calendar, olympia, \
+from .callbacks import result, calendar, \
     subscription, video, medal, athlete, standing, sport
 from .callbacks import testing
 from .callbacks.default import (
@@ -72,6 +72,7 @@ def make_event_handler():
 
         ApiAiHandler(korea_standard_time, 'korea_standard_time'),
         ApiAiHandler(countdown, 'countdown'),
+        ApiAiHandler(countdown, 'info.olympia.countown_days'),
         ApiAiHandler(wiki, 'wiki'),
 
         #story
@@ -90,9 +91,6 @@ def make_event_handler():
         # info.match.calendar
         ApiAiHandler(calendar.api_next, 'info.match.calendar.next', follow_up=True),
         PayloadHandler(calendar.pl_entry_by_matchmeta, ['calendar.entry_by_matchmeta']),
-
-        # info.olympia
-        ApiAiHandler(olympia.api_countdown_days, 'info.olympia.countown_days'),
 
         # info.medal
         ApiAiHandler(medal.medals, 'info.medals.filtered'),

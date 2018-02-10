@@ -92,6 +92,22 @@ def push_delete_handler(sender, **kwargs):
                            interval=HIGHLIGHT_CHECK_INTERVAL)
 
 
+class Category(models.Model):
+    """
+    Eine Meldung kann einer Kategorie zugeordnet werden.
+    """
+
+    class Meta:
+        verbose_name = 'Kategorie'
+        verbose_name_plural = 'Kategorien'
+        ordering = ['-name']
+
+    name = models.CharField('Name', max_length=200, null=False)
+
+    def __str__(self):
+        return self.name
+
+
 class Report(models.Model):
     """
     Meldungen sind themenbezogene, in sich abgeschlossene Nachrichten.</p><p>
@@ -108,6 +124,10 @@ class Report(models.Model):
     headline = models.CharField('Überschrift', max_length=200, null=False)
     sport = models.CharField('Sportart', max_length=200, null=True, blank=True)
     discipline = models.CharField('Disziplin', max_length=200, null=True, blank=True)
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Kategorie',
+        related_name='reports', related_query_name='report'
+    )
     text = models.CharField('Intro-Text', max_length=640, null=False)
     media = models.FileField('Medien-Anhang Intro', null=True, blank=True)
     attachment_id = models.CharField(

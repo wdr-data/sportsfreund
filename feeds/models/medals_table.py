@@ -1,4 +1,4 @@
-from pymongo import DESCENDING
+from pymongo import ASCENDING
 
 from feeds.models.match_meta import MatchMeta
 from .. import api
@@ -52,10 +52,11 @@ class MedalsTable(ListFeedModel):
         return cls.collection.find(filter).sort(
             sorting +
             [
-                ('first', DESCENDING),
-                ('second', DESCENDING),
-                ('third', DESCENDING),
-                ('country.name', DESCENDING),
+                ('rank', ASCENDING),
+                ('first', ASCENDING),
+                ('second', ASCENDING),
+                ('third', ASCENDING),
+                ('country.name', ASCENDING),
             ]
         )
 

@@ -38,15 +38,24 @@ def greetings(event, **kwargs):
 
 def countdown(event, **kwargs):
     today = datetime.datetime.today()
-    olympia_start = datetime.datetime(2018, 2, 9, 12)
-    delta = olympia_start - today
 
-    reply = 'Die Olympischen Winterspiele starten am 9. Februar 2018 um 20:00 Uhr KST, d.h. um 12:00 Uhr unserer Zeit. ' \
-    'Bis dahin sind es noch {days} Tage, {hours} Stunden und {minutes} Minuten.'.format(
-            days=delta.days,
-            hours=delta.seconds//3600,
-            minutes=(delta.seconds%3600)//60
-        )
+    olympia_start = datetime.datetime(2018, 2, 9, 12)
+    start_delta = today - olympia_start
+    start_days = start_delta.days
+    start_hours = start_delta.seconds // 3600
+    start_minutes = (start_delta.seconds % 3600) // 60
+
+    olympia_end = datetime.datetime(2018, 2, 25, 12)
+    end_delta = olympia_end - today
+    end_days = end_delta.days
+    end_hours = end_delta.seconds // 3600
+    end_minutes = (end_delta.seconds % 3600) // 60
+
+
+    reply = f'Die Olympischen Winterspiele laufen nun schon seit {start_days} Tagen, ' \
+            f'{start_hours} Stunden und {start_minutes} Minuten.\n' \
+            f'Bis zur Abschlussfeier sind es noch {end_days} Tage, {end_hours} Stunden ' \
+            f'und {end_minutes} Minuten.'
     event.send_text(reply)
 
 def korea_standard_time(event, **kwargs):

@@ -2,7 +2,8 @@ from django.contrib import admin, messages
 from django import forms
 from sortedm2m_filter_horizontal_widget.forms import SortedFilteredSelectMultiple
 
-from .models import Push, Report, ReportFragment, FacebookUser, Wiki, Info, Story, StoryFragment
+from .models import (Push, Report, ReportFragment, FacebookUser, Wiki, Info, Story, StoryFragment,
+                     Category)
 from feeds.config import SPORTS_CONFIG
 from lib.facebook import UploadFailedError
 
@@ -67,16 +68,16 @@ class ReportModelForm(forms.ModelForm):
 
     class Meta:
         model = Report
-        fields = ('headline', 'sport', 'discipline',
+        fields = ('headline', 'sport', 'discipline', 'category',
                   'text', 'media', 'attachment_id', 'published', 'delivered')
 
 
 class ReportAdmin(admin.ModelAdmin):
     form = ReportModelForm
     date_hierarchy = 'created'
-    list_filter = ['published']
+    list_filter = ['published', 'category']
     search_fields = ['headline']
-    list_display = ('headline', 'created', 'published')
+    list_display = ('headline', 'category', 'created', 'published')
     inlines = (ReportFragmentAdminInline, )
 
     def save_model(self, request, obj, form, change):
@@ -273,6 +274,7 @@ class StoryAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(Push, PushAdmin)
+admin.site.register(Category)
 admin.site.register(Report, ReportAdmin)
 admin.site.register(FacebookUser)
 admin.site.register(Wiki, WikiAdmin)
