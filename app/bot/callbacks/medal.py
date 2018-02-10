@@ -38,6 +38,12 @@ def medals(event, parameters, **kwargs):
         asked_date = datetime.strptime(asked_date, '%Y-%m-%d').date()
         medals = Medal.search_date(date=asked_date, sport=sport,
                                    discipline=discipline, gender=gender, country=country)
+        if len(medals) > 3:
+            for medal in medals[3:]:
+                quick_replies.append(
+                    quick_reply(f'{medal.sport}, {medal.gender_name}',
+                                {'send_medal': medal.id, 'send_quick': True})
+                )
     elif medal_id:
         medals = [Medal.by_id(id=medal_id)]
         if send_quick == True:
@@ -70,6 +76,7 @@ def medals(event, parameters, **kwargs):
         return
 
     else:
+        count = 0
         for medal in medals:
             winner = '\n'.join(
                 '{i} {winner}'.format(
@@ -86,19 +93,17 @@ def medals(event, parameters, **kwargs):
                     winner=winner,
                 )
 
-            if len(medals) < 3:
+            if len(medals) <= 3:
                 event.send_text(reply)
+            elif len(medals) > 3 and count < 3:
+                event.send_text(reply)
+            else:
+                break
 
-            elif len(medals) > 3 and not quick_replies:
-                for medal in medals[3:]:
-                    quick_replies.append(
-                        quick_reply(f'{medal.sport}, {medal.gender_name}',
-                                    {'send_medal': medal.id, 'send_quick': True})
-                    )
-                event.send_text(reply)
+            count += 1
 
         if quick_replies:
-            event.send_text('Hier findest du weitere Medaillenentscheidungen von heute:',
+            event.send_text('Hier findest du weitere Medaillenentscheidungen von des Tages:',
                             quick_replies)
 
 def medals_table(event, parameters, **kwargs):
