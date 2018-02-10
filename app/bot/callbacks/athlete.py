@@ -29,22 +29,28 @@ def characteristics(event, payload):
 
         if (first_name, last_name) not in known_athlete_names:
             if not Person.query(firstname=first_name, surname=last_name):
-                event.send_text('Diese Person ist leider noch nicht in meiner Datenbank... '
-                                'Bist du sicher, dass du dich nicht vertippt hast?')
-                return
+                if not len(Person.query(surname=last_name)) == 1:
+                        event.send_text('Diese Person ist leider noch nicht in meiner Datenbank... '
+                                        'Bist du sicher, dass du dich nicht vertippt hast?')
+                        return
 
     elif (last_name and not first_name) or (first_name and not last_name):
-        event.send_text('Wenn du etwas über einen Athleten erfahren möchtest, '
-                        'schicke mir den Vor- und Nachnamen. Nur um Verwechslungen zu vermeiden ;)')
-        return
+        if not len(Person.query(surname=last_name)) == 1:
+            event.send_text('Wenn du etwas über einen Athleten erfahren möchtest, '
+                            'schicke mir den Vor- und Nachnamen. Nur um Verwechslungen zu vermeiden ;)')
+            return
 
     else:
         event.send_text('Diese Person ist leider noch nicht in meiner Datenbank... '
                         'Bist du sicher, dass du dich nicht vertippt hast?')
         return
 
-    athlete = ' '.join([first_name, last_name])
-    persons = Person.query(fullname=athlete)
+    if first_name and last_name:
+        athlete = ' '.join([first_name, last_name])
+        persons = Person.query(fullname=athlete)
+    elif last_name:
+        persons = Person.query(surname=last_name)
+        athlete = persons[0].fullname
 
     subs = Subscription.query(filter={'athlete': athlete},
                               type=Subscription.Type.RESULT, psid=sender_id)
