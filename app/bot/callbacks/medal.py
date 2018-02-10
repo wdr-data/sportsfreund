@@ -1,11 +1,11 @@
 from feeds.models.medal import Medal
 from feeds.models.medals_table import MedalsTable
 from feeds.models.match import Match
-from lib.response import button_postback
+from lib.response import button_postback, quick_reply
 from ..handlers.payloadhandler import PayloadHandler
 
 from itertools import zip_longest
-from datetime import datetime
+from datetime import datetime, date
 
 from feeds.models.team import Team
 from lib.flag import flag
@@ -16,20 +16,53 @@ def grouper(iterable, n, fillvalue=None):
     return zip_longest(*args, fillvalue=fillvalue)
 
 
+def send_medal_by_id(event, payload, **kwargs):
+    medal_id = payload.get('send_medal')
+    quick = payload.get('send_quick')
+    medals(event, parameters={'medal_id': medal_id, 'send_quick': quick})
+
+
 def medals(event, parameters, **kwargs):
     sport = parameters.get('sport')
     discipline = parameters.get('discipline')
     gender = parameters.get('gender')
     country = parameters.get('country')
-    date = parameters.get('date')
+    asked_date = parameters.get('date')
+    medal_id = parameters.get('medal_id')
+    send_quick = parameters.get('send_quick')
 
-    if date:
-        date = datetime.strptime(date, '%Y-%m-%d').date()
-        medals = Medal.search_date(date=date, sport=sport,
+    today = date.today()
+    quick_replies = []
+
+    if asked_date:
+        asked_date = datetime.strptime(asked_date, '%Y-%m-%d').date()
+        medals = Medal.search_date(date=asked_date, sport=sport,
                                    discipline=discipline, gender=gender, country=country)
+    elif medal_id:
+        medals = [Medal.by_id(id=medal_id)]
+        if send_quick == True:
+            medals_today = Medal.search_date(date=today)
+
+            if medals_today:
+                medals_today[:] = [medal for medal in medals_today if
+                                   medal.get('id') != medals[0].id]
+                for medal in medals_today:
+                    quick_replies.append(
+                        quick_reply(f'{medal.sport}, {medal.gender_name}',
+                                    {'send_medal': medal.id, 'send_quick': True})
+                    )
     else:
         medals = [Medal.search_last(sport=sport, discipline=discipline,
                                    gender=gender, country=country)]
+        medals_today = Medal.search_date(date=today)
+
+        if medals_today:
+            medals_today[:] = [medal for medal in medals_today if medal.get('id') != medals[0].id]
+            for medal in medals_today:
+                quick_replies.append(
+                    quick_reply(f'{medal.sport}, {medal.gender_name}',
+                                {'send_medal': medal.id, 'send_quick': True})
+                )
 
     if not medals:
         event.send_text('In diesem Zeitraum hat kein Event stattgefunden '
@@ -45,21 +78,28 @@ def medals(event, parameters, **kwargs):
                                      flag(Team.by_id(member.team.id).country.iso)]))
                 for i, member in enumerate(medal.ranking))
 
-            event.send_text(
-                'Medaillen für {sport}{discipline} {gender} am {date}: \n\n{winner}'.format(
+            reply = 'Medaillen für {sport} {discipline} {gender} am {date}: \n\n{winner}'.format(
                     sport=medal.sport,
                     discipline=f' {medal.discipline_short}' if medal.discipline_short else '',
                     gender=medal.gender_name,
                     date=medal.end_date.strftime('%d.%m.%Y'),
                     winner=winner,
                 )
-            )
 
-        if len(medals) > 3:
-            event.send_text(
-                'Ich habe zu viele Medaillentscheidungen zu deiner Suchanfrage gefunden, '
-                'als dass ich sie jetzt alle anzeigen könnte. Schränke deine Frage ein, '
-                'z.B. nach Sportart, Datum oder Herren/Damen.')
+            if len(medals) < 3:
+                event.send_text(reply)
+
+            elif len(medals) > 3 and not quick_replies:
+                for medal in medals[3:]:
+                    quick_replies.append(
+                        quick_reply(f'{medal.sport}, {medal.gender_name}',
+                                    {'send_medal': medal.id, 'send_quick': True})
+                    )
+                event.send_text(reply)
+
+        if quick_replies:
+            event.send_text('Hier findest du weitere Medaillenentscheidungen von heute:',
+                            quick_replies)
 
 def medals_table(event, parameters, **kwargs):
     country = parameters.get('country')
@@ -137,4 +177,5 @@ def medal_list(event, payload):
 
 handlers= [
     PayloadHandler(medal_list, ['medal_list']),
+    PayloadHandler(send_medal_by_id, ['send_medal', 'send_quick']),
 ]
