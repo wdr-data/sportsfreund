@@ -16,7 +16,6 @@ class Standing(ListFeedModel):
     cache_time = 60*5
 
     season_feeds = [24752, 24753, 24754, 24732, 24733]
-    id = str(id)
 
     @classmethod
     def transform(cls, obj, id, now):
