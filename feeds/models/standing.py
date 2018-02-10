@@ -22,7 +22,8 @@ class Standing(ListFeedModel):
         round = obj['standing']
         for standing in round:
             standing['season_id'] = id
-            cls.collection.replace_one({'team_id': standing['team']['id']}, standing, upsert=True)
+            standing['id'] = standing['team']['id']
+            cls.collection.replace_one({'id': standing['id']}, standing, upsert=True)
 
     @classmethod
     def load_standings(cls):
