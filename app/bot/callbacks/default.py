@@ -41,14 +41,14 @@ def countdown(event, **kwargs):
 
     olympia_start = datetime.datetime(2018, 2, 9, 12)
     start_delta = today - olympia_start
-    start_days = start_delta.days,
-    start_hours = start_delta.seconds // 3600,
+    start_days = start_delta.days
+    start_hours = start_delta.seconds // 3600
     start_minutes = (start_delta.seconds % 3600) // 60
 
     olympia_end = datetime.datetime(2018, 2, 25, 12)
     end_delta = olympia_end - today
-    end_days = end_delta.days,
-    end_hours = end_delta.seconds // 3600,
+    end_days = end_delta.days
+    end_hours = end_delta.seconds // 3600
     end_minutes = (end_delta.seconds % 3600) // 60
 
 
