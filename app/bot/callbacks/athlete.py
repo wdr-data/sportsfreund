@@ -24,9 +24,11 @@ def characteristics(event, payload):
     first_name = payload.get('first_name')
     last_name = payload.get('last_name')
 
-    if last_name and not first_name:
+    if last_name:
         last_name_query = Person.query(surname=last_name)
-        if len(last_name_query) in [1, 2, 3]:
+        if first_name:
+            last_and_first_name_query = Person.query(firstname=first_name, surname=last_name)
+        if len(last_name_query) in [2, 3]:
             buttons = [button_postback(f'{p.firstname}',
                                       {'first_name': p.firstname,
                                        'last_name': p.surname})
@@ -41,14 +43,14 @@ def characteristics(event, payload):
                                    for athlete in KNOWN_ATHLETES_OLYMPIA)
 
         if (first_name, last_name) not in known_athlete_names:
-            if not Person.query(firstname=first_name, surname=last_name):
+            if not last_and_first_name_query:
                 if not len(last_name_query) == 1:
                         event.send_text('Diese Person ist leider noch nicht in meiner Datenbank... '
                                         'Bist du sicher, dass du dich nicht vertippt hast?')
                         return
 
     elif (last_name and not first_name) or (first_name and not last_name):
-        if not len(Person.query(surname=last_name)) == 1:
+        if not len(last_name_query) == 1:
             event.send_text('Wenn du etwas über einen Athleten erfahren möchtest, '
                             'schicke mir den Vor- und Nachnamen. Nur um Verwechslungen zu vermeiden ;)')
             return
