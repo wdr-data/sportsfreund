@@ -107,7 +107,7 @@ def api_next(event, parameters, **kwargs):
             if not match_meta and (town or country):
                 event.send_text('Leider kein Event in {place}.'.format(place=town if town else country))
             elif not match_meta and round_mode:
-                event.send_text('Deine A')
+                event.send_text('Deine Anfrage führt bei mir leider ins Leere. Sry.')
             else:
                 event.send_text('In dieser Saison findet kein Weltcup mehr in '
                                 f'{town if town else country} statt. Dafür hab ich hier bald die '
@@ -185,6 +185,17 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
         else (' der Herren' if match_meta.gender == 'male'  else '')
 
     is_olympia = match_meta.get('event') == MatchMeta.Event.OLYMPIA_18
+    if 'medals' in match_meta:
+        if match_meta.medals == 'complete':
+            medals = f'{Match.medal(1)}{Match.medal(2)}{Match.medal(3)}'
+        elif match_meta.medals == 'gold_silver':
+            medals = f'{Match.medal(1)}{Match.medal(2)}'
+        elif match_meta.medals == 'bronze_winner':
+            medals = f'{Match.medal(3)}'
+        else:
+            medals = ''
+    else:
+        medals = ''
 
     if match_meta.match_incident:
         event.send_text(f"Ich habe gehört, der Wettkampf {match_meta.discipline} {gender}"
@@ -198,7 +209,7 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
         else:
             reply = f'{localtime_format(match_meta.datetime, event, is_olympia)} - '
 
-        reply += f"{match_meta.sport}, "
+        reply += f"{medals}{match_meta.sport}, "
 
         """
         type = discipline_config(match_meta.sport, match_meta.discipline_short).competition_type

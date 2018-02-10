@@ -500,7 +500,7 @@
   result_digits: 1
   competition_term: Event
   article: das
-  slug: freestyle-sportler
+  slug: ski-freestyle-sportler
   disciplines:
     - name: Aerials
       rounds: True

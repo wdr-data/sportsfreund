@@ -32,10 +32,10 @@ def localtime_format(date, event, is_olympia=False, format="%H:%M Uhr"):
             }, upsert=True)
 
     user_time = date + timedelta(hours=offset)
-    timestring = f"{user_time.strftime(format)} (bei dir)"
+    timestring = f"{user_time.strftime(format)}"
 
     if is_olympia:
         korean_time = date + timedelta(hours=9)
-        timestring += f" - {korean_time.strftime(format)} (in Korea)"
+        timestring += f" ({korean_time.strftime(format)} in 🇰🇷KOR)"
 
     return timestring
