@@ -10,6 +10,7 @@ from feeds.models.subscription import Subscription
 from lib.facebook import guess_attachment_type
 from lib.response import button_postback
 from ..handlers.apiaihandler import ApiAiHandler
+from ..handlers.payloadhandler import PayloadHandler
 from feeds.config import KNOWN_ATHLETES_OLYMPIA
 from feeds.models.person import Person
 
@@ -23,13 +24,25 @@ def characteristics(event, payload):
     first_name = payload.get('first_name')
     last_name = payload.get('last_name')
 
+    if last_name and not first_name:
+        last_name_query = Person.query(surname=last_name)
+        if len(last_name_query) in [1, 2, 3]:
+            buttons = [button_postback(f'{p.firstname}',
+                                      {'first_name': p.firstname,
+                                       'last_name': p.surname})
+                                      for p in last_name_query]
+
+            event.send_buttons(f'Welchen {last_name} meinst du?)',
+                               buttons=buttons
+                               )
+            return
     if last_name and first_name:
         known_athlete_names = set((athlete.first_name, athlete.last_name)
                                    for athlete in KNOWN_ATHLETES_OLYMPIA)
 
         if (first_name, last_name) not in known_athlete_names:
             if not Person.query(firstname=first_name, surname=last_name):
-                if not len(Person.query(surname=last_name)) == 1:
+                if not len(last_name_query) == 1:
                         event.send_text('Diese Person ist leider noch nicht in meiner Datenbank... '
                                         'Bist du sicher, dass du dich nicht vertippt hast?')
                         return
@@ -125,4 +138,5 @@ def characteristics(event, payload):
 
 handlers = [
     ApiAiHandler(api_characteristics, 'athletes.who-is', follow_up=True),
+    PayloadHandler(characteristics, ['first_name', 'last_name'])
 ]
