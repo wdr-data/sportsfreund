@@ -23,15 +23,13 @@ class MedalsTable(ListFeedModel):
 
     @classmethod
     def transform(cls, obj, topic_id, now):
-        i=1
-        for co in obj:
+        for i, co in enumerate(obj, start=1):
             co['first'] = int(co['first'])
             co['second'] = int(co['second'])
             co['third'] = int(co['third'])
             co['rank'] = i
             co['topic_id'] = topic_id
             cls.collection.replace_one({'id': co['id'], 'topic_id': topic_id}, co, upsert=True)
-            i+=1
 
     @classmethod
     def _search(cls, base_filter, country=None, topic_id=None, sorting=[]):
