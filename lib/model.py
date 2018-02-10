@@ -1,4 +1,5 @@
 import logging
+from datetime import time
 from enum import Enum
 
 
@@ -76,3 +77,13 @@ class Model(DotDict):
         """
 
         return cls.collection.delete_many(kwargs)
+
+
+class CachedListModel(Model):
+
+    cache_time = 0
+
+    @classmethod
+    def check_cache_expired(cls):
+        cache_marker = cls.collection.find_one({'_cache_marker': True})
+        return not cache_marker or cache_marker['_cached_at'] + cls.cache_time < time()

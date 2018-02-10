@@ -12,11 +12,11 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-from lib.model import Model
+from lib.model import CachedListModel
 from lib.mongodb import db
 
 
-class Video(Model):
+class Video(CachedListModel):
     """
     @DynamicAttrs
     """
@@ -108,18 +108,8 @@ class Video(Model):
 
         cls.logger.info('%s videos in db', cls.collection.count())
 
-        cache_marker = cls.collection.find_one({'_cache_marker': True})
-
-        if cache_marker:
-
-            if clear_cache:
-                cls.logger.debug('Force-clear video cache')
-
-            elif cache_marker['_cached_at'] + cls.cache_time < time():
-                cls.logger.debug('Cache expired')
-
-            else:
-                return False
+        if not (clear_cache or cls.check_cache_expired()):
+            return
 
         now = time()
 
