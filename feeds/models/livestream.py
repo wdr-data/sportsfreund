@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 import os
 
@@ -20,7 +20,9 @@ class Livestream(CachedListModel):
 
     @classmethod
     def next_events(cls):
-        return cls.collection.find_many({})
+        now = datetime.now()
+        limit = now + timedelta(days=1)
+        return cls.query(start={'$gte': now, '$lt': limit})
 
     @classmethod
     def load_feed(cls, clear_cache: bool=False, history: int=0):
