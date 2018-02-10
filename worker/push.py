@@ -243,11 +243,9 @@ class SendMedals(BaseTask):
 
         recent_medals = Medal.search_range(
             from_date=date.today() - timedelta(days=1), until_date=date.today())
-        print(recent_medals)
 
         # Filter already sent medals
         new_medals = [m for m in recent_medals if not db.pushed_medals.find_one({'id': m.id})]
-        print(new_medals)
 
         for m in new_medals:
             for r in m.ranking:
