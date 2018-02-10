@@ -37,7 +37,7 @@ class MedalsTable(ListFeedModel):
     def _search(cls, base_filter, country=None, topic_id=None, sorting=[]):
 
         for id in MatchMeta.olympia_feeds:
-            cls.load_feed(id)
+            cls.load_feed(id, clear_cache=True)
 
         filter = {}
         filter['id'] = {'$exists': True}
