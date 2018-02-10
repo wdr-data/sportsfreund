@@ -52,6 +52,7 @@ VIDEO_FEED_URL=       # URL für den Mediathek-Feed zum Wintersport (WDR intern)
 VIDEO_PLAYLISTS_BASE= # URL zur Bestimmung der SMIL-Playlist eines Videos (WDR intern) - no trailing slash
 VIDEO_URL_BASE=       # URL-Basis zum Abruf des MP4-Videos (WDR intern) - no trailing slash
 LIVESTREAM_FEED_BASE=  # URL zum ECMS-Feed Olympia
+LIVESTREAM_CENTER=    # URL zur Mediathek-Seite mit allen Livestreams
 SENTRY_URL=           # DSN für die Sentry Error Logging Plattform (optional)
 ```
 
