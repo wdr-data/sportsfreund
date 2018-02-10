@@ -1,5 +1,8 @@
 import logging
 from os import environ
+from django.utils.text import slugify
+
+from backend.models import Story
 
 from django.core.validators import URLValidator
 
@@ -30,6 +33,13 @@ class Person(FeedModel):
             person = cls.collection.find_one({'id': str(id)})
         if not person:
             return None
+        try:
+            slug = slugify(person.fullname)
+            story = Story.objects.get(slug=slug)
+            if story.attachment_id:
+                return story.media
+        except:
+            pass
 
         url = f"{environ.get('PERSON_PICTURE_URL_BASE')}/l/{person['id']}.jpg"
         return url
