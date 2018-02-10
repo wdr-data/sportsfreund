@@ -24,6 +24,9 @@ MATCH_CHECK_INTERVAL = 60
 class UpdateSchedule(BaseTask):
 
     def run(self, params):
+        self.schedule_matches()
+
+    def schedule_matches(self):
         """
         Check for new matches and schedule them
 
