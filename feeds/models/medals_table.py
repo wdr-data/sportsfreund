@@ -30,7 +30,7 @@ class MedalsTable(ListFeedModel):
             co['third'] = int(co['third'])
             co['rank'] = i
             co['topic_id'] = topic_id
-            cls.collection.replace_one({'id': co['id']}, co, upsert=True)
+            cls.collection.replace_one({'id': co['id'], 'topic_id': topic_id}, co, upsert=True)
             i+=1
 
     @classmethod
