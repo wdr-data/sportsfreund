@@ -23,7 +23,7 @@ class Livestream(CachedListModel):
         return cls.collection.find_many({})
 
     @classmethod
-    def load_feed(cls, clear_cache: bool=False):
+    def load_feed(cls, clear_cache: bool=False, history: int=0):
         if not (clear_cache or cls.check_cache_expired()):
             return
 
@@ -31,8 +31,8 @@ class Livestream(CachedListModel):
         if url_base is None:
             return
 
-        for delta in range(3):
-            day = date.today() + timedelta(days=delta)
+        for delta in range(3 + history):
+            day = date.today() + timedelta(days=delta) - timedelta(days=history)
             url = f"{url_base}/{day.strftime('%Y-%m-%d')}.xml"
             r = requests.get(url)
             if r.status_code != 200 or not r.content:
