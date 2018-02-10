@@ -13,6 +13,10 @@ from feeds.config import KNOWN_ATHLETES_OLYMPIA
 GLOBES = ('🌎', '🌏', '🌍')
 
 
+def state_emoji(subscribed):
+    return '✔' if subscribed else '❌'
+
+
 def api_subscribe(event, parameters, **kwargs):
     sport = parameters.get('sport')
     discipline = parameters.get('discipline')
@@ -109,6 +113,84 @@ def pld_subscriptions(event, payload, **kwargs):
     send_subscriptions(event)
 
 
+def sub_element_livestream(subs):
+    type = Subscription.Type.LIVESTREAM
+    subscribed = any(sub.type is type for sub in subs)
+    buttons = [
+        button_postback('🔧 An-/Abmelden' if subscribed else '📝 Anmelden',
+                        {'sub': True, type.value: True, 'action': 'change' if subscribed else 'subscribe'})
+    ]
+    sport_list = ', '.join([sub.filter.sport for sub in subs if sub.type is type])
+    subtitle = f"{sport_list}" if subscribed else "Push, wenn eine Live-Übertragung beginnt"
+
+    return list_element(f"Livestreams {state_emoji(subscribed)}", subtitle, buttons=buttons)
+
+
+def livestream_change(event, payload, **kwargs):
+    sender_id = event['sender']['id']
+    action = payload['action']
+    subs = Subscription.query(psid=sender_id, type=Subscription.Type.LIVESTREAM)
+
+    if action == 'subscribe' or len(subs) == 0:
+        sports = list_available_sports(subs)
+        if not sports:
+            send_literal_no_sports_left(event)
+            return
+
+        quickreplies = [quick_reply(sport, {'sub': True,
+                                            Subscription.Type.LIVESTREAM.value: True,
+                                            'filter': sport,
+                                            'action': 'subscribe'})
+                        for sport in sports[:11]]
+        event.send_text(f'Für welche Sportart soll ich dir Bescheid sagen, wenn ein Livestream beginnt?',
+                        quickreplies)
+
+    elif action == 'unsubscribe':
+        filter_list = [Subscription.describe_filter(sub.filter)
+                       for sub in subs if sub.target is Subscription.Target.SPORT]
+        quickreplies = [
+            quick_reply(filter, {'sub': True,
+                                 Subscription.Type.LIVESTREAM.value: True,
+                                 'filter': filter,
+                                 'action': 'unsubscribe'})
+            for filter in filter_list[:11]
+        ]
+        event.send_text("Für welche Sportart möchtest du keine Meldung beim Start eines Livestreams bekommen?",
+                        quickreplies)
+
+    elif action == 'change':
+        event.send_text("Du bist schon für mindestens eine Sportart angemeldet. Was nun?", [
+            quick_reply('✨ Mehr Sportarten', {'sub': True,
+                                              Subscription.Type.LIVESTREAM.value: True,
+                                              'action': 'subscribe'}),
+            quick_reply('❌ Abmelden', {'sub': True,
+                                       Subscription.Type.LIVESTREAM.value: True,
+                                       'action': 'unsubscribe'}),
+        ])
+
+
+def livestream_apply(event, payload, **kwargs):
+    sender_id = event['sender']['id']
+    action = payload['action']
+    sport = payload['filter']
+
+    if action == 'subscribe':
+        Subscription.create(sender_id, Subscription.Target.SPORT, {'sport': sport}, Subscription.Type.LIVESTREAM)
+        event.send_text("Super! Ich sage dir, wenn's losgeht.")
+        event.send_text("Hier deine Übersicht:")
+        send_subscriptions(event)
+    elif action == 'unsubscribe':
+        sub = Subscription.query(psid=sender_id,
+                                 type=Subscription.Type.LIVESTREAM,
+                                 target=Subscription.Target.SPORT,
+                                 filter={'sport': sport})
+        if len(sub) != 1:
+            raise Exception("Subscription not found, but offered in quick reply. Weird!")
+
+        Subscription.delete(_id=sub[0]._id)
+        event.send_text(f"Gut. Ich höre auf, dich wegen {sport}-Livestreams zu nerven.")
+
+
 def send_subscriptions(event, **kwargs):
     sender_id = event['sender']['id']
     subs = Subscription.query(psid=sender_id)
@@ -138,6 +220,7 @@ def send_subscriptions(event, **kwargs):
             'Ergebnisdienst ' + result_emoji,
             'Sportart / Sportler / Medaillen',
             buttons=[result_button]),
+        sub_element_livestream(subs),
     ]
 
     event.send_list(elements)
@@ -260,6 +343,18 @@ def result_medal_subscriptions(event, **kwargs):
     event.send_list(elements)
 
 
+def list_available_sports(subs):
+    filter_list = [Subscription.describe_filter(sub.filter)
+                   for sub in subs if sub.target is Subscription.Target.SPORT]
+    return [sport for sport in supported_sports if sport not in filter_list]
+
+
+def send_literal_no_sports_left(event):
+    event.send_text(f'Du bist bereits für alle möglichen Sportarten '
+                    f'angemeldet. Du scheinst ja genau so ein '
+                    f'Wintersport Nerd zu sein wie ich 🤓')
+
+
 def result_medal_change(event, payload, **kwargs):
     sender_id = event['sender']['id']
     option = payload['option']
@@ -305,13 +400,9 @@ def result_medal_change(event, payload, **kwargs):
     elif option == 'subscribe':
         if not filter_arg:
             if target == 'sport':
-                filter_list = [Subscription.describe_filter(sub.filter)
-                               for sub in subs if sub.target is Subscription.Target.SPORT]
-                sports = [sport for sport in supported_sports if sport not in filter_list]
+                sports = list_available_sports(subs)
                 if not sports:
-                    event.send_text(f'Du bist bereits für alle möglichen Sportarten '
-                                               f'angemeldet. Du scheinst ja genau so ein '
-                                               f'Wintersport Nerd zu sein wie ich 🤓')
+                    send_literal_no_sports_left(event)
                 else:
                     quickreplies = [quick_reply(sport, {'target': target,
                                                         'filter': sport,
@@ -381,6 +472,8 @@ handlers = [
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe', follow_up=True),
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe'),
     ApiAiHandler(api_subscribe, 'push.subscription.unsubscribe'),
+    PayloadHandler(livestream_apply, ['sub', Subscription.Type.LIVESTREAM.value, 'filter', 'action']),
+    PayloadHandler(livestream_change, ['sub', Subscription.Type.LIVESTREAM.value, 'action']),
     PayloadHandler(highlight_subscriptions, ['target', 'state']),
     PayloadHandler(result_medal_subscriptions, ['type']),
     PayloadHandler(result_medal_change, ['target', 'filter', 'option']),

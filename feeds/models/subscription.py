@@ -25,6 +25,7 @@ class Subscription(Model):
         RESULT = 'result'
         HIGHLIGHT = 'highlight'
         MEDAL = 'medal'
+        LIVESTREAM = 'livestream'
 
     def __init__(self, *args, **kwargs):
 
