@@ -33,6 +33,9 @@ def api_match_standing(event, parameters, **kwargs):
     if sport == 'Eishockey' and not round_mode and not gender:
         gender = 'female'
 
+    if sport == 'Curling':
+        round_mode = 'Round Robin'
+
     if sport and gender and round_mode:
         get_standing(event, {'sport': sport,
                              'round_name': round_mode,
