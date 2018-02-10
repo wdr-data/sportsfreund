@@ -1,3 +1,4 @@
+from mrq.context import log
 from requests.exceptions import RequestException
 
 from feeds.models.match_meta import MatchMeta
@@ -36,4 +37,4 @@ def load_persons():
                         additional_data['team_id'] = result.team.id
                     [Person.by_id(person.id, topic_id, additional_data) for person in persons]
         except Exception as err:
-            print(f"Load match {meta_match.get('id')} failed: {str(err)}")
+            log.warning(f"Load match {meta_match.get('id')} failed: {str(err)}")
