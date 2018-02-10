@@ -73,8 +73,7 @@ class UpdateMatch(BaseTask):
             race = False
             ranks = set()
 
-        if 'winner_team_id' in match and match.winner_team_id != "0" or\
-                (race and all(rank in ranks for rank in (1, 2, 3))):
+        if match.finished or (race and all(rank in ranks for rank in (1, 2, 3))):
             if not Push.query(target={'match_id': match_id}):
                 Push.create({'match_id': match_id}, Push.State.SENDING, datetime.now())
                 UpdateMatch.result_push(match)
