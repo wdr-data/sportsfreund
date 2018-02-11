@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'sortedm2m_filter_horizontal_widget',
     'tz_detect',
     'metrics.apps.MetricsConfig',
+    'oauth2_provider',
 ]
 
 MIDDLEWARE = [
@@ -136,6 +137,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 URL_PREFIX = '/'
 
+LOGIN_URL = '/admin/login'
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL[1:])
 STATIC_URL = os.path.join(URL_PREFIX, STATIC_URL[1:])
@@ -186,3 +189,9 @@ LOGGING = {
 }
 
 TZ_DETECT_COUNTRIES = ('DE', 'FR', 'GB', 'US', 'CN', 'IN', 'JP', 'BR', 'RU')
+
+OAUTH2_PROVIDER = {
+    'SCOPES': {
+        'user': 'User profile',
+    },
+}

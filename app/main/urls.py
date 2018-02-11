@@ -18,6 +18,8 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base import RedirectView
+
+import backend.views as backend_views
 from .settings import DEBUG
 
 urlpatterns = [
@@ -25,6 +27,8 @@ urlpatterns = [
     url(r'^fb/', include('bot.urls')),
     url(r'^tz_detect/', include('tz_detect.urls')),
     url(r'metrics/', include('metrics.urls')),
+    url(r'^oauth/user', backend_views.OAuthUserInfo.as_view()),
+    url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]
 
 if not DEBUG:
