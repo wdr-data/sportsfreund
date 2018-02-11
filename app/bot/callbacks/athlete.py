@@ -35,9 +35,7 @@ def characteristics(event, payload):
         last_name_query = Person.query(surname=last_name)
     if first_name:
         first_name_query = Person.query(firstname=first_name)
-    event.send_text(
-        f'{len(last_and_first_name_query)}, {len(first_name_query)}, {len(last_name_query)}'
-    )
+
     if last_name and first_name:
         known_athlete_names = set((athlete.first_name, athlete.last_name)
                                    for athlete in KNOWN_ATHLETES_OLYMPIA)
@@ -89,13 +87,13 @@ def characteristics(event, payload):
                                 'person_id': p['id']})
                    for p in first_name_query]
     elif len(last_name_query) in range(4, 11):
-        buttons = [quick_reply(f"{p['fullname']}",
+        quicks = [quick_reply(f"{p['fullname']}",
                                {'first_name': p['firstname'],
                                 'last_name': p['surname'],
                                 'person_id': p['id']})
                    for p in last_name_query]
     elif len(first_name_query) in range(4, 11):
-        buttons = [quick_reply(f"{p['fullname']}",
+        quicks = [quick_reply(f"{p['fullname']}",
                                {'first_name': p['firstname'],
                                 'last_name': p['surname'],
                                 'person_id': p['id']})
