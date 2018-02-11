@@ -8,9 +8,10 @@ from backend.models import Story
 
 from feeds.models.subscription import Subscription
 from lib.facebook import guess_attachment_type
-from lib.response import button_postback
+from lib.response import button_postback, quick_reply
 from ..handlers.apiaihandler import ApiAiHandler
 from ..handlers.payloadhandler import PayloadHandler
+from lib.flag import flag
 from feeds.config import KNOWN_ATHLETES_OLYMPIA
 from feeds.models.person import Person
 
@@ -23,36 +24,37 @@ def characteristics(event, payload):
     sender_id = event['sender']['id']
     first_name = payload.get('first_name')
     last_name = payload.get('last_name')
+    person_id = payload.get('person_id')
+
+    first_name_query = []
+    last_name_query = []
+
+    last_and_first_name_query = Person.query(firstname=first_name, surname=last_name)
 
     if last_name:
         last_name_query = Person.query(surname=last_name)
-        if first_name:
-            last_and_first_name_query = Person.query(firstname=first_name, surname=last_name)
-        if len(last_name_query) in [2, 3]:
-            buttons = [button_postback(f'{p.firstname}',
-                                      {'first_name': p.firstname,
-                                       'last_name': p.surname})
-                                      for p in last_name_query]
-
-            event.send_buttons(f'Welchen {last_name} meinst du?)',
-                               buttons=buttons
-                               )
-            return
+    if first_name:
+        first_name_query = Person.query(firstname=first_name)
+    event.send_text(
+        f'{len(last_and_first_name_query)}, {len(first_name_query)}, {len(last_name_query)}'
+    )
     if last_name and first_name:
         known_athlete_names = set((athlete.first_name, athlete.last_name)
                                    for athlete in KNOWN_ATHLETES_OLYMPIA)
 
         if (first_name, last_name) not in known_athlete_names:
-            if not last_and_first_name_query:
-                if not len(last_name_query) == 1:
-                        event.send_text('Diese Person ist leider noch nicht in meiner Datenbank... '
-                                        'Bist du sicher, dass du dich nicht vertippt hast?')
-                        return
+            if not last_and_first_name_query \
+                    and not len(last_name_query) in range(0, 11) \
+                    and not len(first_name_query) in range(0, 11):
+                    event.send_text('Diese Person ist leider noch nicht in meiner Datenbank... '
+                                    'Bist du sicher, dass du dich nicht vertippt hast?')
+                    return
 
     elif (last_name and not first_name) or (first_name and not last_name):
-        if not len(last_name_query) == 1:
+        if not len(last_name_query) in range(0, 11) and not len(first_name_query) in range(0, 11):
             event.send_text('Wenn du etwas über einen Athleten erfahren möchtest, '
-                            'schicke mir den Vor- und Nachnamen. Nur um Verwechslungen zu vermeiden ;)')
+                            'schicke mir den Vor- und Nachnamen.'
+                            ' Nur um Verwechslungen zu vermeiden ;)')
             return
 
     else:
@@ -60,12 +62,60 @@ def characteristics(event, payload):
                         'Bist du sicher, dass du dich nicht vertippt hast?')
         return
 
-    if first_name and last_name:
+    buttons = []
+    quicks = []
+    if person_id:
+        persons = [Person.query(id=person_id)[0]]
+        athlete = persons[0].fullname
+    elif last_and_first_name_query == 1:
         athlete = ' '.join([first_name, last_name])
         persons = Person.query(fullname=athlete)
-    elif last_name:
-        persons = Person.query(surname=last_name)
+    elif len(last_name_query) == 1:
+        persons = last_name_query
         athlete = persons[0].fullname
+    elif len(first_name_query) == 1:
+        persons = first_name_query
+        athlete = persons[0].fullname
+    elif len(last_name_query) in [2, 3]:
+        buttons = [button_postback(f"{p['fullname']}",
+                               {'first_name': p['firstname'],
+                                'last_name': p['surname'],
+                                'person_id': p['id']})
+                   for p in last_name_query]
+    elif len(first_name_query) in [2, 3]:
+        buttons = [button_postback(f"{p['fullname']}",
+                               {'first_name': p['firstname'],
+                                'last_name': p['surname'],
+                                'person_id': p['id']})
+                   for p in first_name_query]
+    elif len(last_name_query) in range(4, 11):
+        buttons = [quick_reply(f"{p['fullname']}",
+                               {'first_name': p['firstname'],
+                                'last_name': p['surname'],
+                                'person_id': p['id']})
+                   for p in last_name_query]
+    elif len(first_name_query) in range(4, 11):
+        buttons = [quick_reply(f"{p['fullname']}",
+                               {'first_name': p['firstname'],
+                                'last_name': p['surname'],
+                                'person_id': p['id']})
+                   for p in first_name_query]
+    else:
+        event.send_text('--- SportlerIn nicht in meiner Datenbank --- '
+                        'Ich schau mir das mal genauer an 🧐. Und schau du mal,'
+                        ' ob du den Namen richtig geschrieben hast.')
+        return
+
+    if buttons:
+        event.send_buttons(f'Wen meinst du?',
+                           buttons=buttons
+                           )
+        return
+
+    if quicks:
+        event.send_text(f'Mhmm. Deine Eingabe alles andere als Eindeutig. Wen meinst du? 🤔',
+                        quick_replies=quicks)
+        return
 
     subs = Subscription.query(filter={'athlete': athlete},
                               type=Subscription.Type.RESULT, psid=sender_id)
