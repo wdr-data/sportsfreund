@@ -26,7 +26,6 @@ pytz = "*"
 tempora = "*"
 "urllib3" = "*"
 dj-database-url = "*"
-"psycopg2" = "*"
 gunicorn = "*"
 whitenoise = "*"
 pymongo = "*"
@@ -48,6 +47,7 @@ gevent = "*"
 "iso8601" = "*"
 prometheus_client = "*"
 django-oauth-toolkit = "*"
+"psycopg2-binary" = "*"
 
 
 [dev-packages]
