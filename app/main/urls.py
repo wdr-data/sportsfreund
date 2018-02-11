@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^fb/', include('bot.urls')),
     url(r'^tz_detect/', include('tz_detect.urls')),
+    url(r'metrics/', include('metrics.urls')),
 ]
 
 if not DEBUG:

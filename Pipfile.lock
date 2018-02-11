@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7b8d56f3b6aecf41530c15aee52d4f28d7a6c67d59dd9c57e5fd88e80192ed94"
+            "sha256": "3dcde63892884c171e0281c9ae0716cd323a73c343f8544ff08babfea2cc8c55"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -389,6 +389,12 @@
                 "sha256:bc48d3d99e1eaf2e9406c729f8848bfdaf87876cd3560dc3ec6c16714f529586"
             ],
             "version": "==2.2"
+        },
+        "prometheus-client": {
+            "hashes": [
+                "sha256:bf0a5c22de74026966075f3e1ea45a314a2dee41953dabc0c45c218cdeff9898"
+            ],
+            "version": "==0.1.1"
         },
         "psutil": {
             "hashes": [

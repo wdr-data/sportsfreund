@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'sortedm2m',
     'sortedm2m_filter_horizontal_widget',
     'tz_detect',
+    'metrics.apps.MetricsConfig',
 ]
 
 MIDDLEWARE = [
