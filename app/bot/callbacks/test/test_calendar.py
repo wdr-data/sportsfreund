@@ -98,8 +98,6 @@ class TestApiNext:
         api_next(event, parameters)
 
         ExpectedReply(event).expect_text(
-            'Gucken wir mal was da so los sein wird.'
-        ).expect_text(
             [f'Heute findet kein Wintersport-Event statt. Ich geh ne Runde {emoji}!'
              for emoji in ('⛷', '🏂')]
         )
