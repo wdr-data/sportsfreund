@@ -98,7 +98,7 @@ def api_next(event, parameters, **kwargs):
 
         return
 
-    if town or country or round_mode:
+    if round_mode:
         today = date.today()
         match_meta = MatchMeta.search_range(from_date=today, discipline=discipline,
                                             sport=sport, town=town, country=country,
@@ -145,9 +145,12 @@ def api_next(event, parameters, **kwargs):
         event.send_text(sports_to_choose)
         return
 
-    # get_match_id_by_parameter
     match_meta = MatchMeta.search_next(discipline=discipline, sport=sport,
-                                       gender=gender, round_mode=round_mode)
+                                           gender=gender, town=town, country=country,
+                                           round_mode=round_mode)
+    if not match_meta:
+        match_meta = MatchMeta.search_next(discipline=discipline, sport=sport,
+                                           gender=gender, round_mode=round_mode)
 
     if not match_meta:
         if sport and discipline:
@@ -208,8 +211,8 @@ def multiple_entry(event, metas):
                                   'options': 'continue'}
                     )
                 )
-        event.send_text(f'Insgesamt habe ich {len(metas)} Events für dich:',
-                        quick_replies=quickies)
+            event.send_text(f'Insgesamt habe ich {len(metas)} Events für dich:',
+                            quick_replies=quickies)
 
 
 def send_more_cal_events_by_ids(event, payload, **kwargs):
