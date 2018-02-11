@@ -18,17 +18,6 @@ WORKER_CLASS = "worker.BotWorker"
 SCHEDULER = True
 SCHEDULER_INTERVAL = 30
 SCHEDULER_TASKS = [
-    {
-        'path': 'push.UpdateSchedule',
-        'params': {},
-        'interval': 60 * 60
-    },
-    {
-        'path': 'push.SendMedals',
-        'params': {},
-        'interval': 60 * 5,
-    },
-
     # MRQ maintenance jobs
 
     # This will requeue jobs in the 'retry' status, until they reach their max_retries.
@@ -62,3 +51,15 @@ SCHEDULER_TASKS = [
         "interval": 24 * 3600
     },
 ]
+
+"""    {
+        'path': 'push.UpdateSchedule',
+        'params': {},
+        'interval': 60 * 60
+    },
+    {
+        'path': 'push.SendMedals',
+        'params': {},
+        'interval': 60 * 5,
+    },
+"""
