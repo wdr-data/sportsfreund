@@ -60,6 +60,7 @@ class UpdateSchedule(BaseTask):
                    if s.get('sport-name') in supported_sports and int(s.get('channel')) < 4]
 
         for stream in streams:
+            log.debug(f"Scheduling push for ID {stream.id} at {stream.start}")
             queue.add_scheduled("push.UpdateLivestream",
                                 {'stream_id': stream.id},
                                 start_at=stream.start,
@@ -173,6 +174,9 @@ class UpdateLivestream(BaseTask):
         subs = Subscription.query(type=Subscription.Type.LIVESTREAM,
                                   target=Subscription.Target.SPORT,
                                   filter={'sport': stream['sport-name']})
+
+        log.debug(f"Sending livestream push #{stream['id']} to {len(subs)} users")
+
         for sub in subs:
             self.send_livestream(stream, sub.psid)
 
