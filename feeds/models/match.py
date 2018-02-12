@@ -1,3 +1,5 @@
+import logging
+
 import re
 from datetime import datetime, timedelta
 from calendar import day_name
@@ -46,7 +48,7 @@ class Match(FeedModel):
                 cls.delete(id=id)
                 MatchMeta.delete(match_id=id)
             except:
-                pass
+                logging.warning('Deleted Match and MatchMeta: %s', str(e))
 
             raise
 
