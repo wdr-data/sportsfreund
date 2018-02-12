@@ -432,11 +432,11 @@
       competition_type: SINGLE
       result_at: '0'
       article: das
-    - name: 50km
+    - name: 50km Massenstart
       competition_type: RACE
       result_at: '0'
       article: das
-    - name: 30km
+    - name: 30km Massenstart
       competition_type: RACE
       result_at: '0'
       article: das
@@ -477,7 +477,7 @@
       competition_type: SINGLE
       result_at: '3'
       article: das
-    - name: Snowboardcross
+    - name: Cross
       rounds: True
       competition_type: SINGLE
       result_at: '0'
@@ -522,7 +522,7 @@
       competition_type: SINGLE
       result_at: '3'
       article: die
-    - name: Ski Cross
+    - name: Cross
       rounds: True
       competition_type: SINGLE
       result_at: '0'
