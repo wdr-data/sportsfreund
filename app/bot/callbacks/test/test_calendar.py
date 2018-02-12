@@ -77,9 +77,14 @@ class TestApiNext:
 
         timestr = the_date.strftime('%A, %d.%m.%Y um %H:%M')
 
-        ExpectedReply(event).expect_text(
-            'Gucken wir mal was da so los sein wird.'
-        )
+        sport = parameters.get('sport')
+        if sport:
+            text = f'Eine Übersicht der nächsten Events im {sport}:'
+        else:
+            text = 'Ein Übersicht der nächsten Events.'
+
+        ExpectedReply(event).expect_text(text)
+
 
     def test_future_not_found(self, event, collection):
         gen_match(datetime.now() - timedelta(days=1), collection)
@@ -98,8 +103,6 @@ class TestApiNext:
         api_next(event, parameters)
 
         ExpectedReply(event).expect_text(
-            'Gucken wir mal was da so los sein wird.'
-        ).expect_text(
             [f'Heute findet kein Wintersport-Event statt. Ich geh ne Runde {emoji}!'
              for emoji in ('⛷', '🏂')]
         )

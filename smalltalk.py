@@ -50,7 +50,6 @@ def main():
 
         if name in intent_ids:
             intent = load_existing_intent(intent_ids[name])
-            print('Existing:', intent['name'])
             orig_name, orig_questions, orig_answers = parse_intent(intent)
             all_questions = list(set(questions) | set(orig_questions))
             all_answers = list(set(answers) | set(orig_answers))
@@ -63,8 +62,6 @@ def main():
             )
 
         else:
-            print('New:     ', name)
-            print(name, questions, answers)
             api_call(
                 'intents',
                 data=simple_intent(name, questions, answers),

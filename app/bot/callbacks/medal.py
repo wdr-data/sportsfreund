@@ -32,7 +32,11 @@ def medals(event, parameters, **kwargs):
     send_quick = parameters.get('send_quick')
 
     today = date.today()
-    quick_replies = []
+    quick_replies = [quick_reply('🥇🥈🥉- Spiegel',
+                                 {'country': None,
+                                  'event': None,
+                                  'pl_medals_table': None}
+                                 )]
 
     if asked_date:
         asked_date = datetime.strptime(asked_date, '%Y-%m-%d').date()
@@ -72,7 +76,8 @@ def medals(event, parameters, **kwargs):
 
     if not medals:
         event.send_text('In diesem Zeitraum hat kein Event stattgefunden '
-                        'oder es wurde noch nicht beendet')
+                        'oder es wurde noch nicht beendet',
+                        quick_replies=quick_replies)
         return
 
     else:
@@ -103,8 +108,9 @@ def medals(event, parameters, **kwargs):
             count += 1
 
         if quick_replies:
-            event.send_text('Hier findest du weitere Medaillenentscheidungen von des Tages:',
+            event.send_text('Hier findest du weitere Medaillenentscheidungen des Tages:',
                             quick_replies)
+
 
 def medals_table(event, parameters, **kwargs):
     country = parameters.get('country')
@@ -116,16 +122,25 @@ def medals_table(event, parameters, **kwargs):
         else:
             medals = MedalsTable.by_country(country=country)
 
+        quicks = [quick_reply('🥇🥈🥉- Spiegel',
+                     {'country': None,
+                      'event': None,
+                      'pl_medals_table': None}
+                     )
+         ]
+
         if not medals:
             event.send_text(f'{country} hat noch keine Medaillen gewonnen. '
-                            f'Mal sehen wie sich das entwickelt... 🤞🏼')
+                            f'Mal sehen wie sich das entwickelt... 🤞🏼',
+                            quick_replies=quicks)
             return
 
         event.send_text(
             f'{country} im Medaillenspiegel:\nPlatz {medals.rank}\n'
             f'{str(medals.first)} Gold {Match.medal(1)}\n'
             f'{str(medals.second)} Silber {Match.medal(2)}\n'
-            f'{str(medals.third)} Bronze {Match.medal(3)}'
+            f'{str(medals.third)} Bronze {Match.medal(3)}',
+            quick_replies=quicks
         )
 
     else:
@@ -160,6 +175,7 @@ def medals_table(event, parameters, **kwargs):
             reply += '\nAlle anderen teilnehmenden Länder haben noch keine Medaillen gewonnen.'
             event.send_text(reply)
 
+
 def medal_list(event, payload):
     olympic_event = payload.get('medal_list')
 
@@ -177,10 +193,19 @@ def medal_list(event, payload):
             for m in medals[10:])
 
         event.send_text(f'{country_rank}')
-        event.send_text(f'Alle anderen teilnehmenden Länder haben noch keine Medaillen gewonnen.')
+        event.send_text(f'Alle anderen teilnehmenden Länder haben noch keine Medaillen gewonnen.',
+                       )
+
+
+def pl_medals_table(event, payload):
+    country = payload.get('country')
+    event_value = payload.get('event')
+    medals_table(event, {'country': country,
+                         'event': event_value})
 
 
 handlers= [
+    PayloadHandler(pl_medals_table, ['pl_medals_table', 'country', 'event']),
     PayloadHandler(medal_list, ['medal_list']),
     PayloadHandler(send_medal_by_id, ['send_medal', 'send_quick']),
 ]

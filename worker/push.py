@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, date
 
 import os
 from mrq.context import log
+from gevent import sleep
 
 from backend.models import HIGHLIGHT_CHECK_INTERVAL, Push as PushModel
 from backend.models import Report
@@ -59,6 +60,7 @@ class UpdateSchedule(BaseTask):
                    if s.get('sport-name') in supported_sports and int(s.get('channel')) < 4]
 
         for stream in streams:
+            log.debug(f"Scheduling push for ID {stream.id} at {stream.start}")
             queue.add_scheduled("push.UpdateLivestream",
                                 {'stream_id': stream.id},
                                 start_at=stream.start,
@@ -172,6 +174,9 @@ class UpdateLivestream(BaseTask):
         subs = Subscription.query(type=Subscription.Type.LIVESTREAM,
                                   target=Subscription.Target.SPORT,
                                   filter={'sport': stream['sport-name']})
+
+        log.debug(f"Sending livestream push #{stream['id']} to {len(subs)} users")
+
         for sub in subs:
             self.send_livestream(stream, sub.psid)
 
@@ -201,6 +206,7 @@ class SendHighlight(BaseTask):
 
             try:
                 send_push(event, push, report_nr=None, state=None)
+                sleep(0.5)
             except Exception as e:
                 text = f"Sending highlights push to {event['sender']['id']} failed"
                 log.exception(text)
@@ -243,11 +249,9 @@ class SendMedals(BaseTask):
 
         recent_medals = Medal.search_range(
             from_date=date.today() - timedelta(days=1), until_date=date.today())
-        print(recent_medals)
 
         # Filter already sent medals
         new_medals = [m for m in recent_medals if not db.pushed_medals.find_one({'id': m.id})]
-        print(new_medals)
 
         for m in new_medals:
             for r in m.ranking:
