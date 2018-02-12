@@ -47,8 +47,9 @@ class Match(FeedModel):
             try:
                 cls.delete(id=id)
                 MatchMeta.delete(match_id=id)
-            except:
                 logging.warning('Deleted Match and MatchMeta: %s', str(e))
+            except:
+                pass
 
             raise
 
