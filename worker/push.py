@@ -166,6 +166,7 @@ class UpdateLivestream(BaseTask):
         self.remove(params)
 
         if stream['start'] < datetime.now() - timedelta(minutes=15):
+            log.warning("Livestream push scheduled too late, already running for 15 minutes")
             return  # discard if started more than 15 minutes ago
 
         subs = Subscription.query(type=Subscription.Type.LIVESTREAM,
