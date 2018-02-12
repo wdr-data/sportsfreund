@@ -23,6 +23,11 @@ SCHEDULER_TASKS = [
         'params': {},
         'interval': 60 * 60
     },
+    {
+        'path': 'push.SendMedals',
+        'params': {},
+        'interval': 60 * 5,
+    },
 
     # MRQ maintenance jobs
 
@@ -57,11 +62,3 @@ SCHEDULER_TASKS = [
         "interval": 24 * 3600
     },
 ]
-
-"""
-    {
-        'path': 'push.SendMedals',
-        'params': {},
-        'interval': 60 * 5,
-    },
-"""
