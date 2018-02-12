@@ -11,7 +11,12 @@ def load_persons():
         try:
             meta_match = MatchMeta(**meta_match)
             if meta_match.get('id') is not None:
-                match = Match.by_id(meta_match.id)
+                # Skip deleted matches
+                try:
+                    match = Match.by_id(meta_match.id)
+                except ValueError:
+                    continue
+
                 topic_id = meta_match.topic_id
 
                 if match.get('match_result') is None:

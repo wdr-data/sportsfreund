@@ -98,9 +98,17 @@ def api_podium(event, parameters, **kwargs):
 def result_podium(event, payload):
     # payload is list of match_ids
     match_ids = payload['result_podium']
-    match_metas = [MatchMeta.by_match_id(match_id) for match_id in match_ids]
+    match_metas = []
+    asked_matches = []
 
-    asked_matches = [Match.by_id(id) for id in match_ids]
+    for match_id in match_ids:
+        # Skip deleted matches
+        try:
+            asked_matches.append(Match.by_id(match_id))
+            match_metas.append(MatchMeta.by_match_id(match_id))
+
+        except ValueError:
+            pass
 
     discipline = [match.discipline for match in match_metas]
 
@@ -152,7 +160,11 @@ def result_details(event, payload):
 def result_total(event, payload):
     step = payload['step']
     match_id = payload['result_total']
-    match = Match.by_id(match_id)
+
+    try:
+        match = Match.by_id(match_id)
+    except ValueError:
+        event.send_text('Dieses Event kann ich in meiner Datenbank nicht mehr finden :/')
 
     buttons = []
     if step == 'top_10' or step == 'round_mode':
@@ -219,8 +231,12 @@ def result_by_country(event, payload):
     country_name = payload['result_by_country']
     match_id = payload['match_id']
 
-    if not country_name:
+    try:
         match = Match.by_id(match_id)
+    except ValueError:
+        event.send_text('Dieses Event kann ich in meiner Datenbank nicht mehr finden :/')
+
+    if not country_name:
         countries_all = [result.team.country for result in match.results]
         countries = [ii for n, ii in enumerate(countries_all) if ii not in countries_all[:n]]
 
@@ -232,7 +248,6 @@ def result_by_country(event, payload):
                         quick_replies=quick)
         return
 
-    match = Match.by_id(match_id)
     results_all = match.results_by_country(country_name)
     results = []
     for r in results_all:

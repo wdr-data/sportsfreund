@@ -51,7 +51,12 @@ class Person(FeedModel):
                 meta_match = MatchMeta(**meta_match)
                 if meta_match.get('id') is not None:
                     logger.debug(f"Fetching match {meta_match.id}")
-                    match = Match.by_id(meta_match.id)
+
+                    # Skip deleted matches
+                    try:
+                        match = Match.by_id(meta_match.id)
+                    except ValueError:
+                        continue
 
                     if match.get('match_result') is None:
                         continue

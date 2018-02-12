@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timedelta
 from calendar import day_name
 from typing import Iterable, List
@@ -27,6 +28,27 @@ class Match(FeedModel):
         super().__init__(*args, **kwargs)
         self._meta = None
         self._winner_result = None
+
+    @classmethod
+    def by_id(cls, id, clear_cache=False, api_params=None, additional_data=None):
+        try:
+            return super().by_id(
+                id,
+                clear_cache=clear_cache,
+                api_params=api_params,
+                additional_data=additional_data,
+            )
+        except ValueError as e:
+            if not re.match(r'Feed match/ma\d* is empty', str(e)):
+                raise
+
+            try:
+                cls.delete(id=id)
+                MatchMeta.delete(match_id=id)
+            except:
+                pass
+
+            raise
 
     @classmethod
     def transform(cls, match):
