@@ -80,8 +80,12 @@ def api_next(event, parameters, **kwargs):
                                                    gender=gender, round_mode=round_mode)
 
             if not match_meta:
-                match_meta = MatchMeta.search_date(date=d_date,
+                tomorrow = datetime.strptime(p_date, '%Y-%m-%d') + timedelta(days=1)
+                match_meta = MatchMeta.search_date(date=tomorrow.date(),
+                                                   sport=sport, town=town, country=country,
                                                    gender=gender, round_mode=round_mode)
+
+            if not match_meta:
                 if match_meta and (discipline or sport or town or country):
                     event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
                                     'aber vielleicht interessiert dich ja folgendes Event:')
@@ -93,7 +97,10 @@ def api_next(event, parameters, **kwargs):
                                     f'Ich geh ne Runde {random.choice(emoji)}!')
                     return
             else:
-                event.send_text('Gucken wir mal was da so los sein wird.')
+                if sport:
+                    event.send_text(f'Eine Übersicht der nächsten Events im {sport}:')
+                else:
+                    event.send_text('Ein Übersicht der nächsten Events.')
                 multiple_entry(event, match_meta)
 
         return
