@@ -119,8 +119,10 @@ def medals_table(event, parameters, **kwargs):
     if country:
         if olympic_event == 'owg14':
             medals = MedalsTable.by_country(country=country, topic_id='548')
+            winners = Medal.by_country(country=country, topic_id='548')
         else:
             medals = MedalsTable.by_country(country=country)
+            winners = Medal.by_country(country=country)
 
         quicks = [quick_reply('🥇🥈🥉- Spiegel',
                      {'country': None,
@@ -135,13 +137,28 @@ def medals_table(event, parameters, **kwargs):
                             quick_replies=quicks)
             return
 
-        event.send_text(
-            f'{country} im Medaillenspiegel:\nPlatz {medals.rank}\n'
-            f'{str(medals.first)} Gold {Match.medal(1)}\n'
-            f'{str(medals.second)} Silber {Match.medal(2)}\n'
-            f'{str(medals.third)} Bronze {Match.medal(3)}',
-            quick_replies=quicks
-        )
+        reply = ''
+
+        if winners:
+            reply += f"Medaillengewinner aus {flag(winners[0]['country']['iso'])} " \
+                     f"{winners[0]['country']['code']}:\n\n"
+        for winner in winners:
+            reply += f"{Match.medal(winner['rank'])} {winner['name']}," \
+                     f" {winner['sport']} {winner['discipline']}\n"
+
+        reply += f'\n'
+
+        if medals.first:
+            reply += f'{medals.first} {Match.medal(1)}'
+        if medals.second:
+            reply += f'{medals.second} {Match.medal(2)}'
+        if medals.third:
+            reply += f'{medals.third} {Match.medal(3)}'
+        reply += f'bedeutet Platz {medals.rank} im Medaillenspiegel.'
+
+        event.send_text(reply,
+                        quick_replies=quicks
+                        )
 
     else:
         if olympic_event == 'owg14':
