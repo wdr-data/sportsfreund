@@ -141,15 +141,9 @@ def api_next(event, parameters, **kwargs):
         return
 
     if not discipline and not sport:
-        event.send_text('Mein Kalender ist voll mit Terminen. '
-                        'Such dir eine der folgenden Sportarten aus:')
-        sports_to_choose = ''
-        for i, sport in enumerate(supported_sports):
-            if i == len(supported_sports) - 1:
-                sports_to_choose += f'oder {sport}.'
-            else:
-                sports_to_choose += f'{sport}, '
-        event.send_text(sports_to_choose)
+        event.send_text('Mein Kalender ist voll mit Terminen. Was interessiert dich?\n'
+                        'Termine für morgen? Nächstes Curling Spiel? Entscheidungen im Snowboard?'
+                        ' Halbfinale im Eishockey der Damen?')
         return
 
     match_meta = MatchMeta.search_next(discipline=discipline, sport=sport,
