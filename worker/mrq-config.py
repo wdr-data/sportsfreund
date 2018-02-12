@@ -1,9 +1,12 @@
 import os
 import django
+import time
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
-
 django.setup()
+# Ugly hack: Django somehow guesses the timezone and that changes global datetime behaviour. This resets that
+del os.environ['TZ']
+time.tzset()
 
 MONGODB_JOBS = os.environ.get('MONGODB_URI')
 REDIS = os.environ.get('REDIS_URL')
