@@ -211,6 +211,7 @@ def multiple_entry(event, metas):
                                   'options': 'continue'}
                     )
                 )
+        if quickies:
             event.send_text(f'Insgesamt habe ich {len(metas)} Events für dich:',
                             quick_replies=quickies)
 
