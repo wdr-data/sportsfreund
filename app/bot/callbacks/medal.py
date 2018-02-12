@@ -193,7 +193,15 @@ def medal_list(event, payload):
             for m in medals[10:])
 
         event.send_text(f'{country_rank}')
-        event.send_text(f'Alle anderen teilnehmenden Länder haben noch keine Medaillen gewonnen.')
+        event.send_text(f'Alle anderen teilnehmenden Länder haben noch keine Medaillen gewonnen.',
+                       )
+
+
+def pl_medals_table(event, payload):
+    country = payload.get('country')
+    event_value = payload.get('event')
+    medals_table(event, {'country': country,
+                         'event': event_value})
 
 
 handlers= [
