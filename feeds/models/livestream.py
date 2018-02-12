@@ -20,6 +20,7 @@ class Livestream(CachedListModel):
 
     @classmethod
     def next_events(cls):
+        cls.load_feed()
         now = datetime.now()
         limit = now + timedelta(days=1)
         return cls.query(start={'$gte': now, '$lt': limit})
