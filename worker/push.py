@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, date
 
 import os
 from mrq.context import log
+from gevent import sleep
 
 from backend.models import HIGHLIGHT_CHECK_INTERVAL, Push as PushModel
 from backend.models import Report
@@ -201,6 +202,7 @@ class SendHighlight(BaseTask):
 
             try:
                 send_push(event, push, report_nr=None, state=None)
+                sleep(0.5)
             except Exception as e:
                 text = f"Sending highlights push to {event['sender']['id']} failed"
                 log.exception(text)
