@@ -3,6 +3,7 @@ import logging
 import os
 
 from apiai import ApiAI
+from raven.contrib.django.raven_compat.models import client as error_client
 
 from lib.config import FB_PAGE_TOKEN
 from lib.response import Replyable
@@ -177,6 +178,7 @@ def make_event_handler():
                             handler.handle_event(event)
 
                         except Exception as e:
+                            error_client.captureException()
                             logging.exception("Handling event failed")
 
                             try:
