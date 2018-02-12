@@ -107,7 +107,10 @@ def medals(event, parameters, **kwargs):
 
             count += 1
 
-        if quick_replies:
+        if len(quick_replies) == 1:
+            event.send_text('Wer wohl ganz oben im Medaillenspiegel steht?',
+                            quick_replies)
+        else:
             event.send_text('Hier findest du weitere Medaillenentscheidungen des Tages:',
                             quick_replies)
 
