@@ -77,7 +77,13 @@ class TestApiNext:
 
         timestr = the_date.strftime('%A, %d.%m.%Y um %H:%M')
 
+        sport = parameters.get('sport')
+        if sport:
+            text = f'Eine Übersicht der nächsten Events im {sport}:'
+        else:
+            text = 'Ein Übersicht der nächsten Events.'
 
+        ExpectedReply(event).expect_text(text)
 
 
     def test_future_not_found(self, event, collection):
