@@ -131,7 +131,7 @@ def medals_table(event, parameters, **kwargs):
                      )
          ]
 
-        if not medals:
+        if not winners:
             event.send_text(f'{country} hat noch keine Medaillen gewonnen. '
                             f'Mal sehen wie sich das entwickelt... 🤞🏼',
                             quick_replies=quicks)
