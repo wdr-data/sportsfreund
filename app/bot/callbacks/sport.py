@@ -19,6 +19,10 @@ def api_sport(event, parameters,**kwargs):
     sport = parameters.get('sport')
     today = date.today().strftime("%Y-%m-%d")
 
+    if not sport:
+        event.send_text('Über welchen Sport soll ich informieren?')
+        return
+
     result = MatchMeta.search_last(sport=sport)
     person_image = None
 
