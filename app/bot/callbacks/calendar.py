@@ -227,6 +227,10 @@ def send_more_cal_events_by_ids(event, payload, **kwargs):
 
     all_metas = [MatchMeta.by_match_id(m_id) for m_id in match_ids]
     metas = [m for m in all_metas if m.sport in sports_to_show]
+
+    if not metas:
+        event.send_text('Keine weiteren Events gefunden 🔍')
+
     start_date = metas[0].match_date
     event.send_text(f'Events am {metas[0].datetime.strftime("%d.%m.%Y")}:')
     for i, meta in enumerate(metas):
