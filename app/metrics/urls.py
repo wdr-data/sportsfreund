@@ -4,6 +4,7 @@ from django.http import HttpResponse
 
 from metrics.models import subscriptions, unique_users, activity
 
+
 def ExportToDjangoView(request):
     """Exports /metrics as a Django view.
 
