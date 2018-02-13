@@ -254,6 +254,7 @@ class SendMedals(BaseTask):
         new_medals = [m for m in recent_medals if not db.pushed_medals.find_one({'id': m.id})]
 
         for m in new_medals:
+            notified = set()
             for r in m.ranking:
                 # Filter subscribers for the sport
                 medal_subs = Subscription.query(type=Subscription.Type.MEDAL,
@@ -264,7 +265,8 @@ class SendMedals(BaseTask):
                 medal_psids = set(s.psid for s in medal_subs)
                 result_psids = set(s.psid for s in result_subs)
 
-                psids = medal_psids - result_psids
+                psids = medal_psids - result_psids - notified
+                notified |= psids
 
                 for psid in psids:
                     event = Replyable({'sender': {'id': psid}}, type=SenderTypes.FACEBOOK)
