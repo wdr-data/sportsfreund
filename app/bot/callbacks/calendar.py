@@ -230,6 +230,7 @@ def send_more_cal_events_by_ids(event, payload, **kwargs):
 
     if not metas:
         event.send_text('Keine weiteren Events gefunden 🔍')
+        return
 
     start_date = metas[0].match_date
     event.send_text(f'Events am {metas[0].datetime.strftime("%d.%m.%Y")}:')
