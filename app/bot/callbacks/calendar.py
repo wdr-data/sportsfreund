@@ -316,7 +316,17 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
             reply += f" {flag(match_meta.venue.country.iso)} {match_meta.venue.country.code}"
 
         reply += '.'
-        event.send_text(reply)
+
+        buttons = []
+        if match_meta.finished == 'yes':
+            buttons.append(button_postback('Ergebnisse',
+                                           {'match_id': match_meta.id,
+                                            'result': 'complete'}))
+        if buttons:
+            event.send_buttons(reply,
+                               buttons=buttons)
+        else:
+            event.send_text(reply)
 
 
 def period_to_dates(period):
