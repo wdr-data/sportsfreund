@@ -5,6 +5,7 @@ import logging
 import gevent
 import requests
 
+from feeds.models.subscription import Subscription
 from lib.attachment import Attachment
 from lib.facebook import upload_attachment, guess_attachment_type
 from lib.response import Replyable, SenderTypes
@@ -56,7 +57,10 @@ class Send(BaseTask):
 
         error = json.loads(response).get('error')
         if error:
-            raise FacebookError(error)
+            if int(error.get('code', 0)) == 551:  # Unavailable
+                Subscription.collection.delete_many({'psid': payload['recipient']['id']})
+            else:
+                raise FacebookError(error)
         else:
             UserSentTracking.set_sent(payload['recipient']['id'], id)
 
