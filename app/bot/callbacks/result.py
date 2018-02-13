@@ -258,7 +258,7 @@ def result_by_country(event, payload):
 
     if not results:
         event.send_text(f'Kein Athlet aus {country_name}'
-                        f' hat das {sport_by_name[match.sport].competition_term} beendet.')
+                        f' hat das {sport_by_name[match.meta.sport].competition_term} beendet.')
         return
 
     teams = [result.team for result in results]
