@@ -385,7 +385,15 @@ def result_game(event, match):
         result_total(event, match)
 
 
+def pl_send_result(event, payload):
+    match_id = payload.get('match_id')
+
+    match = Match.by_id(match_id)
+    send_result(event, match)
+
+
 handlers = [
+    PayloadHandler(pl_send_result, ['match_id', 'result']),
     PayloadHandler(btn_podium, ['podium']),
     PayloadHandler(result_details, ['result_details']),
     PayloadHandler(result_by_country, ['result_by_country', 'match_id']),
