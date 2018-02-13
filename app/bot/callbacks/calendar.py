@@ -80,10 +80,17 @@ def api_next(event, parameters, **kwargs):
                                                    gender=gender, round_mode=round_mode)
 
             if not match_meta:
+
                 tomorrow = datetime.strptime(p_date, '%Y-%m-%d') + timedelta(days=1)
                 match_meta = MatchMeta.search_date(date=tomorrow.date(),
                                                    sport=sport, town=town, country=country,
                                                    gender=gender, round_mode=round_mode)
+
+                if match_meta:
+                    event.send_text(f"Am "
+                                    f"{datetime.strptime(p_date, '%Y-%m-%d').strftime('%d.%m.%Y')} "
+                                    f"findet kein Event mehr statt. Dafür:"
+                                    )
 
             if not match_meta:
                 if match_meta and (discipline or sport or town or country):
@@ -99,8 +106,8 @@ def api_next(event, parameters, **kwargs):
             else:
                 if sport:
                     event.send_text(f'Eine Übersicht der nächsten Events im {sport}:')
-                else:
-                    event.send_text('Ein Übersicht der nächsten Events.')
+                # else:
+                    # event.send_text('Eine Übersicht der nächsten Events.')
                 multiple_entry(event, match_meta)
 
         return
@@ -109,21 +116,33 @@ def api_next(event, parameters, **kwargs):
         today = date.today()
 
         if round_mode == 'Finale' or round_mode == 'Entscheidung':
-            match_meta = MatchMeta.search_range(from_date=today, discipline=discipline,
-                                                sport=sport, town=town, country=country,
-                                                gender=gender,
-                                                medals='all'
-                                                )
+            if not sport and not discipline and not gender:
+                match_meta = MatchMeta.search_date(date=today, discipline=discipline,
+                                                   sport=sport, town=town, country=country,
+                                                   gender=gender,
+                                                   medals='all'
+                                                   )
+            else:
+                match_meta = MatchMeta.search_range(from_date=today, discipline=discipline,
+                                                    sport=sport, town=town, country=country,
+                                                    gender=gender,
+                                                    medals='all'
+                                                    )
         else:
             match_meta = MatchMeta.search_range(from_date=today, discipline=discipline,
                                                 sport=sport, town=town, country=country,
                                                 gender=gender, round_mode=round_mode,
                                                 )
 
-        if not match_meta and round_mode:
+        if not match_meta:
             event.send_text('Deine Anfrage führt bei mir leider ins Leere. Sry! 😪')
             return
-        multiple_entry(event, match_meta)
+
+        if len(match_meta) > 1:
+            multiple_entry(event, match_meta)
+        elif len(match_meta) == 1:
+            pl_entry_by_matchmeta(event, {'calendar.entry_by_matchmeta': match_meta[0],
+                                          'add_options': True})
         return
 
     if country or town:
@@ -183,6 +202,9 @@ def multiple_entry(event, metas):
         same_sport = [m for m in metas if m.sport == name]
         if same_sport:
             overview[name] = same_sport
+    if not metas:
+        event.send_text('Deine Anfrage findet keinen Treffer in meinem Kalender. Sry')
+        return
 
     if len(overview) == 1:
         for k, v in overview.items():
@@ -199,21 +221,25 @@ def multiple_entry(event, metas):
         return
     else:
         medal_metas = [m for m in metas if m.medals]
-        event.send_text(f'Hier die Medaillen Entscheidungen:')
-        send_more_cal_events_by_ids(event,
-                                    {'send_more_cal_events_by_ids': [m.id for m in medal_metas],
-                                     'sports_to_show': [m.sport for m in medal_metas]}
-                                    )
+        medal_sports = [m.sport for m in medal_metas]
+        if medal_metas:
+            event.send_text(f'Hier die Medaillen Entscheidungen:')
+            send_more_cal_events_by_ids(event,
+                                        {'send_more_cal_events_by_ids': [m.id for m in medal_metas],
+                                         'sports_to_show': [m.sport for m in medal_metas]}
+                                        )
         quickies = []
         for sport, meta_list in overview.items():
-            if len(meta_list) > 1:
-                quickies.append(
-                    quick_reply(f'{sport} ({len(meta_list)})',
-                                 {'send_more_cal_events_by_ids': [m.id for m in metas],
-                                  'sports_to_show': sport,
-                                  'options': 'continue'}
+            if sport in medal_sports and len(meta_list) > 1 or sport not in medal_sports:
+                if [m.id for m in metas if m.sport == sport and not m.medals]:
+                    quickies.append(
+                        quick_reply(f'{sport} ({len(meta_list)})',
+                                     {'send_more_cal_events_by_ids': [m.id for m in metas],
+                                      'sports_to_show': sport,
+                                      'options': 'continue'}
+                        )
                     )
-                )
+
         if quickies:
             event.send_text(f'Insgesamt habe ich {len(metas)} Events für dich:',
                             quick_replies=quickies)
@@ -223,6 +249,7 @@ def send_more_cal_events_by_ids(event, payload, **kwargs):
     match_ids = payload['send_more_cal_events_by_ids']
     options = payload.get('options')
     sports_to_show = payload.get('sports_to_show')
+    kind = payload.get('kind')
 
     if not isinstance(sports_to_show, list):
         sports_to_show = [sports_to_show]
@@ -232,6 +259,52 @@ def send_more_cal_events_by_ids(event, payload, **kwargs):
 
     if not metas:
         event.send_text('Keine weiteren Events gefunden 🔍')
+        return
+
+    if kind == 'limit' and len(match_ids) > 10:
+        one = all_metas[0]
+        already_done = [m for m in all_metas if 'winner_team' in m]
+        to_be_done = [m for m in all_metas if 'winner_team' not in m]
+        if to_be_done:
+            initial_date = to_be_done[0].datetime
+            done_in_two_days = [m for m in to_be_done
+                                if m.datetime < (initial_date + timedelta(days=2))
+                                and not m.medals]
+            event.send_text(f'Hier die nächsten Events im {one.discipline_short}'
+                            f' am {initial_date.strftime("%d.%m.%Y")}:')
+
+            for i, meta in enumerate(done_in_two_days):
+                if i < 5:
+                    if initial_date != meta.datetime.date():
+                        initial_date = meta.datetime.date()
+                        event.send_text(f'{meta.datetime.strftime("%d.%m.%Y")}:')
+                    pl_entry_by_matchmeta(event,
+                                          {'calendar.entry_by_matchmeta': meta,
+                                           'one_in_many': True})
+                else:
+                    for meta in [m for m in all_metas if m.medals]:
+                        event.send_text(f'Und die Entscheidung findet statt am'
+                                        f' {meta.datetime.strftime("%d.%m.%Y")}')
+                        pl_entry_by_matchmeta(event,
+                                              {'calendar.entry_by_matchmeta': meta,
+                                               'one_in_many': True})
+                    buttons = []
+                    if already_done:
+                        buttons.append(button_postback('Gelaufene Events',
+                                                       {'send_more_cal_events_by_ids':
+                                                            [m.id for m in already_done],
+                                                        'sports_to_show': already_done[0].sport}
+                                                        ))
+                    if match_ids and len(done_in_two_days) + 1 < len(match_ids):
+                        buttons.append(button_postback('Alles zum Events',
+                                                       {'send_more_cal_events_by_ids':
+                                                            [m.id for m in all_metas],
+                                                        'sports_to_show': all_metas[0].sport}
+                                                       ))
+                    if buttons:
+                        event.send_buttons(f'Hier gerne nochmal alle {len(match_ids)} Events.',
+                                            buttons=buttons)
+                    break
         return
 
     start_date = metas[0].match_date
@@ -271,10 +344,14 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
     if not isinstance(match_meta, MatchMeta):
         match_meta = MatchMeta.by_id(match_meta)
 
+    buttons = []
+    config = discipline_config(match_meta.sport, match_meta.discipline_short)
+
     gender = ' der Damen' if match_meta.gender == 'female' \
         else (' der Herren' if match_meta.gender == 'male'  else '')
 
     is_olympia = match_meta.get('event') == MatchMeta.Event.OLYMPIA_18
+
     if 'medals' in match_meta:
         if match_meta.medals == 'complete':
             medals = f'{Match.medal(1)}{Match.medal(2)}{Match.medal(3)}'
@@ -292,14 +369,26 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
                         f" in {match_meta.town}, welcher am "
                         f"{day_name[match_meta.datetime.weekday()]}, {match_meta.datetime.strftime('%d.%m.%Y')} "
                         f"geplant war, sei {match_meta.match_incident.name}.")
+
     else:
         if not one_in_many:
             reply = f"Am {day_name[match_meta.datetime.weekday()]}, {match_meta.datetime.strftime('%d.%m.%Y')} " \
                     f"um {localtime_format(match_meta.datetime, event, is_olympia)}: "
+
+            if 'rounds' in config and config['rounds']:
+                all_round_metas = MatchMeta.by_season_id(match_meta.season_id)
+                all_round_meta_ids = [m.id for m in all_round_metas]
+                if len(all_round_meta_ids) > 1:
+                    buttons.append(button_postback('Alle Runden',
+                                                {'send_more_cal_events_by_ids': all_round_meta_ids,
+                                                 'sports_to_show': match_meta.sport,
+                                                 'kind': 'limit'
+                                                }))
+
         else:
             reply = f'{localtime_format(match_meta.datetime, event, is_olympia)} - '
 
-        reply += f"{medals}{match_meta.sport}, "
+        reply += f"{medals}{match_meta.sport}"
 
         """
         type = discipline_config(match_meta.sport, match_meta.discipline_short).competition_type
@@ -311,14 +400,19 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
                          f'{flag(away.country.iso)}{away.name}'
         else: \
         """
-        reply += f"{match_meta.discipline_short}{gender} in {match_meta.town}"
+        if match_meta.sport not in ['Eishockey', 'Curling']:
+            reply += f', {match_meta.discipline_short}'
+
+        reply += f"{gender}"
+
+        if 'rounds' in config and config['rounds']:
+            reply += f' 🔸{match_meta.round_mode}🔸 '
 
         if match_meta.get('event') != MatchMeta.Event.OLYMPIA_18:
             reply += f" {flag(match_meta.venue.country.iso)} {match_meta.venue.country.code}"
 
         reply += '.'
 
-        buttons = []
         if match_meta.finished == 'yes':
             buttons.append(button_postback('Ergebnisse',
                                            {'match_id': match_meta.id,

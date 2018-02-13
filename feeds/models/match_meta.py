@@ -86,6 +86,10 @@ class MatchMeta(ListFeedModel):
         return cls.query(round_id=round_id)
 
     @classmethod
+    def by_season_id(cls, season_id):
+        return cls.search_range(season_id=season_id)
+
+    @classmethod
     def transform(cls, obj, topic_id, now):
         # Single-element list at top level
         sp = obj[0]  # sport object
@@ -247,7 +251,8 @@ class MatchMeta(ListFeedModel):
 
     @classmethod
     def _search(cls, base_filter=None, sport=None, discipline=None,
-                town=None, country=None, gender=None, round_mode=None, event=None, medals=None):
+                town=None, country=None, gender=None, round_mode=None, event=None,
+                 medals=None, season_id=None):
 
         cls.load_all_feeds(sport)
 
@@ -276,6 +281,9 @@ class MatchMeta(ListFeedModel):
 
         if event is not None:
             filter['event'] = event
+
+        if season_id is not None:
+            filter['season_id'] = season_id
 
         if medals is not None:
             if medals == 'all':
@@ -379,7 +387,7 @@ class MatchMeta(ListFeedModel):
     @classmethod
     def search_range(cls, *, from_date=None, until_date=None, sport=None, discipline=None,
                      town=None, country=None, gender=None,
-                     round_mode=None, event=None, medals=None):
+                     round_mode=None, event=None, medals=None, season_id=None):
         """
         Searches for matches on a specific day and returns details about them
 
@@ -418,6 +426,6 @@ class MatchMeta(ListFeedModel):
 
         cursor = cls._search(filter, sport, discipline,
                              town, country, gender, round_mode,
-                             event, medals).sort([("datetime", 1)])
+                             event, medals, season_id).sort([("datetime", 1)])
 
         return [cls(**result) for result in cursor]
