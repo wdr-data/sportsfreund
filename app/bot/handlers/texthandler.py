@@ -2,6 +2,7 @@
 import re
 import threading
 
+from metrics.models.activity import UserActivity
 from .handler import Handler
 
 
@@ -69,6 +70,8 @@ class TextHandler(Handler):
 
         kwargs = dict()
         kwargs['text'] = text
+
+        UserActivity.capture('text', text)
 
         if self.pattern is not None:
             match = self.local.match

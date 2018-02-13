@@ -7,6 +7,7 @@ from raven.contrib.django.raven_compat.models import client as error_client
 
 from lib.config import FB_PAGE_TOKEN
 from lib.response import Replyable
+from metrics.models.activity import UserActivity
 from metrics.models.unique_users import UserListing
 # dirty
 from .callbacks import dirty
@@ -173,7 +174,6 @@ def make_event_handler():
                     message['nlp'] = nlp
 
                 api_ai_story_hook(event, nlp)
-
 
             for handler in handlers:
                 try:

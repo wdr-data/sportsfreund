@@ -2,6 +2,7 @@
 import threading
 import json
 
+from metrics.models.activity import UserActivity
 from .handler import Handler
 
 
@@ -67,5 +68,8 @@ class PayloadHandler(Handler):
 
         kwargs = dict()
         kwargs['payload'] = self.local.payload
+
+        function_path = f'{self.callback.__module__}.{self.callback.__qualname__}'
+        UserActivity.capture('payload', function_path)
 
         return self.callback(event, **kwargs)

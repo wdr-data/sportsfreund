@@ -2,6 +2,7 @@
 import threading
 import re
 
+from metrics.models.activity import UserActivity
 from .handler import Handler
 
 
@@ -85,5 +86,7 @@ class ApiAiHandler(Handler):
         kwargs['parameters'] = self.local.parameters
         kwargs['fulfillment'] = self.local.fulfillment
         kwargs['score'] = self.local.score
+
+        UserActivity.capture('intent', self.local.intent)
 
         return self.callback(event, **kwargs)
