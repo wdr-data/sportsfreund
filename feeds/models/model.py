@@ -134,7 +134,11 @@ class ListFeedModel(FeedModel, metaclass=ABCMeta):
             else:
                 return False
 
-        obj = cls.api_function(**{cls.api_id_name: id})
+        try:
+            obj = cls.api_function(**{cls.api_id_name: id})
+        except ValueError:
+            return False
+
         now = int(time())
 
         cls.transform(obj, id, now)
