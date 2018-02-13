@@ -7,6 +7,7 @@ from raven.contrib.django.raven_compat.models import client as error_client
 
 from lib.config import FB_PAGE_TOKEN
 from lib.response import Replyable
+from metrics.models.unique_users import UserListing
 # dirty
 from .callbacks import dirty
 from .callbacks import result, calendar, \
@@ -161,6 +162,9 @@ def make_event_handler():
             message = event.get('message')
 
             event = Replyable(event, type)
+            sender_id = event['sender']['id']
+
+            UserListing.capture(sender_id)
 
             if message:
                 nlp = query_api_ai(event)
@@ -182,7 +186,6 @@ def make_event_handler():
                             logging.exception("Handling event failed")
 
                             try:
-                                sender_id = event['sender']['id']
                                 event.send_text('Huppsala, das hat nicht funktioniert :(')
 
                                 if int(sender_id) in ADMINS:
