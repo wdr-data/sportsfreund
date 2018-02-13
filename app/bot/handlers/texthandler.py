@@ -71,7 +71,12 @@ class TextHandler(Handler):
         kwargs = dict()
         kwargs['text'] = text
 
-        UserActivity.capture('text', text)
+        intent = event.get('message', {}).get('nlp', {}).get('result', {}).get('metadata', {}).get('intentName')
+        if intent:
+            UserActivity.capture('intent', intent)
+        else:
+            function_path = f'{self.callback.__module__}.{self.callback.__qualname__}'
+            UserActivity.capture('text', function_path)
 
         if self.pattern is not None:
             match = self.local.match
