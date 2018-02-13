@@ -21,6 +21,9 @@ class Medal(ListFeedModel):
 
     @classmethod
     def api_function(cls, **kwargs):
+        if int(kwargs[cls.api_id_name]) not in FEED_PARAMS:
+            raise ValueError('Unknown feed')
+
         kwargs['df'] = FEED_PARAMS[int(kwargs[cls.api_id_name])]['df']
         kwargs['dt'] = FEED_PARAMS[int(kwargs[cls.api_id_name])]['dt']
         return api.medals(**kwargs)
@@ -172,3 +175,44 @@ class Medal(ListFeedModel):
             filter, sport, discipline, gender, country, sorting=[('end_date', ASCENDING)])
 
         return [cls(**result) for result in cursor]
+
+    @classmethod
+    def by_country(cls, country, topic_id=None):
+        """
+        This function will give back all medal winners from a country
+
+        :param country:
+        :param topic_id:
+        :return:
+        """
+
+        if not topic_id:
+            topic_id = '1757'
+
+        if topic_id == '548':
+            from_date = datetime.strptime('2014-02-01', '%Y-%m-%d').date()
+            until_date = datetime.strptime('2014-03-01', '%Y-%m-%d').date()
+        elif topic_id == '1757':
+            from_date = datetime.strptime('2018-02-01', '%Y-%m-%d').date()
+            until_date = None
+        else:
+            from_date = None
+            until_date = None
+
+        all_medal_sets = cls.search_range(from_date=from_date, until_date=until_date, country=country)
+
+        winner_by_country = []
+        for medal_set in all_medal_sets:
+            for person in medal_set.ranking:
+                if person.team.country.name == country:
+                    info = {
+                        'name': person.team.name,
+                        'country': person.team.country,
+                        'rank': person.rank,
+                        'sport': medal_set.sport,
+                        'discipline': medal_set.discipline_short,
+                        'gender': medal_set.gender
+                    }
+                    winner_by_country.append(info)
+
+        return winner_by_country

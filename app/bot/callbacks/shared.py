@@ -208,7 +208,8 @@ def send_push(event, push, report_nr, state):
         if not user_subs:
             event.send_buttons('Du bist noch nicht für die täglichen Nachrichten angemeldet. '
                                'Möchtest du das jetzt nachholen?',
-                               buttons=[button_postback('Ja, bitte!', ['subscribe'])])
+                               buttons=[button_postback('Ja, bitte!', {'target': 'highlight',
+                                                                       'state': 'subscribe'})])
 
 
 def send_report(event, report, state=None):

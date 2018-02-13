@@ -76,7 +76,10 @@ def api_podium(event, parameters, **kwargs):
         match_metas = [MatchMeta.search_last(
             sport=sport, discipline=discipline, town=town, country=country, gender=gender)]
         reply = ''
-        if match_metas[0].event != MatchMeta.Event.OLYMPIA_18:
+        if match_metas[0] is None:
+            reply += 'Hmm dazu habe ich noch keine Ergebnisse in meiner Datenbank 🤔'
+
+        elif match_metas[0].event != MatchMeta.Event.OLYMPIA_18:
             reply += '🚨Aus PyeongChang 🇰🇷 liegen noch keine aktuellen Ergebnisse vor!🚨' \
                      'Aber hier ist das letzte {event_title}:'.format(
                 event_title='Weltcup Ergebnis' if match_metas[0].event.value == 'worldcup' else
@@ -255,7 +258,7 @@ def result_by_country(event, payload):
 
     if not results:
         event.send_text(f'Kein Athlet aus {country_name}'
-                        f' hat das {sport_by_name[match.sport].competition_term} beendet.')
+                        f' hat das {sport_by_name[match.meta.sport].competition_term} beendet.')
         return
 
     teams = [result.team for result in results]
@@ -382,7 +385,15 @@ def result_game(event, match):
         result_total(event, match)
 
 
+def pl_send_result(event, payload):
+    match_id = payload.get('match_id')
+
+    match = Match.by_id(match_id)
+    send_result(event, match)
+
+
 handlers = [
+    PayloadHandler(pl_send_result, ['match_id', 'result']),
     PayloadHandler(btn_podium, ['podium']),
     PayloadHandler(result_details, ['result_details']),
     PayloadHandler(result_by_country, ['result_by_country', 'match_id']),

@@ -107,31 +107,32 @@ def api_next(event, parameters, **kwargs):
 
     if round_mode:
         today = date.today()
-        match_meta = MatchMeta.search_range(from_date=today, discipline=discipline,
+
+        if round_mode == 'Finale' or round_mode == 'Entscheidung':
+            match_meta = MatchMeta.search_range(until_date=today, discipline=discipline,
+                                                sport=sport, town=town, country=country,
+                                                gender=gender,
+                                                medals='all'
+                                                )
+        else:
+            match_meta = MatchMeta.search_range(until_date=today, discipline=discipline,
+                                                sport=sport, town=town, country=country,
+                                                gender=gender, round_mode=round_mode,
+                                                )
+
+        if not match_meta and round_mode:
+            event.send_text('Deine Anfrage führt bei mir leider ins Leere. Sry! 😪')
+        else:
+            event.send_text('In dieser Saison findet kein Weltcup mehr in '
+                            f'{town if town else country} statt. Dafür hab ich hier bald die '
+                            f'Ergebnisse aus {town if town else country}.')
+    if country or town:
+        match_meta = MatchMeta.search_range(until_date=today, discipline=discipline,
                                             sport=sport, town=town, country=country,
-                                            gender=gender, round_mode=round_mode)
+                                            gender=gender, round_mode=round_mode,
+                                            )
         if not match_meta:
-            if round_mode == 'Finale' or round_mode == 'Entscheidung':
-                match_meta = MatchMeta.search_range(until_date=today, discipline=discipline,
-                                                    sport=sport, town=town, country=country,
-                                                    gender=gender, round_mode=round_mode,
-                                                    medals='all'
-                                                    )
-            else:
-                match_meta = MatchMeta.search_range(until_date=today, discipline=discipline,
-                                                    sport=sport, town=town, country=country,
-                                                    gender=gender, round_mode=round_mode,
-                                                    )
-
-            if not match_meta and (town or country):
-                event.send_text('Leider kein Event in {place}.'.format(place=town if town else country))
-            elif not match_meta and round_mode:
-                event.send_text('Deine Anfrage führt bei mir leider ins Leere. Sry! 😪')
-            else:
-                event.send_text('In dieser Saison findet kein Weltcup mehr in '
-                                f'{town if town else country} statt. Dafür hab ich hier bald die '
-                                f'Ergebnisse aus {town if town else country}.')
-
+            event.send_text('Leider kein Event in {place}.'.format(place=town if town else country))
         else:
             if not round_mode:
                 event.send_text('Folgende Events finden in {place} statt'.format(place=town if town else country))
@@ -141,15 +142,9 @@ def api_next(event, parameters, **kwargs):
         return
 
     if not discipline and not sport:
-        event.send_text('Mein Kalender ist voll mit Terminen. '
-                        'Such dir eine der folgenden Sportarten aus:')
-        sports_to_choose = ''
-        for i, sport in enumerate(supported_sports):
-            if i == len(supported_sports) - 1:
-                sports_to_choose += f'oder {sport}.'
-            else:
-                sports_to_choose += f'{sport}, '
-        event.send_text(sports_to_choose)
+        event.send_text('Mein Kalender ist voll mit Terminen. Was interessiert dich?\n'
+                        'Termine für morgen? Nächstes Curling Spiel? Entscheidungen im Snowboard?'
+                        ' Halbfinale im Eishockey der Damen?')
         return
 
     match_meta = MatchMeta.search_next(discipline=discipline, sport=sport,
@@ -233,6 +228,11 @@ def send_more_cal_events_by_ids(event, payload, **kwargs):
 
     all_metas = [MatchMeta.by_match_id(m_id) for m_id in match_ids]
     metas = [m for m in all_metas if m.sport in sports_to_show]
+
+    if not metas:
+        event.send_text('Keine weiteren Events gefunden 🔍')
+        return
+
     start_date = metas[0].match_date
     event.send_text(f'Events am {metas[0].datetime.strftime("%d.%m.%Y")}:')
     for i, meta in enumerate(metas):
@@ -316,7 +316,17 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
             reply += f" {flag(match_meta.venue.country.iso)} {match_meta.venue.country.code}"
 
         reply += '.'
-        event.send_text(reply)
+
+        buttons = []
+        if match_meta.finished == 'yes':
+            buttons.append(button_postback('Ergebnisse',
+                                           {'match_id': match_meta.id,
+                                            'result': 'complete'}))
+        if buttons:
+            event.send_buttons(reply,
+                               buttons=buttons)
+        else:
+            event.send_text(reply)
 
 
 def period_to_dates(period):
