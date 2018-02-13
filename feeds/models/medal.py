@@ -21,6 +21,9 @@ class Medal(ListFeedModel):
 
     @classmethod
     def api_function(cls, **kwargs):
+        if int(kwargs[cls.api_id_name]) not in FEED_PARAMS:
+            raise ValueError('Unknown feed')
+
         kwargs['df'] = FEED_PARAMS[int(kwargs[cls.api_id_name])]['df']
         kwargs['dt'] = FEED_PARAMS[int(kwargs[cls.api_id_name])]['dt']
         return api.medals(**kwargs)
