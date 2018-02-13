@@ -109,25 +109,26 @@ def api_next(event, parameters, **kwargs):
         today = date.today()
 
         if round_mode == 'Finale' or round_mode == 'Entscheidung':
-            match_meta = MatchMeta.search_range(until_date=today, discipline=discipline,
+            match_meta = MatchMeta.search_range(from_date=today, discipline=discipline,
                                                 sport=sport, town=town, country=country,
                                                 gender=gender,
                                                 medals='all'
                                                 )
         else:
-            match_meta = MatchMeta.search_range(until_date=today, discipline=discipline,
+            match_meta = MatchMeta.search_range(from_date=today, discipline=discipline,
                                                 sport=sport, town=town, country=country,
                                                 gender=gender, round_mode=round_mode,
                                                 )
 
         if not match_meta and round_mode:
             event.send_text('Deine Anfrage führt bei mir leider ins Leere. Sry! 😪')
-        else:
-            event.send_text('In dieser Saison findet kein Weltcup mehr in '
-                            f'{town if town else country} statt. Dafür hab ich hier bald die '
-                            f'Ergebnisse aus {town if town else country}.')
+            return
+        multiple_entry(event, match_meta)
+        return
+
     if country or town:
-        match_meta = MatchMeta.search_range(until_date=today, discipline=discipline,
+        today = date.today()
+        match_meta = MatchMeta.search_range(from_date=today, discipline=discipline,
                                             sport=sport, town=town, country=country,
                                             gender=gender, round_mode=round_mode,
                                             )
