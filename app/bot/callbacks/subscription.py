@@ -47,7 +47,7 @@ def api_subscribe(event, parameters, **kwargs):
     except:
         pass
 
-    highlight = subscription_type == 'highlight' or parameters.get('highlight')
+    highlight = subscription_type == 'highlight'
     medal = subscription_type == 'medal'
     livestream = subscription_type == 'livestream'
 
