@@ -81,7 +81,7 @@ class UpdateMatch(BaseTask):
             match = Match.by_id(match_id, clear_cache=True)
         except ValueError:
             queue.remove_scheduled("push.UpdateMatch", params, interval=MATCH_CHECK_INTERVAL)
-            raise
+            return
 
         disciplines = sport_by_name[match.meta.sport].disciplines
 
