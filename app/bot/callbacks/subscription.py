@@ -462,9 +462,9 @@ def send_second_level_subs(event, **kwargs):
 
 
 def list_available_sports(subs):
-    filter_list = [Subscription.describe_filter(sub.filter)
-                   for sub in subs if sub.target is Subscription.Target.SPORT]
-    return [sport for sport in SUPPORTED_SPORTS if sport not in filter_list]
+    filters = {Subscription.describe_filter(sub.filter)
+               for sub in subs if sub.target is Subscription.Target.SPORT}
+    return [sport for sport in SUPPORTED_SPORTS if sport not in filters]
 
 
 def send_literal_no_sports_left(event):
