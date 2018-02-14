@@ -185,7 +185,9 @@ def livestream_apply(event, payload, **kwargs):
 
     if action == 'subscribe':
         Subscription.create(sender_id, Subscription.Target.SPORT, {'sport': sport}, Subscription.Type.LIVESTREAM)
-        event.send_text("Super! Ich sage dir, wenn's losgeht.")
+        event.send_text("Super! Ich sage dir, wenn's losgeht.\n"
+                        "Wenn du dich für weitere Übertragungen im Livestream interessierst, "
+                        "schreib mir einfach z.B. \'Anmelden für Biathlon Livestream\'.")
         event.send_text("Hier deine Übersicht:")
         send_subscriptions(event)
     elif action == 'unsubscribe':
@@ -426,8 +428,8 @@ def result_medal_change(event, payload, **kwargs):
                                 '"Anmelden für Medaillen von Deutschland"')
             else:
                 event.send_text(f'Über wen soll ich dich informieren? Schreibe mir zum Beispiel '
-                                f'"Viktoria Rebensburg" - bitte nenne immer den Vor- und Nachnamen,'
-                                f' damit es keine Missverständnisse gibt.')
+                                f'"Anmelden für Viktoria Rebensburg" - bitte nenne immer den '
+                                f'Vor- und Nachnamen, damit es keine Missverständnisse gibt.')
 
         else:
             sub_target = Subscription.Target(target)
@@ -436,13 +438,18 @@ def result_medal_change(event, payload, **kwargs):
             if target == 'sport':
                 sub_filter['sport'] = filter_arg
                 reply = f'Ok. In der Übersicht siehst du für welche Ergebnis-Dienste du ' \
-                        f'angemeldet bist.'
+                        f'angemeldet bist.\n Wenn du dich für weitere Sportarten interessierst, ' \
+                        f'schreib mir einfach z.B. \'Anmelden für Biathlon\'.'
             elif target == 'athlete':
                 sub_filter['athlete'] = filter_arg
-                reply = f'Top. Ich melde mich, wenn es etwas Neues von {filter_arg} gibt.'
+                reply = f'Top. Ich melde mich, wenn es etwas Neues von {filter_arg} gibt.\n ' \
+                        f'Falls du weiteren Athleten folgen möchtest, schreib mir einfach z.B. ' \
+                        f'\'Anmelden für Viktoria Rebensburg\'.'
             elif target == 'country':
                 sub_filter['country'] = filter_arg
-                reply = f'Top. Ich melde mich, wenn es neue Medaillen für {filter_arg} gibt.'
+                reply = f'Ok. Ich melde mich, wenn es neue Medaillen für {filter_arg} gibt.\n ' \
+                        f'Dich interessiert noch ein andees Land? Schreib mir einfach ' \
+                        f'z.B. \'Anmelden für Schweden\'.'
 
             if sub_target in (Subscription.Target.SPORT, Subscription.Target.ATHLETE,
                               Subscription.Target.DISCIPLINE):
