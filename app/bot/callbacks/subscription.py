@@ -56,10 +56,19 @@ def api_subscribe(event, parameters, **kwargs):
 
     highlight = subscription_type == 'highlight' or parameters.get('highlight')
     medal = subscription_type == 'medal'
+    livestream = subscription_type == 'livestream'
 
     if highlight:
         payload = {'target': 'highlight', 'state': 'subscribe'}
         highlight_subscriptions(event, payload)
+        return
+    if livestream and sport:
+        payload = {'action': 'subscribe', 'filter': sport}
+        livestream_apply(event, payload)
+        return
+    elif livestream and not sport:
+        payload = {'action': 'subscribe'}
+        livestream_change(event, payload)
         return
     if medal and country:
         payload = {'target': 'medal', 'state': 'subscribe', 'country': country}
