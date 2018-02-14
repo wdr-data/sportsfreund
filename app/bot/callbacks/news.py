@@ -72,7 +72,7 @@ def api_news(event, parameters, **kwargs):
 
     if calendar:
         elements.append(
-            list_element(f'Nächstes Medaillen {sport_by_name[calendar.sport].competition_term}: '
+            list_element(f'Nächste Medaille-Entscheidung: '
                          f'{calendar.sport} '
                          f'{calendar.discipline_short}, {calendar.gender_name}',
                          f'{day_name[calendar.datetime.weekday()]}, '
@@ -103,9 +103,7 @@ def api_news(event, parameters, **kwargs):
                                                   {'report_sport': None,
                                                    'report_discipline': None})]))
 
-
-
-    event.send_text('Die Übersicht der letzten Ergeignisse aus PyeongChang.')
+    event.send_text('Bitte schön, hier kommt deine Übersicht:')
     event.send_list(elements,
                     button=button_postback('Weitere Meldungen', ['more_reports'])
                     )

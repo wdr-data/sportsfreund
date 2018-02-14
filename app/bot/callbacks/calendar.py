@@ -220,7 +220,7 @@ def multiple_entry(event, metas):
         medal_metas = [m for m in metas if m.medals]
         medal_sports = [m.sport for m in medal_metas]
         if medal_metas:
-            event.send_text(f'Hier die Medaillen Entscheidungen:')
+            event.send_text(f'Hier die Medaillen-Entscheidungen:')
             send_more_cal_events_by_ids(event,
                                         {'send_more_cal_events_by_ids': [m.id for m in medal_metas],
                                          'sports_to_show': [m.sport for m in medal_metas]}
