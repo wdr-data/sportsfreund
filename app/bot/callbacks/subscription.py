@@ -13,6 +13,8 @@ KNOWN_ATHLETE_NAMES = {
     (athlete.first_name, athlete.last_name)
     for athlete in KNOWN_ATHLETES_OLYMPIA
 }
+TXT_NO_SPORTS_LEFT = ('Du bist bereits für alle möglichen Sportarten angemeldet. Du scheinst ja '
+                      'genau so ein Wintersport Nerd zu sein wie ich 🤓')
 
 
 def state_emoji(subscribed):
@@ -109,7 +111,7 @@ def livestream_change(event, payload, **kwargs):
     if action == 'subscribe' or len(subs) == 0:
         sports = list_available_sports(subs)
         if not sports:
-            send_literal_no_sports_left(event)
+            event.send_text(TXT_NO_SPORTS_LEFT)
             return
 
         quickreplies = [quick_reply(sport, {'sub': True,
@@ -271,7 +273,7 @@ def sport_change(event, payload, **kwargs):
     if action == 'subscribe' or len(subs) == 0:
         sports = list_available_sports(subs)
         if not sports:
-            send_literal_no_sports_left(event)
+            event.send_text(TXT_NO_SPORTS_LEFT)
             return
 
         quickreplies = [quick_reply(sport, {'sub': True,
@@ -465,12 +467,6 @@ def list_available_sports(subs):
     filters = {Subscription.describe_filter(sub.filter)
                for sub in subs if sub.target is Subscription.Target.SPORT}
     return [sport for sport in SUPPORTED_SPORTS if sport not in filters]
-
-
-def send_literal_no_sports_left(event):
-    event.send_text(f'Du bist bereits für alle möglichen Sportarten '
-                    f'angemeldet. Du scheinst ja genau so ein '
-                    f'Wintersport Nerd zu sein wie ich 🤓')
 
 
 handlers = [
