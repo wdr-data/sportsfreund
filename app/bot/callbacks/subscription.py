@@ -70,7 +70,7 @@ def api_subscribe(event, parameters, **kwargs):
         payload = {'action': 'subscribe'}
         livestream_change(event, payload)
         return
-    if medal and country:
+    if country:
         payload = {'target': 'medal', 'state': 'subscribe', 'country': country}
         medal_subscriptions(event, payload)
         return
