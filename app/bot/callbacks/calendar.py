@@ -238,6 +238,7 @@ def multiple_entry(event, metas):
                     )
 
         if quickies:
+            sleep(2)
             event.send_text(f'Insgesamt habe ich {len(metas)} Events für dich:',
                             quick_replies=quickies)
 
@@ -403,16 +404,15 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
         reply += f"{gender}"
 
         if 'rounds' in config and config['rounds']:
-            reply += f' 🔸{match_meta.round_mode}🔸 '
+            reply += f'\n🔸{match_meta.round_mode}🔸'
 
         if match_meta.get('event') != MatchMeta.Event.OLYMPIA_18:
             reply += f" {flag(match_meta.venue.country.iso)} {match_meta.venue.country.code}"
 
-        reply += '.'
-
         if match_meta.finished == 'yes':
             if 'winner_team' in match_meta:
-                button_text = f'{Match.medal(1)} {match_meta.winner_team.name}'
+                button_text = f'{Match.medal(1)} {match_meta.winner_team.name}' \
+                              f' {flag(match_meta.winner_team.country.iso)}'
             else:
                 button_text = 'Ergebnisse'
             buttons.append(button_postback(button_text,
