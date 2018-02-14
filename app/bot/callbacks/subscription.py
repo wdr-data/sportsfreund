@@ -9,6 +9,10 @@ from ..handlers.payloadhandler import PayloadHandler
 from feeds.config import KNOWN_ATHLETES_OLYMPIA
 
 GLOBES = ('🌎', '🌏', '🌍')
+KNOWN_ATHLETE_NAMES = {
+    (athlete.first_name, athlete.last_name)
+    for athlete in KNOWN_ATHLETES_OLYMPIA
+}
 
 
 def state_emoji(subscribed):
@@ -24,11 +28,7 @@ def api_subscribe(event, parameters, **kwargs):
     athlete = None
 
     if last_name and first_name:
-
-        known_athlete_names = set((athlete.first_name, athlete.last_name)
-                                   for athlete in KNOWN_ATHLETES_OLYMPIA)
-
-        if (first_name, last_name) not in known_athlete_names:
+        if (first_name, last_name) not in KNOWN_ATHLETE_NAMES:
             if not Person.query(firstname=first_name, surname=last_name):
                 event.send_text('Diese Person ist leider noch nicht in meiner Datenbank... '
                                 'Bist du sicher, dass du dich nicht vertippt hast?')
