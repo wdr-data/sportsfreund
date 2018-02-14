@@ -89,7 +89,11 @@ class UpdateMatch(BaseTask):
         try:
             disciplines = sport_by_name[match.meta.sport].disciplines
         except AttributeError:
-            log.warning('Removing match "%s" with no meta')
+            log.warning(f'Removing match "{match}" with no meta')
+            queue.remove_scheduled("push.UpdateMatch", params, interval=MATCH_CHECK_INTERVAL)
+            return
+        except KeyError:
+            log.warning(f'Removing match "{match}" with unknown sport {match.meta.sport}')
             queue.remove_scheduled("push.UpdateMatch", params, interval=MATCH_CHECK_INTERVAL)
             return
 
