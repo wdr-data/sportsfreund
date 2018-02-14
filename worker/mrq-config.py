@@ -24,7 +24,7 @@ SCHEDULER_TASKS = [
     {
         'path': 'push.UpdateSchedule',
         'params': {},
-        'interval': 60 * 60
+        'interval': 60 * 15
     },
     {
         'path': 'push.SendMedals',
