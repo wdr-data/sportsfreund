@@ -10,7 +10,7 @@ from lib.flag import flag
 from lib.time import localtime_format
 from .shared import get_latest_report
 from feeds.models.match_meta import MatchMeta
-from feeds.config import sport_by_name
+from feeds.config import SPORT_BY_NAME
 from lib.response import button_postback, list_element, button_url
 
 
@@ -45,7 +45,7 @@ def api_sport(event, parameters,**kwargs):
     except ObjectDoesNotExist:
         report = None
 
-    slug = sport_by_name[sport].slug
+    slug = SPORT_BY_NAME[sport].slug
     try:
         story = Story.objects.get(slug=slug)
     except ObjectDoesNotExist:
@@ -63,12 +63,12 @@ def api_sport(event, parameters,**kwargs):
 
     if calendar:
         elements.append(
-            list_element(f'Nächstes {sport_by_name[sport].competition_term}: {calendar.sport} '
+            list_element(f'Nächstes {SPORT_BY_NAME[sport].competition_term}: {calendar.sport} '
                          f'{calendar.discipline_short}, {calendar.gender_name}',
                          f'{day_name[calendar.datetime.weekday()]}, '
                          f'{calendar.datetime.strftime("%d.%m.%Y")} '
                          f'um {localtime_format(calendar.datetime, event)}',
-                         image_url=sport_by_name[sport].picture_url,
+                         image_url=SPORT_BY_NAME[sport].picture_url,
                          buttons=[button_postback("Was gibt's noch?", {'event_today': today})],
                          ))
 

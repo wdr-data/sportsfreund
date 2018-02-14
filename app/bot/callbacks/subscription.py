@@ -1,6 +1,6 @@
 import random
 
-from feeds.config import supported_sports
+from feeds.config import SUPPORTED_SPORTS
 from feeds.models.person import Person
 from feeds.models.subscription import Subscription
 from lib.response import list_element, button_postback, quick_reply
@@ -363,15 +363,15 @@ def result_apply(event, payload, **kwargs):
     action = payload['action']
     filter = payload['filter']
 
-    target = Subscription.Target.SPORT if filter in supported_sports \
+    target = Subscription.Target.SPORT if filter in SUPPORTED_SPORTS \
         else Subscription.Target.ATHLETE
-    sub_filter = {'sport': filter} if filter in supported_sports else {'athlete': filter}
+    sub_filter = {'sport': filter} if filter in SUPPORTED_SPORTS else {'athlete': filter}
 
     if action == 'subscribe':
         Subscription.create(sender_id, target, sub_filter, Subscription.Type.RESULT)
         reply = f"\nWenn du dich für weitere Ergebnis-Dienste anmelden möchtest, " \
                 f"schreibe mir einfach z.B. 'Anmelden für " \
-                f"{'Biathlon' if filter in supported_sports else 'Viktoria Rebensburg'}.'"
+                f"{'Biathlon' if filter in SUPPORTED_SPORTS else 'Viktoria Rebensburg'}.'"
         event.send_text("Super! Ich sage dir, sobald es etwas Neues gibt." + reply)
         send_second_level_subs(event)
     elif action == 'unsubscribe':
@@ -464,7 +464,7 @@ def send_second_level_subs(event, **kwargs):
 def list_available_sports(subs):
     filter_list = [Subscription.describe_filter(sub.filter)
                    for sub in subs if sub.target is Subscription.Target.SPORT]
-    return [sport for sport in supported_sports if sport not in filter_list]
+    return [sport for sport in SUPPORTED_SPORTS if sport not in filter_list]
 
 
 def send_literal_no_sports_left(event):

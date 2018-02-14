@@ -15,7 +15,7 @@ from feeds.models.match_meta import MatchMeta
 from feeds.models.medal import Medal
 from feeds.models.subscription import Subscription
 from feeds.models.team import Team
-from feeds.config import sport_by_name, CompetitionType, ResultType, supported_sports
+from feeds.config import SPORT_BY_NAME, CompetitionType, ResultType, SUPPORTED_SPORTS
 from lib.flag import flag
 from lib.push import Push
 from lib.response import Replyable, SenderTypes
@@ -60,7 +60,7 @@ class UpdateSchedule(BaseTask):
 
     def schedule_livestreams(self):
         streams = [s for s in Livestream.next_events()
-                   if s.get('sport-name') in supported_sports and int(s.get('channel')) < 4]
+                   if s.get('sport-name') in SUPPORTED_SPORTS and int(s.get('channel')) < 4]
 
         for stream in streams:
             log.debug(f"Scheduling push for ID {stream.id} at {stream.start}")
@@ -87,7 +87,7 @@ class UpdateMatch(BaseTask):
             return
 
         try:
-            disciplines = sport_by_name[match.meta.sport].disciplines
+            disciplines = SPORT_BY_NAME[match.meta.sport].disciplines
         except AttributeError:
             log.warning(f'Removing match "{match}" with no meta')
             queue.remove_scheduled("push.UpdateMatch", params, interval=MATCH_CHECK_INTERVAL)
@@ -154,7 +154,7 @@ class UpdateMatch(BaseTask):
             athlete_result = next(match.results_by_team(athlete))
             points = match.txt_points(athlete_result)
             result = f'einer Zeit von {points}.' if \
-                sport_by_name[match.meta.sport].result_type == ResultType.TIME else \
+                SPORT_BY_NAME[match.meta.sport].result_type == ResultType.TIME else \
                 f'{points} Punkten'
 
             event.send_text(f'{meta.sport} {meta.discipline} in {meta.town} wurde soeben beendet. '
@@ -171,7 +171,7 @@ class UpdateLivestream(BaseTask):
             log.warning(f"Stream not found: {params['stream_id']}")
             self.remove(params)
 
-        if not (stream.get('sport-name') in supported_sports):
+        if not (stream.get('sport-name') in SUPPORTED_SPORTS):
             log.warning(f"Sport for stream not supported: {params['stream_id']}")
 
         if stream['start'] > datetime.now():
