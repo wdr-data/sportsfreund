@@ -95,7 +95,7 @@ def sub_element_livestream(subs):
                         {'sub': True, type.value: True,
                          'action': 'change' if subscribed else 'subscribe'})
     ]
-    sport_list = ', '.join([sub.filter.sport for sub in subs if sub.type is type])
+    sport_list = ', '.join(sub.filter.sport for sub in subs if sub.type is type)
     subtitle = f"{sport_list}" if subscribed else "Push, wenn eine Live-Übertragung beginnt"
 
     return list_element(f"Livestreams {state_emoji(subscribed)}", subtitle, buttons=buttons)
