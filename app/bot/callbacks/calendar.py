@@ -66,49 +66,46 @@ def api_next(event, parameters, **kwargs):
 
     if p_date:
         d_date = datetime.strptime(p_date, '%Y-%m-%d').date()
-        if d_date < date.today():
-            api_podium(event, parameters, **kwargs)
+
+        if round_mode == 'Finale' or round_mode == 'Entscheidung':
+            match_meta = MatchMeta.search_date(date=d_date, discipline=discipline,
+                                               sport=sport, town=town, country=country,
+                                               gender=gender, medals='all')
         else:
-            if round_mode == 'Finale' or round_mode == 'Entscheidung':
-                match_meta = MatchMeta.search_date(date=d_date, discipline=discipline,
-                                                   sport=sport, town=town, country=country,
-                                                   gender=gender, round_mode=round_mode,
-                                                   medals='all')
-            else:
-                match_meta = MatchMeta.search_date(date=d_date, discipline=discipline,
-                                                   sport=sport, town=town, country=country,
-                                                   gender=gender, round_mode=round_mode)
+            match_meta = MatchMeta.search_date(date=d_date, discipline=discipline,
+                                               sport=sport, town=town, country=country,
+                                               gender=gender, round_mode=round_mode)
 
-            if not match_meta:
+        if not match_meta:
 
-                tomorrow = datetime.strptime(p_date, '%Y-%m-%d') + timedelta(days=1)
-                match_meta = MatchMeta.search_date(date=tomorrow.date(),
-                                                   sport=sport, town=town, country=country,
-                                                   gender=gender, round_mode=round_mode)
+            tomorrow = datetime.strptime(p_date, '%Y-%m-%d') + timedelta(days=1)
+            match_meta = MatchMeta.search_date(date=tomorrow.date(),
+                                               sport=sport, town=town, country=country,
+                                               gender=gender, round_mode=round_mode)
 
-                if match_meta:
-                    event.send_text(f"Am "
-                                    f"{datetime.strptime(p_date, '%Y-%m-%d').strftime('%d.%m.%Y')} "
-                                    f"findet kein Event mehr statt. Dafür:"
-                                    )
+            if match_meta:
+                event.send_text(f"Am "
+                                f"{datetime.strptime(p_date, '%Y-%m-%d').strftime('%d.%m.%Y')} "
+                                f"findet kein Event mehr statt. Dafür:"
+                                )
 
-            if not match_meta:
-                if match_meta and (discipline or sport or town or country):
-                    event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
-                                    'aber vielleicht interessiert dich ja folgendes Event:')
-                    multiple_entry(event, match_meta)
-                    return
-                else:
-                    emoji = ['⛷', '🏂']
-                    event.send_text('Heute findet kein Wintersport-Event statt. '
-                                    f'Ich geh ne Runde {random.choice(emoji)}!')
-                    return
-            else:
-                if sport:
-                    event.send_text(f'Eine Übersicht der nächsten Events im {sport}:')
-                # else:
-                    # event.send_text('Eine Übersicht der nächsten Events.')
+        if not match_meta:
+            if match_meta and (discipline or sport or town or country):
+                event.send_text('Zu deiner Anfrage hab da leider keine Antwort, '
+                                'aber vielleicht interessiert dich ja folgendes Event:')
                 multiple_entry(event, match_meta)
+                return
+            else:
+                emoji = ['⛷', '🏂']
+                event.send_text('Heute findet kein Wintersport-Event statt. '
+                                f'Ich geh ne Runde {random.choice(emoji)}!')
+                return
+        else:
+            if sport:
+                event.send_text(f'Eine Übersicht der nächsten Events im {sport}:')
+            # else:
+                # event.send_text('Eine Übersicht der nächsten Events.')
+            multiple_entry(event, match_meta)
 
         return
 
@@ -414,7 +411,11 @@ def pl_entry_by_matchmeta(event, payload, **kwargs):
         reply += '.'
 
         if match_meta.finished == 'yes':
-            buttons.append(button_postback('Ergebnisse',
+            if 'winner_team' in match_meta:
+                button_text = f'{Match.medal(1)} {match_meta.winner_team.name}'
+            else:
+                button_text = 'Ergebnisse'
+            buttons.append(button_postback(button_text,
                                            {'match_id': match_meta.id,
                                             'result': 'complete'}))
         if buttons:
