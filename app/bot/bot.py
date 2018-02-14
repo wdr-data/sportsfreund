@@ -11,7 +11,7 @@ from metrics.models.activity import UserActivity
 from metrics.models.unique_users import UserListing
 # dirty
 from .callbacks import dirty
-from .callbacks import result, calendar, \
+from .callbacks import result, calendar, news, \
     subscription, video, medal, athlete, standing, sport
 from .callbacks import testing
 from .callbacks.default import (
@@ -45,6 +45,7 @@ def make_event_handler():
     handlers.extend(athlete.handlers)
     handlers.extend(standing.handlers)
     handlers.extend(calendar.handlers)
+    handlers.extend(news.handlers)
 
     handlers.extend([
         ApiAiHandler(greetings, 'gruss'),
