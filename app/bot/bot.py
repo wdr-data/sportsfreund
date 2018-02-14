@@ -1,12 +1,14 @@
 import json
 import logging
 import os
+from time import time
 
 from apiai import ApiAI
 from raven.contrib.django.raven_compat.models import client as error_client
 
 from lib.config import FB_PAGE_TOKEN
 from lib.response import Replyable
+from lib.redis import redis, HANDLED_UPDATES_FB
 from metrics.models.activity import UserActivity
 from metrics.models.unique_users import UserListing
 # dirty
@@ -162,9 +164,20 @@ def make_event_handler():
         for event in events:
             logging.debug('Incoming message : ' + str(event))
             message = event.get('message')
+            sender_id = event['sender']['id']
+
+            if message:
+                msg_id = message['mid']
+            else:
+                msg_id = f'{sender_id}.{event["timestamp"]}'
+
+            already_handled = (redis.zadd(HANDLED_UPDATES_FB, time(), msg_id) == 0)
+
+            if already_handled:
+                logger.warning('Skipping duplicate event: %s', event)
+                continue
 
             event = Replyable(event, type)
-            sender_id = event['sender']['id']
 
             UserListing.capture(sender_id)
 

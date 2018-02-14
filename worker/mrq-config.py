@@ -31,6 +31,11 @@ SCHEDULER_TASKS = [
         'params': {},
         'interval': 60 * 5,
     },
+    {
+        'path': 'cleanup.HandledUpdates',
+        'params': {},
+        'interval': 60 * 5,
+    },
 
     # MRQ maintenance jobs
 
