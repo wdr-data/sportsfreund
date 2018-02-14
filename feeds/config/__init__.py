@@ -54,6 +54,7 @@ def discipline_config(sport, discipline):
 
     return None
 
-supported_sports = [
+
+supported_sports = {
     sport.name for sport in SPORTS_CONFIG
-]
+}
