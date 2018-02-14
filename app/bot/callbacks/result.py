@@ -9,7 +9,7 @@ from ..handlers.payloadhandler import PayloadHandler
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
 from feeds.config import discipline_config
-from feeds.config import supported_sports, sport_by_name
+from feeds.config import SUPPORTED_SPORTS, SPORT_BY_NAME
 from lib.flag import flag
 from lib.emoij_number import emoji_number
 from lib.response import button_postback, quick_reply, list_element
@@ -258,7 +258,7 @@ def result_by_country(event, payload):
 
     if not results:
         event.send_text(f'Kein Athlet aus {country_name}'
-                        f' hat das {sport_by_name[match.meta.sport].competition_term} beendet.')
+                        f' hat das {SPORT_BY_NAME[match.meta.sport].competition_term} beendet.')
         return
 
     teams = [result.team for result in results]
@@ -369,7 +369,7 @@ def result_game(event, match):
             list_medal =[
                 list_element(reply_title,
                              reply_sbtl,
-                             image_url=sport_by_name[match.meta.sport].picture_url
+                             image_url=SPORT_BY_NAME[match.meta.sport].picture_url
                 ),
                 list_element(f'{medal_first} {winner.team.name} {flag(winner.team.country.iso)}',
                              f'{first}'),

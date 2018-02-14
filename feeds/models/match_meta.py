@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 from time import time as time
 
-from feeds.config import DISCIPLINE_ALIASES, sport_by_name, discipline_config, SPORTS_CONFIG
+from feeds.config import DISCIPLINE_ALIASES, SPORT_BY_NAME, discipline_config, SPORTS_CONFIG
 from lib.mongodb import db
 from .model import ListFeedModel
 from .. import api
@@ -161,7 +161,7 @@ class MatchMeta(ListFeedModel):
         now = int(time())
 
         for sp in obj:
-            if sp['name'] in sport_by_name:
+            if sp['name'] in SPORT_BY_NAME:
                 for co in sp['competition']:
                     for se in co['season']:
                         for ro in se['round']:
@@ -236,7 +236,7 @@ class MatchMeta(ListFeedModel):
     def load_all_feeds(cls, sport=None):
         if sport is not None:
             try:
-                id = sport_by_name[sport].topic_id
+                id = SPORT_BY_NAME[sport].topic_id
                 cls.load_feed(id)
             except:
                 pass

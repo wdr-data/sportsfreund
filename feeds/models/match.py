@@ -6,7 +6,7 @@ from calendar import day_name
 from typing import Iterable, List
 import locale
 
-from feeds.config import sport_by_name, ResultType, discipline_config
+from feeds.config import SPORT_BY_NAME, ResultType, discipline_config
 from feeds.models.match_meta import MatchMeta
 from feeds.models.team import Team
 from lib.flag import flag
@@ -153,7 +153,7 @@ class Match(FeedModel):
         header = [list_element(
             header_text,
             header_sbtl,
-            image_url=sport_by_name[self.meta.sport].picture_url
+            image_url=SPORT_BY_NAME[self.meta.sport].picture_url
         )]
 
         for winner_team, winner_result in zip(winner_teams, winner_results):
@@ -187,7 +187,7 @@ class Match(FeedModel):
         return header
 
     def txt_points(self, result):
-        conf = sport_by_name[self.meta.sport]
+        conf = SPORT_BY_NAME[self.meta.sport]
 
         if conf.result_type is ResultType.TIME and result.match_result:
             if result.rank == self.winner_result.rank:
