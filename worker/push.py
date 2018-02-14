@@ -83,7 +83,12 @@ class UpdateMatch(BaseTask):
             queue.remove_scheduled("push.UpdateMatch", params, interval=MATCH_CHECK_INTERVAL)
             return
 
-        disciplines = sport_by_name[match.meta.sport].disciplines
+        try:
+            disciplines = sport_by_name[match.meta.sport].disciplines
+        except AttributeError:
+            log.warning('Removing match "%s" with no meta')
+            queue.remove_scheduled("push.UpdateMatch", params, interval=MATCH_CHECK_INTERVAL)
+            return
 
         for discipline in disciplines:
             if discipline.name == match.meta.discipline_short:
