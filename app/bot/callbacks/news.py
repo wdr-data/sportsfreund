@@ -89,10 +89,13 @@ def api_news(event, parameters, **kwargs):
                                                   {'report_sport': None,
                                                    'report_discipline': None})]))
 
-    event.send_text('Bitte schön, hier kommt deine Übersicht:')
-    event.send_list(elements,
-                    button=button_postback('Weitere Meldungen', ['more_reports'])
-                    )
+    if len(elements) > 1:
+        event.send_text('Bitte schön, hier kommt deine Übersicht:')
+        event.send_list(elements,
+                        button=button_postback('Weitere Meldungen', ['more_reports'])
+                        )
+    else:
+        event.send_text('Keine Neuigkeiten')
 
 
 def more_reports(event, payload):
