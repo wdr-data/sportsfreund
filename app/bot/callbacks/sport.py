@@ -12,6 +12,8 @@ from .shared import get_latest_report
 from feeds.models.match_meta import MatchMeta
 from feeds.config import SPORT_BY_NAME
 from lib.response import button_postback, list_element, button_url
+from bot.callbacks.subscription import (ACT_UNSUBSCRIBE, ACT_SUBSCRIBE, KEY_FILTER, KEY_ACTION,
+                                        KEY_SUB)
 
 
 def api_sport(event, parameters,**kwargs):
@@ -91,19 +93,24 @@ def api_sport(event, parameters,**kwargs):
                               type=Subscription.Type.RESULT, psid=sender_id)
     if subs:
         button_title = 'Abmelden'
-        button_option = 'unsubscribe'
+        action = ACT_UNSUBSCRIBE
     else:
         button_title = 'Anmelden'
-        button_option = 'subscribe'
+        action = ACT_SUBSCRIBE
+
+    sub_button = button_postback(
+            button_title, {
+                KEY_SUB: True,
+                Subscription.Type.RESULT.value: True,
+                KEY_FILTER: sport,
+                KEY_ACTION: action,
+            }
+        )
 
     if len(elements) > 1:
-        event.send_list(elements, button=button_postback(
-            button_title, {"target": "sport", "filter": sport, "option": button_option}
-        ))
+        event.send_list(elements, button=sub_button)
     else:
-        event.send_buttons(f'Hier kannst du dich für {sport} anmelden.', button=button_postback(
-            button_title, {"target": "sport", "filter": sport, "option": button_option}
-        ))
+        event.send_buttons(f'Hier kannst du dich für {sport} anmelden.', buttons=[sub_button])
 
 
 def api_discipline(event,parameters,**kwargs):
