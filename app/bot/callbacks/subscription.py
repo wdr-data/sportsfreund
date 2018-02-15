@@ -15,6 +15,23 @@ KNOWN_ATHLETE_NAMES = {
 }
 TXT_NO_SPORTS_LEFT = ('Du bist bereits für alle möglichen Sportarten angemeldet. Du scheinst ja '
                       'genau so ein Wintersport Nerd zu sein wie ich 🤓')
+KEY_ACTION = 'action'
+KEY_FILTER = 'filter'
+KEY_TARGET = 'target'
+KEY_STATE = 'state'
+KEY_SUB = 'sub'
+KEY_TYPE = 'type'
+KEY_RESULT = 'result'
+ACT_SUBSCRIBE = 'subscribe'
+ACT_UNSUBSCRIBE = 'unsubscribe'
+ACT_CHANGE = 'change'
+TAR_HIGHLIGHT = 'highlight'
+TAR_SPORT = 'sport'
+TAR_ATHLETE = 'athlete'
+TAR_COUNTRY = 'country'
+TYP_HIGHLIGHT = 'highlight'
+TYP_MEDAL = 'medal'
+TYP_LIVESTREAM = 'livestream'
 
 
 def state_emoji(subscribed):
@@ -42,38 +59,38 @@ def api_subscribe(event, parameters, **kwargs):
     try:
         if (athlete and
             event['message']['nlp']['result']['metadata']['intentName'].endswith('unsubscribe')):
-            payload = {'action': 'subscribe', 'filter': athlete}
+            payload = {KEY_ACTION: ACT_SUBSCRIBE, KEY_FILTER: athlete}
             result_apply(event, payload)
             return
 
     except:
         pass
 
-    highlight = subscription_type == 'highlight'
-    medal = subscription_type == 'medal'
-    livestream = subscription_type == 'livestream'
+    highlight = subscription_type == TYP_HIGHLIGHT
+    medal = subscription_type == TYP_MEDAL
+    livestream = subscription_type == TYP_LIVESTREAM
 
     if highlight:
-        payload = {'target': 'highlight', 'state': 'subscribe'}
+        payload = {KEY_TARGET: TAR_HIGHLIGHT, KEY_STATE: ACT_SUBSCRIBE}
         highlight_change(event, payload)
         return
     if livestream and sport:
-        payload = {'action': 'subscribe', 'filter': sport}
+        payload = {KEY_ACTION: ACT_SUBSCRIBE, KEY_FILTER: sport}
         livestream_apply(event, payload)
         return
     elif livestream and not sport:
-        payload = {'action': 'subscribe'}
+        payload = {KEY_ACTION: ACT_SUBSCRIBE}
         livestream_change(event, payload)
         return
     if country:
-        payload = {'action': 'subscribe', 'filter': country}
+        payload = {KEY_ACTION: ACT_SUBSCRIBE, KEY_FILTER: country}
         medal_apply(event, payload)
         return
     elif medal and not country:
-        payload = {'action': 'subscribe'}
+        payload = {KEY_ACTION: ACT_SUBSCRIBE}
         livestream_change(event, payload)
     if sport or athlete:
-        payload = {'action': 'subscribe', 'filter': sport if sport else athlete}
+        payload = {KEY_ACTION: ACT_SUBSCRIBE, KEY_FILTER: sport if sport else athlete}
         result_apply(event, payload)
         return
     elif (last_name and not first_name) or (first_name and not last_name):
@@ -94,8 +111,8 @@ def sub_element_livestream(subs):
     subscribed = any(sub.type is type for sub in subs)
     buttons = [
         button_postback('🔧 An-/Abmelden' if subscribed else '📝 Anmelden',
-                        {'sub': True, type.value: True,
-                         'action': 'change' if subscribed else 'subscribe'})
+                        {KEY_SUB: True, type.value: True,
+                         KEY_ACTION: ACT_CHANGE if subscribed else ACT_SUBSCRIBE})
     ]
     sport_list = ', '.join(sub.filter.sport for sub in subs if sub.type is type)
     subtitle = f"{sport_list}" if subscribed else "Push, wenn eine Live-Übertragung beginnt"
@@ -105,67 +122,68 @@ def sub_element_livestream(subs):
 
 def livestream_change(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    action = payload['action']
+    action = payload[KEY_ACTION]
     subs = Subscription.query(psid=sender_id, type=Subscription.Type.LIVESTREAM)
 
-    if action == 'subscribe' or len(subs) == 0:
+    if action == ACT_SUBSCRIBE or len(subs) == 0:
         sports = list_available_sports(subs)
         if not sports:
             event.send_text(TXT_NO_SPORTS_LEFT)
             return
 
-        quickreplies = [quick_reply(sport, {'sub': True,
+        quickreplies = [quick_reply(sport, {KEY_SUB: True,
                                             Subscription.Type.LIVESTREAM.value: True,
-                                            'filter': sport,
-                                            'action': 'subscribe'})
+                                            KEY_FILTER: sport,
+                                            KEY_ACTION: ACT_SUBSCRIBE})
                         for sport in sports[:11]]
         event.send_text(f'Für welche Sportart soll ich dir Bescheid sagen, '
                         f'wenn ein Livestream beginnt?',
                         quickreplies)
 
-    elif action == 'unsubscribe':
+    elif action == ACT_UNSUBSCRIBE:
         filter_list = [Subscription.describe_filter(sub.filter)
                        for sub in subs if sub.target is Subscription.Target.SPORT]
         quickreplies = [
-            quick_reply(filter, {'sub': True,
+            quick_reply(filter, {KEY_SUB: True,
                                  Subscription.Type.LIVESTREAM.value: True,
-                                 'filter': filter,
-                                 'action': 'unsubscribe'})
+                                 KEY_FILTER: filter,
+                                 KEY_ACTION: ACT_UNSUBSCRIBE})
             for filter in filter_list[:11]
         ]
         event.send_text("Für welche Sportart möchtest du keine Meldung "
                         "beim Start eines Livestreams bekommen?",
                         quickreplies)
 
-    elif action == 'change':
+    elif action == ACT_CHANGE:
         event.send_text("Du bist schon für mindestens eine Sportart angemeldet. Was nun?", [
-            quick_reply('✨ Mehr Sportarten', {'sub': True,
+            quick_reply('✨ Mehr Sportarten', {KEY_SUB: True,
                                               Subscription.Type.LIVESTREAM.value: True,
-                                              'action': 'subscribe'}),
-            quick_reply('❌ Abmelden', {'sub': True,
+                                              KEY_ACTION: ACT_SUBSCRIBE}),
+            quick_reply('❌ Abmelden', {KEY_SUB: True,
                                        Subscription.Type.LIVESTREAM.value: True,
-                                       'action': 'unsubscribe'}),
+                                       KEY_ACTION: ACT_UNSUBSCRIBE}),
         ])
 
 
 def livestream_apply(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    action = payload['action']
-    sport = payload['filter']
+    action = payload[KEY_ACTION]
+    sport = payload[KEY_FILTER]
 
-    if action == 'subscribe':
-        Subscription.create(sender_id, Subscription.Target.SPORT, {'sport': sport},
+    if action == ACT_SUBSCRIBE:
+        Subscription.create(sender_id, Subscription.Target.SPORT,
+                            {Subscription.Target.SPORT.value: sport},
                             Subscription.Type.LIVESTREAM)
         event.send_text("Super! Ich sage dir, wenn's losgeht.\n"
                         "Wenn du dich für weitere Übertragungen im Livestream interessierst, "
                         "schreib mir einfach z.B. \'Anmelden für Biathlon Livestream\'.")
         event.send_text("Hier deine Übersicht:")
         send_first_level_subs(event)
-    elif action == 'unsubscribe':
+    elif action == ACT_UNSUBSCRIBE:
         sub = Subscription.query(psid=sender_id,
                                  type=Subscription.Type.LIVESTREAM,
                                  target=Subscription.Target.SPORT,
-                                 filter={'sport': sport})
+                                 filter={Subscription.Target.SPORT.value: sport})
         if len(sub) != 1:
             raise Exception("Subscription not found, but offered in quick reply. Weird!")
 
@@ -178,8 +196,8 @@ def sub_element_medal(subs):
     subscribed = any(sub.type is type for sub in subs)
     buttons = [
         button_postback('🔧 An-/Abmelden' if subscribed else '📝 Anmelden',
-                        {'sub': True, type.value: True,
-                         'action': 'change' if subscribed else 'subscribe'})
+                        {KEY_SUB: True, type.value: True,
+                         KEY_ACTION: ACT_CHANGE if subscribed else ACT_SUBSCRIBE})
     ]
     country_list = ', '.join([sub.filter.country for sub in subs if sub.type is type])
     subtitle = f"{country_list}" if subscribed \
@@ -190,55 +208,55 @@ def sub_element_medal(subs):
 
 def medal_change(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    action = payload['action']
+    action = payload[KEY_ACTION]
     subs = Subscription.query(psid=sender_id, type=Subscription.Type.MEDAL)
 
-    if action == 'subscribe' or len(subs) == 0:
+    if action == ACT_SUBSCRIBE or len(subs) == 0:
         event.send_text('Du kannst dich ganz einfach für die Medaillen-Benachrichtigungen '
                         f'anmelden {random.choice(GLOBES)} Dafür musst du mir z. B. '
                         f'folgendes schreiben:\n\n "Anmelden für Medaillen von Deutschland"')
 
-    elif action == 'unsubscribe':
+    elif action == ACT_UNSUBSCRIBE:
         filter_list = [Subscription.describe_filter(sub.filter)
                        for sub in subs if sub.target is Subscription.Target.COUNTRY]
         quickreplies = [
-            quick_reply(filter, {'sub': True,
+            quick_reply(filter, {KEY_SUB: True,
                                  Subscription.Type.MEDAL.value: True,
-                                 'filter': filter,
-                                 'action': 'unsubscribe'})
+                                 KEY_FILTER: filter,
+                                 KEY_ACTION: ACT_UNSUBSCRIBE})
             for filter in filter_list[:11]
         ]
         event.send_text("Für welches Land möchtest du keine Infos mehr bekommen?",
                         quickreplies)
 
-    elif action == 'change':
+    elif action == ACT_CHANGE:
         event.send_text("Du bist schon für mindestens ein Land angemeldet. Was nun?", [
-            quick_reply('✨ Mehr Länder', {'sub': True,
+            quick_reply('✨ Mehr Länder', {KEY_SUB: True,
                                           Subscription.Type.MEDAL.value: True,
-                                          'action': 'subscribe'}),
-            quick_reply('❌ Abmelden', {'sub': True,
+                                          KEY_ACTION: ACT_SUBSCRIBE}),
+            quick_reply('❌ Abmelden', {KEY_SUB: True,
                                        Subscription.Type.MEDAL.value: True,
-                                       'action': 'unsubscribe'}),
+                                       KEY_ACTION: ACT_UNSUBSCRIBE}),
         ])
 
 
 def medal_apply(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    action = payload['action']
-    country = payload['filter']
+    action = payload[KEY_ACTION]
+    country = payload[KEY_FILTER]
 
-    if action == 'subscribe':
+    if action == ACT_SUBSCRIBE:
         Subscription.create(sender_id, Subscription.Target.COUNTRY,
-                            {'country': country}, Subscription.Type.MEDAL)
+                            {Subscription.Target.COUNTRY.value: country}, Subscription.Type.MEDAL)
         event.send_text(f'Cool! Wann immer {country} eine Olympische Medaille erkämpft, sage ich '
                         'dir Bescheid!\nDich interessiert noch ein andees Land? Schreib mir '
                         'einfach z.B. \'Anmelden für Schweden\'.')
         send_second_level_subs(event)
-    elif action == 'unsubscribe':
+    elif action == ACT_UNSUBSCRIBE:
         sub = Subscription.query(psid=sender_id,
                                  type=Subscription.Type.MEDAL,
                                  target=Subscription.Target.COUNTRY,
-                                 filter={'country': country})
+                                 filter={Subscription.Target.COUNTRY.value: country})
         if len(sub) != 1:
             raise Exception("Subscription not found, but offered in quick reply. Weird!")
 
@@ -253,8 +271,8 @@ def sub_element_sport(subs):
     subscribed = any(sub.target is target for sub in subs)
     buttons = [
         button_postback('🔧 An-/Abmelden' if subscribed else '📝 Anmelden',
-                        {'sub': True, target.value: True,
-                         'action': 'change' if subscribed else 'subscribe'})
+                        {KEY_SUB: True, target.value: True,
+                         KEY_ACTION: ACT_CHANGE if subscribed else ACT_SUBSCRIBE})
     ]
     sport_list = ', '.join([sub.filter.sport for sub in subs if sub.target is target])
     subtitle = f"{sport_list}" if subscribed \
@@ -265,47 +283,47 @@ def sub_element_sport(subs):
 
 def sport_change(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    action = payload['action']
+    action = payload[KEY_ACTION]
     subs = Subscription.query(psid=sender_id,
                               type=Subscription.Type.RESULT,
                               target=Subscription.Target.SPORT)
 
-    if action == 'subscribe' or len(subs) == 0:
+    if action == ACT_SUBSCRIBE or len(subs) == 0:
         sports = list_available_sports(subs)
         if not sports:
             event.send_text(TXT_NO_SPORTS_LEFT)
             return
 
-        quickreplies = [quick_reply(sport, {'sub': True,
+        quickreplies = [quick_reply(sport, {KEY_SUB: True,
                                             Subscription.Type.RESULT.value: True,
-                                            'filter': sport,
-                                            'action': 'subscribe'})
+                                            KEY_FILTER: sport,
+                                            KEY_ACTION: ACT_SUBSCRIBE})
                         for sport in sports[:11]]
         event.send_text(f'Ich sage Bescheid, sobald ich Ergbnisse oder oder Neuigkeiten habe. '
                         f'Für welche Sportart interessierst du dich?',
                         quickreplies)
 
-    elif action == 'unsubscribe':
+    elif action == ACT_UNSUBSCRIBE:
         filter_list = [Subscription.describe_filter(sub.filter)
                        for sub in subs if sub.target is Subscription.Target.SPORT]
         quickreplies = [
-            quick_reply(filter, {'sub': True,
+            quick_reply(filter, {KEY_SUB: True,
                                  Subscription.Type.RESULT.value: True,
-                                 'filter': filter,
-                                 'action': 'unsubscribe'})
+                                 KEY_FILTER: filter,
+                                 KEY_ACTION: ACT_UNSUBSCRIBE})
             for filter in filter_list[:11]
         ]
         event.send_text("Für welche Sportart möchtest du keine Infos mehr bekommen?",
                         quickreplies)
 
-    elif action == 'change':
+    elif action == ACT_CHANGE:
         event.send_text("Du bist schon für mindestens eine Sportart angemeldet. Was nun?", [
-            quick_reply('✨ Mehr Sportarten', {'sub': True,
+            quick_reply('✨ Mehr Sportarten', {KEY_SUB: True,
                                               Subscription.Target.SPORT.value: True,
-                                              'action': 'subscribe'}),
-            quick_reply('❌ Abmelden', {'sub': True,
+                                              KEY_ACTION: ACT_SUBSCRIBE}),
+            quick_reply('❌ Abmelden', {KEY_SUB: True,
                                        Subscription.Target.SPORT.value: True,
-                                       'action': 'unsubscribe'}),
+                                       KEY_ACTION: ACT_UNSUBSCRIBE}),
         ])
 
 
@@ -314,8 +332,8 @@ def sub_element_athlete(subs):
     subscribed = any(sub.target is target for sub in subs)
     buttons = [
         button_postback('🔧 An-/Abmelden' if subscribed else '📝 Anmelden',
-                        {'sub': True, target.value: True,
-                         'action': 'change' if subscribed else 'subscribe'})
+                        {KEY_SUB: True, target.value: True,
+                         KEY_ACTION: ACT_CHANGE if subscribed else ACT_SUBSCRIBE})
     ]
     athlete_list = ', '.join([sub.filter.athlete for sub in subs if sub.target is target])
     subtitle = f"{athlete_list}" if subscribed \
@@ -326,57 +344,57 @@ def sub_element_athlete(subs):
 
 def athlete_change(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    action = payload['action']
+    action = payload[KEY_ACTION]
     subs = Subscription.query(psid=sender_id,
                               type=Subscription.Type.RESULT,
                               target=Subscription.Target.ATHLETE)
 
-    if action == 'subscribe' or len(subs) == 0:
+    if action == ACT_SUBSCRIBE or len(subs) == 0:
         event.send_text("Über wen soll ich dich informieren? Schreibe mir zum Beispiel "
                         "\'Anmelden für Viktoria Rebensburg\' - bitte nenne immer den "
                         "Vor- und Nachnamen, damit es keine Missverständnisse gibt.")
 
-    elif action == 'unsubscribe':
+    elif action == ACT_UNSUBSCRIBE:
         filter_list = [Subscription.describe_filter(sub.filter)
                        for sub in subs if sub.target is Subscription.Target.ATHLETE]
         quickreplies = [
-            quick_reply(filter, {'sub': True,
+            quick_reply(filter, {KEY_SUB: True,
                                  Subscription.Type.RESULT.value: True,
-                                 'filter': filter,
-                                 'action': 'unsubscribe'})
+                                 KEY_FILTER: filter,
+                                 KEY_ACTION: ACT_UNSUBSCRIBE})
             for filter in filter_list[:11]
         ]
         event.send_text("Für welchen Sportler möchtest du keine Infos mehr bekommen?",
                         quickreplies)
 
-    elif action == 'change':
+    elif action == ACT_CHANGE:
         event.send_text("Du bist schon für mindestens einen Sportler angemeldet. Was nun?", [
-            quick_reply('✨ Mehr Sportler', {'sub': True,
+            quick_reply('✨ Mehr Sportler', {KEY_SUB: True,
                                             Subscription.Target.ATHLETE.value: True,
-                                            'action': 'subscribe'}),
-            quick_reply('❌ Abmelden', {'sub': True,
+                                            KEY_ACTION: ACT_SUBSCRIBE}),
+            quick_reply('❌ Abmelden', {KEY_SUB: True,
                                        Subscription.Target.ATHLETE.value: True,
-                                       'action': 'unsubscribe'}),
+                                       KEY_ACTION: ACT_UNSUBSCRIBE}),
         ])
 
 
 def result_apply(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    action = payload['action']
-    filter = payload['filter']
+    action = payload[KEY_ACTION]
+    filter = payload[KEY_FILTER]
 
     target = Subscription.Target.SPORT if filter in SUPPORTED_SPORTS \
         else Subscription.Target.ATHLETE
-    sub_filter = {'sport': filter} if filter in SUPPORTED_SPORTS else {'athlete': filter}
+    sub_filter = {TAR_SPORT: filter} if filter in SUPPORTED_SPORTS else {TAR_ATHLETE: filter}
 
-    if action == 'subscribe':
+    if action == ACT_SUBSCRIBE:
         Subscription.create(sender_id, target, sub_filter, Subscription.Type.RESULT)
         reply = f"\nWenn du dich für weitere Ergebnis-Dienste anmelden möchtest, " \
                 f"schreibe mir einfach z.B. 'Anmelden für " \
                 f"{'Biathlon' if filter in SUPPORTED_SPORTS else 'Viktoria Rebensburg'}.'"
         event.send_text("Super! Ich sage dir, sobald es etwas Neues gibt." + reply)
         send_second_level_subs(event)
-    elif action == 'unsubscribe':
+    elif action == ACT_UNSUBSCRIBE:
         sub = Subscription.query(psid=sender_id,
                                  type=Subscription.Type.RESULT,
                                  target=target,
@@ -391,19 +409,19 @@ def result_apply(event, payload, **kwargs):
 
 def highlight_change(event, payload, **kwargs):
     sender_id = event['sender']['id']
-    state = payload['state']
+    state = payload[KEY_STATE]
     subs = Subscription.query(psid=sender_id, type=Subscription.Type.HIGHLIGHT)
 
-    if state == 'subscribe':
+    if state == ACT_SUBSCRIBE:
         target = Subscription.Target.HIGHLIGHT
         filter_arg = {}
-        filter_arg['highlight'] = 'Highlight'
+        filter_arg[TYP_HIGHLIGHT] = 'Highlight'
         type_arg = Subscription.Type.HIGHLIGHT
         Subscription.create(sender_id, target, filter_arg, type_arg)
         event.send_text('#läuft\nIch melde mich während der Olympischen Spiele zweimal täglich mit '
                         'den Highlights aus PyeonChang bei dir.\nKann ich sonst nochwas liefern?')
         send_first_level_subs(event)
-    elif state == 'unsubscribe':
+    elif state == ACT_UNSUBSCRIBE:
         for sub in subs:
             Subscription.delete(_id=sub._id)
         event.send_text('Du bist nun von den Highlights abgemeldet.')
@@ -420,18 +438,18 @@ def send_first_level_subs(event, **kwargs):
 
     if any(sub.target is Subscription.Target.HIGHLIGHT for sub in subs):
         highlight_emoji, highlight_button = '✔', button_postback('📝 Abmelden',
-                                                                 {'target': 'highlight',
-                                                                  'state': 'unsubscribe'})
+                                                                 {KEY_TARGET: TAR_HIGHLIGHT,
+                                                                  KEY_STATE: ACT_UNSUBSCRIBE})
     else:
         highlight_emoji, highlight_button = '❌', button_postback('📝 Anmelden',
-                                                                 {'target': 'highlight',
-                                                                  'state': 'subscribe'})
+                                                                 {KEY_TARGET: TAR_HIGHLIGHT,
+                                                                  KEY_STATE: ACT_SUBSCRIBE})
 
     if any(sub.type is Subscription.Type.RESULT for sub in subs):
-        result_button = button_postback('🔧 An-/Abmelden', {'type': 'result'})
+        result_button = button_postback('🔧 An-/Abmelden', {KEY_TYPE: KEY_RESULT})
         result_emoji = '✔'
     else:
-        result_button = button_postback('📝 Anmelden', {'type': 'result'})
+        result_button = button_postback('📝 Anmelden', {KEY_TYPE: KEY_RESULT})
         result_emoji = '❌'
 
     elements = [
@@ -473,14 +491,15 @@ handlers = [
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe', follow_up=True),
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe'),
     ApiAiHandler(api_subscribe, 'push.subscription.unsubscribe'),
-    PayloadHandler(livestream_apply, ['sub', Subscription.Type.LIVESTREAM.value, 'filter', 'action']),
-    PayloadHandler(livestream_change, ['sub', Subscription.Type.LIVESTREAM.value, 'action']),
-    PayloadHandler(result_apply, ['sub', Subscription.Type.RESULT.value, 'filter', 'action']),
-    PayloadHandler(sport_change, ['sub', Subscription.Target.SPORT.value, 'action']),
-    PayloadHandler(athlete_change, ['sub', Subscription.Target.ATHLETE.value, 'action']),
-    PayloadHandler(medal_apply, ['sub', Subscription.Type.MEDAL.value, 'filter', 'action']),
-    PayloadHandler(medal_change, ['sub', Subscription.Type.MEDAL.value, 'action']),
-    PayloadHandler(highlight_change, ['target', 'state']),
-    PayloadHandler(send_second_level_subs, ['type']),
+    PayloadHandler(livestream_apply,
+                   ['sub', Subscription.Type.LIVESTREAM.value, KEY_FILTER, KEY_ACTION]),
+    PayloadHandler(livestream_change, ['sub', Subscription.Type.LIVESTREAM.value, KEY_ACTION]),
+    PayloadHandler(result_apply, ['sub', Subscription.Type.RESULT.value, KEY_FILTER, KEY_ACTION]),
+    PayloadHandler(sport_change, ['sub', Subscription.Target.SPORT.value, KEY_ACTION]),
+    PayloadHandler(athlete_change, ['sub', Subscription.Target.ATHLETE.value, KEY_ACTION]),
+    PayloadHandler(medal_apply, ['sub', Subscription.Type.MEDAL.value, KEY_FILTER, KEY_ACTION]),
+    PayloadHandler(medal_change, ['sub', Subscription.Type.MEDAL.value, KEY_ACTION]),
+    PayloadHandler(highlight_change, [KEY_TARGET, KEY_STATE]),
+    PayloadHandler(send_second_level_subs, [KEY_TYPE]),
     PayloadHandler(pld_subscriptions, ['send_subscriptions']),
 ]
