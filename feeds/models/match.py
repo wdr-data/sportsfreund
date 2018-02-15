@@ -109,12 +109,17 @@ class Match(FeedModel):
         :return:
         """
 
+        # config is now a dict
         config = discipline_config(self.meta.sport, self.meta.discipline_short)
-        if config is None:
-            raise ValueError(f'Sports_config does not exist for {self.meta.sport}, '
-                             f'{self.meta.discipline_short}')
+
+        # Check for result, because of Heimspiel delivers sometimes at '3'
+        if 'result_at' in config:
+           result_at = config.result_at
+        else:
+           result_at = '0'
+
         return sorted(
-            (r for r in self.match_result if r.match_result_at == config.result_at),
+            (r for r in self.match_result if r.match_result_at == result_at),
             key=(lambda r: int(r.rank)))
 
     @property
