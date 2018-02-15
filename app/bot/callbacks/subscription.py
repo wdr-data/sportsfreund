@@ -416,8 +416,9 @@ def highlight_change(event, payload, **kwargs):
 
     if state == ACT_SUBSCRIBE:
         target = Subscription.Target.HIGHLIGHT
-        filter_arg = {}
-        filter_arg[TYP_HIGHLIGHT] = 'Highlight'
+        filter_arg = {
+            TYP_HIGHLIGHT: 'Highlight',
+        }
         type_arg = Subscription.Type.HIGHLIGHT
         Subscription.create(sender_id, target, filter_arg, type_arg)
         event.send_text('#läuft\nIch melde mich während der Olympischen Spiele zweimal täglich mit '
