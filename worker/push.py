@@ -100,7 +100,11 @@ class UpdateMatch(BaseTask):
         for discipline in disciplines:
             if discipline.name == match.meta.discipline_short:
                 race = discipline.competition_type == CompetitionType.RACE
-                ranks = {r.rank for r in match.match_result if not int(r.match_result_at)}
+                try:
+                    ranks = {r.rank for r in match.match_result if int(r.match_result_at) == 0}
+                except KeyError:
+                    ranks = set()
+
                 break
         else:
             race = False
