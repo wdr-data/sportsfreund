@@ -32,9 +32,18 @@ class Push(models.Model):
         verbose_name_plural = 'Pushes'
 
     headline = models.CharField('Titel', max_length=200, null=False)
+
     text = models.CharField('Intro-Text', max_length=640, null=False)
+    media_intro = models.FileField('Medien-Anhang Intro', null=True, blank=True)
+    attachment_id_intro = models.CharField(
+        'Facebook Attachment ID Intro', max_length=64, null=True, blank=True,
+        help_text="Wird automatisch ausgefüllt")
 
     outro = models.CharField('Outro-Text', max_length=640, blank=True, null=False)
+    media_outro = models.FileField('Medien-Anhang Outro', null=True, blank=True)
+    attachment_id_outro = models.CharField(
+        'Facebook Attachment ID Outro', max_length=64, null=True, blank=True,
+        help_text="Wird automatisch ausgefüllt")
 
     reports = SortedManyToManyField('Report', related_name='pushes', verbose_name='Meldungen')
 
@@ -68,6 +77,20 @@ class Push(models.Model):
             pushes = pushes.order_by('-id')
 
         return pushes[offset:count]
+
+    def update_attachment_intro(self):
+        if str(self.media_intro):
+            attachment_id = upload_attachment(self.media_intro.url)
+            self.attachment_id_intro = attachment_id
+        else:
+            self.attachment_id_intro = None
+
+    def update_attachment_outro(self):
+        if str(self.media_outro):
+            attachment_id = upload_attachment(self.media_outro.url)
+            self.attachment_id_outro = attachment_id
+        else:
+            self.attachment_id_outro = None
 
     def save(self, *args, **kwargs):
         if self.pk:

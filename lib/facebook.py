@@ -43,7 +43,10 @@ def upload_attachment(url, type=None, retries=3):
                 params={'access_token': FB_PAGE_TOKEN},
                 data=json.dumps(payload),
                 headers=headers)
-            return json.loads(r.content.decode())['attachment_id']
+
+            response = json.loads(r.content.decode())
+            logger.debug(str(response))
+            return response['attachment_id']
 
         except:
             logging.exception("Uploading failed, retry %s/%s", i + 1, retries)
