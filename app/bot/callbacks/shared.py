@@ -102,6 +102,8 @@ def send_push(event, push, report_nr, state):
     # Push Intro
     if not report:
         reply = push.text
+        media = push.attachment_id_intro
+        url = push.media_intro
 
         if push.reports.count():
             next_state = 'intro'
@@ -112,6 +114,9 @@ def send_push(event, push, report_nr, state):
                                            {'push': push.id, 'report': next_report_nr,
                                             'next_state': next_state}
                                            )
+            if media:
+                event.send_attachment_by_id(str(media), guess_attachment_type(str(url)))
+
             event.send_buttons(reply, buttons=[intro_button])
             return
 
@@ -198,8 +203,13 @@ def send_push(event, push, report_nr, state):
         else:
             event.send_text(r)
 
+    # Push Outro
     if not quick_replies:
         event.send_text(push.outro)
+        media = push.attachment_id_outro
+        url = push.media_outro
+        if media:
+            event.send_attachment_by_id(str(media), guess_attachment_type(str(url)))
 
     if next_state is None:
         user_subs = Subscription.query(type=Subscription.Type.HIGHLIGHT,
