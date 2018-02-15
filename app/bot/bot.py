@@ -8,7 +8,7 @@ from raven.contrib.django.raven_compat.models import client as error_client
 
 from lib.config import FB_PAGE_TOKEN
 from lib.response import Replyable
-from lib.redis import redis, HANDLED_UPDATES_FB
+from lib.redis import redis_connection, HANDLED_UPDATES_FB
 from metrics.models.activity import UserActivity
 from metrics.models.unique_users import UserListing
 # dirty
@@ -171,7 +171,8 @@ def make_event_handler():
             else:
                 msg_id = f'{sender_id}.{event["timestamp"]}'
 
-            already_handled = (redis.zadd(HANDLED_UPDATES_FB, time(), msg_id) == 0)
+            with redis_connection() as redis:
+                already_handled = (redis.zadd(HANDLED_UPDATES_FB, time(), msg_id) == 0)
 
             if already_handled:
                 logger.warning('Skipping duplicate event: %s', event)
