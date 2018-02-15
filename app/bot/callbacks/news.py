@@ -78,7 +78,7 @@ def api_news(event, parameters, **kwargs):
                      f'{Match.medal(2)} {first.second} {Match.medal(3)} {first.third}',
                      buttons=[button_postback('Anschauen 😍',
                                               {'pl_medals_table': None,
-                                               'country': 'Deutschland',
+                                               'country': first.country.name,
                                                'event': 'owg18'})]))
 
     if report:
