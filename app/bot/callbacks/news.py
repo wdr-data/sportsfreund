@@ -107,6 +107,14 @@ def more_reports(event, payload):
     reports = Report.last(
         count=4, only_published=True, delivered=True, by_date=False, ignore=ignore)
 
+    if len(reports) == 0:
+        event.send_text('Keine weiteren Meldungen 😐')
+        return
+
+    elif len(reports) == 1:
+        send_report(event, reports[0])
+        return
+
     event.send_text('Die letzten Meldungen auf einen Blick 👀')
     event.send_list([
         list_element(
