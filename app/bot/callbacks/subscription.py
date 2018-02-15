@@ -493,6 +493,7 @@ handlers = [
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe', follow_up=True),
     ApiAiHandler(api_subscribe, 'push.subscription.subscribe'),
     ApiAiHandler(api_subscribe, 'push.subscription.unsubscribe'),
+    PayloadHandler(pld_subscriptions, ['subscribe_menu']),
     PayloadHandler(livestream_apply,
                    [KEY_SUB, Subscription.Type.LIVESTREAM.value, KEY_FILTER, KEY_ACTION]),
     PayloadHandler(livestream_change, [KEY_SUB, Subscription.Type.LIVESTREAM.value, KEY_ACTION]),
