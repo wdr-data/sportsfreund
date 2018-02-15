@@ -86,7 +86,7 @@ def api_podium(event, parameters, **kwargs):
                 'Ergebnis aus Sotschi'
             )
         else:
-            reply += 'Hier das Letzte Event in meiner Datenbank:'
+            reply += 'Hier das letzte Event in meiner Datenbank:'
         event.send_text(reply)
 
     match_ids = [match.id for match in match_metas if match]
