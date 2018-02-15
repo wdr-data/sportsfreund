@@ -26,9 +26,6 @@ ACT_SUBSCRIBE = 'subscribe'
 ACT_UNSUBSCRIBE = 'unsubscribe'
 ACT_CHANGE = 'change'
 TAR_HIGHLIGHT = 'highlight'
-TAR_SPORT = 'sport'
-TAR_ATHLETE = 'athlete'
-TAR_COUNTRY = 'country'
 TYP_HIGHLIGHT = 'highlight'
 TYP_MEDAL = 'medal'
 TYP_LIVESTREAM = 'livestream'
@@ -387,7 +384,9 @@ def result_apply(event, payload, **kwargs):
 
     target = Subscription.Target.SPORT if filter in SUPPORTED_SPORTS \
         else Subscription.Target.ATHLETE
-    sub_filter = {TAR_SPORT: filter} if filter in SUPPORTED_SPORTS else {TAR_ATHLETE: filter}
+    sub_filter = ({Subscription.Target.SPORT.value: filter}
+                  if filter in SUPPORTED_SPORTS else
+                  {Subscription.Target.ATHLETE.value: filter})
 
     if action == ACT_SUBSCRIBE:
         Subscription.create(sender_id, target, sub_filter, Subscription.Type.RESULT)
