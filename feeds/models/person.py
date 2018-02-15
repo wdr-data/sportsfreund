@@ -1,4 +1,6 @@
 import logging
+
+import requests
 from os import environ
 
 from django.core.validators import URLValidator
@@ -32,6 +34,12 @@ class Person(FeedModel):
             return None
 
         url = f"{environ.get('PERSON_PICTURE_URL_BASE')}/l/{person['id']}.jpg"
+
+        # Make sure the URL is valid to prevent facebook errors
+        r = requests.head(url)
+        if r.status_code == 404:
+            return None
+
         return url
 
     @classmethod
