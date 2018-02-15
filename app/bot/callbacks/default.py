@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from fuzzywuzzy import fuzz, process
 
-from .subscription import send_subscriptions
+from .subscription import send_first_level_subs
 from lib.facebook import guess_attachment_type
 from lib.response import (button_postback, quick_reply, generic_element,
                           button_web_url, button_share, button_url)
@@ -343,4 +343,4 @@ def story(event, slug, fragment_nr):
 
         event.send_text(reply)
         if slug == 'onboarding':
-            send_subscriptions(event)
+            send_first_level_subs(event)

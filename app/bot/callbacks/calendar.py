@@ -7,7 +7,7 @@ import random
 from ..handlers.payloadhandler import PayloadHandler
 from feeds.models.match import Match
 from feeds.models.match_meta import MatchMeta
-from feeds.config import supported_sports, sport_by_name, discipline_config
+from feeds.config import SUPPORTED_SPORTS, SPORT_BY_NAME, discipline_config
 from lib.flag import flag
 from lib.time import localtime_format
 from lib.response import button_postback, quick_reply
@@ -187,7 +187,7 @@ def api_next(event, parameters, **kwargs):
         event.send_text('Moment, Ich schau kurz in meinen Kalender...')
         sleep(3)
         event.send_text(f'Ah! Hier hab ich ja das nächste '
-                        f'{sport_by_name[match_meta.sport].competition_term}:')
+                        f'{SPORT_BY_NAME[match_meta.sport].competition_term}:')
         pl_entry_by_matchmeta(event, {'calendar.entry_by_matchmeta': match_meta,
                                       'add_options': True})
 
@@ -195,7 +195,7 @@ def api_next(event, parameters, **kwargs):
 def multiple_entry(event, metas):
 
     overview = {}
-    for name in sport_by_name:
+    for name in SPORT_BY_NAME:
         same_sport = [m for m in metas if m.sport == name]
         if same_sport:
             overview[name] = same_sport
@@ -318,7 +318,7 @@ def send_more_cal_events_by_ids(event, payload, **kwargs):
 
         if i == len(metas)-1 and options == 'continue':
             quickies = []
-            for sport in sport_by_name:
+            for sport in SPORT_BY_NAME:
                 meta_list = [m for m in all_metas if m.sport == sport]
                 if meta_list and len(meta_list) > 1:
                     quickies.append(

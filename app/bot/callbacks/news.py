@@ -7,7 +7,7 @@ from backend.models import Push, Report, Info, Story
 from feeds.models.match_meta import MatchMeta
 from feeds.models.match import Match
 from feeds.models.person import Person
-from feeds.config import sport_by_name
+from feeds.config import SPORT_BY_NAME
 from feeds.models.medals_table import MedalsTable
 from lib.flag import flag
 from lib.time import localtime_format
@@ -64,7 +64,7 @@ def api_news(event, parameters, **kwargs):
                          f'{day_name[calendar.datetime.weekday()]}, '
                          f'{calendar.datetime.strftime("%d.%m.%Y")} '
                          f'um {localtime_format(calendar.datetime, event)}',
-                         image_url=sport_by_name[calendar.sport].picture_url,
+                         image_url=SPORT_BY_NAME[calendar.sport].picture_url,
                          buttons=[button_postback(f'Was geht am '
                                                   f'{calendar.datetime.strftime("%d.%m.")}',
                                                   {'event_today': calendar.match_date})],

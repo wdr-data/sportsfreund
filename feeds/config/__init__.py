@@ -36,7 +36,7 @@ for sport in SPORTS_CONFIG:
     for discipline in sport.disciplines:
         discipline.competition_type = CompetitionType(discipline.competition_type.lower())
 
-sport_by_name = {
+SPORT_BY_NAME = {
     sport.name: sport
     for sport in SPORTS_CONFIG
 }
@@ -54,6 +54,7 @@ def discipline_config(sport, discipline):
 
     return {}
 
-supported_sports = [
+
+SUPPORTED_SPORTS = {
     sport.name for sport in SPORTS_CONFIG
-]
+}
