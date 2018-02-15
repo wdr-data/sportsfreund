@@ -249,7 +249,7 @@ def medal_apply(event, payload, **kwargs):
         Subscription.create(sender_id, Subscription.Target.COUNTRY,
                             {Subscription.Target.COUNTRY.value: country}, Subscription.Type.MEDAL)
         event.send_text(f'Cool! Wann immer {country} eine Olympische Medaille erkämpft, sage ich '
-                        'dir Bescheid!\nDich interessiert noch ein andees Land? Schreib mir '
+                        'dir Bescheid!\nDich interessiert noch ein anderes Land? Schreib mir '
                         'einfach z.B. \'Anmelden für Schweden\'.')
         send_second_level_subs(event)
     elif action == ACT_UNSUBSCRIBE:
