@@ -143,7 +143,7 @@ def characteristics(event, payload):
                     event.send_attachment(person_url)
                     sleep(1)
             except:
-                continue
+                pass
 
         reply += f"{person.fullname} aus {', '.join([country.name for country in person.country])}"
 
