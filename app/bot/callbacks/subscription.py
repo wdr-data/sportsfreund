@@ -253,14 +253,16 @@ def medal_apply(event, payload, **kwargs):
                         'einfach z.B. \'Anmelden für Schweden\'.')
         send_second_level_subs(event)
     elif action == ACT_UNSUBSCRIBE:
-        sub = Subscription.query(psid=sender_id,
-                                 type=Subscription.Type.MEDAL,
-                                 target=Subscription.Target.COUNTRY,
-                                 filter={Subscription.Target.COUNTRY.value: country})
-        if len(sub) != 1:
+        subs = Subscription.query(psid=sender_id,
+                                  type=Subscription.Type.MEDAL,
+                                  target=Subscription.Target.COUNTRY,
+                                  filter={Subscription.Target.COUNTRY.value: country})
+        if not subs:
             raise Exception("Subscription not found, but offered in quick reply. Weird!")
 
-        Subscription.delete(_id=sub[0]._id)
+        for sub in subs:
+            Subscription.delete(_id=sub._id)
+
         event.send_text(f'Du bekommst ab jetzt keine Benachrichtigungen über Medaillen '
                         f'des Landes "{country}"')
         send_second_level_subs(event)
