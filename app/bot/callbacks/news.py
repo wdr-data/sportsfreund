@@ -19,19 +19,6 @@ from .shared import get_push, schema, send_push, get_pushes_by_date, get_latest_
 
 
 def api_news(event, parameters, **kwargs):
-    date = parameters.get('date')
-
-    if not date:
-        push = get_push(force_latest=True)
-    else:
-        if len(date) == 1:
-            find_date = datetime.strptime(date[0], '%Y-%m-%d').date()
-            pushes = get_pushes_by_date(find_date)
-            push = pushes[0]
-        else:
-            push = None
-
-    news_list = []
 
     result = MatchMeta.search_last(medals='all')
 
