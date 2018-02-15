@@ -158,7 +158,8 @@ class Report(models.Model):
             self.attachment_id = None
 
     @classmethod
-    def last(cls, *, count=1, offset=0, only_published=True, delivered=False, by_date=True):
+    def last(cls, *, count=1, offset=0, only_published=True, delivered=False, by_date=True,
+             ignore=None):
         reports = cls.objects.all()
 
         if only_published:
@@ -172,7 +173,7 @@ class Report(models.Model):
         else:
             reports = reports.order_by('-id')
 
-        return reports[offset:count]
+        return reports.exclude(id__in=ignore or [])[offset:count]
 
     def save(self, *args, **kwargs):
         if self.pk:

@@ -81,6 +81,7 @@ def api_news(event, parameters, **kwargs):
                                                'country': first.country.name,
                                                'event': 'owg18'})]))
 
+    ignore_reports = []
     if report:
         elements.append(
             list_element(report.headline, report.text,
@@ -88,19 +89,24 @@ def api_news(event, parameters, **kwargs):
                          buttons=[button_postback('Lesen...',
                                                   {'report_sport': None,
                                                    'report_discipline': None})]))
+        ignore_reports = [report.id]
 
     if len(elements) > 1:
         event.send_text('Bitte schön, hier kommt deine Übersicht:')
         event.send_list(elements,
-                        button=button_postback('Weitere Meldungen', ['more_reports'])
+                        button=button_postback('Weitere Meldungen',
+                                               {'more_reports': True, 'ignore': ignore_reports})
                         )
     else:
         event.send_text('Keine Neuigkeiten')
 
 
 def more_reports(event, payload):
+    ignore = payload.get('ignore', [])
 
-    reports = Report.last(count=4, only_published=True, delivered=True, by_date=False)
+    reports = Report.last(
+        count=4, only_published=True, delivered=True, by_date=False, ignore=ignore)
+
     event.send_text('Die letzten Meldungen auf einen Blick 👀')
     event.send_list([
         list_element(
