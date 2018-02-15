@@ -480,7 +480,7 @@
     - name: Cross
       rounds: True
       competition_type: SINGLE
-      result_at: '0'
+      result_at: '3'
       article: das
     - name: Big Air
       rounds: True
