@@ -26,17 +26,16 @@ def api_news(event, parameters, **kwargs):
 
     if result.get('winner_team'):
         winner = result.winner_team
-        subtitle_result = f'{Match.medal(1)} {result.winner_team.name}, {flag(winner.country.iso)} ' \
-                          f'{winner.country.code}'
-    else:
-        subtitle_result = 'Schau dir jetzt das gesamte Ergebnis an...'
+        subtitle_result = (f'{Match.medal(1)} {result.winner_team.name}, '
+                           f'{flag(winner.country.iso)} {winner.country.code}')
 
-    if result.get('winner_team'):
         try:
             winner_person = Person.query(fullname=winner.name)
             person_image = Person.get_picture_url(winner_person[0].id)
         except:
             pass
+    else:
+        subtitle_result = 'Schau dir jetzt das gesamte Ergebnis an...'
 
     calendar = MatchMeta.search_next(medals='all')
 
