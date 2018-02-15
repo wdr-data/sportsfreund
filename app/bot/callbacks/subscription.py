@@ -337,7 +337,7 @@ def sub_element_athlete(subs):
                         {KEY_SUB: True, target.value: True,
                          KEY_ACTION: ACT_CHANGE if subscribed else ACT_SUBSCRIBE})
     ]
-    athlete_list = ', '.join([sub.filter.athlete for sub in subs if sub.target is target])
+    athlete_list = ', '.join(sub.filter.athlete for sub in subs if sub.target is target)
     subtitle = f"{athlete_list}" if subscribed \
         else "Push, bei Ergebnissen und Neuigkeiten für einen gewählten Sportler"
 
