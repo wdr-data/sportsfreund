@@ -136,6 +136,7 @@ class PushAdmin(admin.ModelAdmin):
     list_display = ('published', 'pub_date', 'headline',  'delivered')
     list_display_links = ('pub_date',)
     ordering = ('-pub_date',)
+    readonly_fields = ('attachment_id_intro', 'attachment_id_outro')
 
     # filter_horizontal = ('reports', )
 
@@ -144,6 +145,31 @@ class PushAdmin(admin.ModelAdmin):
             kwargs['widget'] = SortedFilteredSelectMultiple(
                 attrs={'verbose_name': db_field.verbose_name})
         return super().formfield_for_manytomany(db_field, request, **kwargs)
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+
+        changed_data = []
+
+        if 'media_intro' in form.changed_data:
+            try:
+                obj.update_attachment_intro()
+                changed_data.append('attachment_id_intro')
+
+            except UploadFailedError:
+                messages.error(request, UPLOAD_FAILED_MSG % obj.media_intro)
+
+        if 'media_outro' in form.changed_data:
+            try:
+                obj.update_attachment_outro()
+                changed_data.append('attachment_id_outro')
+
+            except UploadFailedError:
+                messages.error(request, UPLOAD_FAILED_MSG % obj.media_outro)
+
+        if changed_data:
+            form.changed_data = changed_data
+            super().save_model(request, obj, form, change)
 
 
 class WikiModelForm(forms.ModelForm):
