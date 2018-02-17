@@ -114,7 +114,15 @@ class Match(FeedModel):
 
         # Check for result, because of Heimspiel delivers sometimes at '3'
         if 'result_at' in config:
-           result_at = config.result_at
+            if isinstance(config.result_at, list):
+                result = []
+                for result_at in config.result_at:
+                    result.append(sorted(
+                        (r for r in self.match_result if r.match_result_at == result_at),
+                        key=(lambda r: int(r.rank))))
+                return [r for r in result if r != []]
+            else:
+                result_at = config.result_at
         else:
            result_at = '0'
 
