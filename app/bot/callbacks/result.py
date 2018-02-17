@@ -289,12 +289,17 @@ def send_result(event, match):
         else:
             button = None
 
-        event.send_list(
-                match.lst_podium,
-                top_element_style='large',
-                button=button
-        )
-        return
+        list = match.lst_podium
+
+        if len(list) > 1:
+            event.send_list(
+                    list,
+                    top_element_style='large',
+                    button=button
+            )
+            return
+        else:
+            event.send_text('Tut mir Leid, dazu habe ich derzeit keine Informationen.')
 
 
     result_total(event, {'result_total': match.id, 'step': 'round_mode'})
