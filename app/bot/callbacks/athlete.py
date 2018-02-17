@@ -117,7 +117,7 @@ def characteristics(event, payload):
                         quick_replies=quicks)
         return
 
-    subs = Subscription.query(filter={'athlete': athlete},
+    subs = Subscription.query(filter={'athlete': athlete}, target=Subscription.Target.ATHLETE,
                               type=Subscription.Type.RESULT, psid=sender_id)
 
     story_exist = False
