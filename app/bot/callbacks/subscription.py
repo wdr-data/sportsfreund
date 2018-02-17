@@ -181,7 +181,7 @@ def livestream_apply(event, payload, **kwargs):
                                  type=Subscription.Type.LIVESTREAM,
                                  target=Subscription.Target.SPORT,
                                  filter={Subscription.Target.SPORT.value: sport})
-        if len(sub) != 1:
+        if not sub:
             raise Exception("Subscription not found, but offered in quick reply. Weird!")
 
         Subscription.delete(_id=sub[0]._id)
@@ -400,7 +400,7 @@ def result_apply(event, payload, **kwargs):
                                  type=Subscription.Type.RESULT,
                                  target=target,
                                  filter=sub_filter)
-        if len(sub) != 1:
+        if not sub:
             raise Exception("Subscription not found, but offered in quick reply. Weird!")
 
         Subscription.delete(_id=sub[0]._id)
