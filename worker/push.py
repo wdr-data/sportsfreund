@@ -42,7 +42,7 @@ class UpdateSchedule(BaseTask):
         """
 
         PYEONGCHANG_FEED = 1757
-        MatchMeta.load_feed(PYEONGCHANG_FEED, clear_cache=True)
+        MatchMeta.load_olympia_feed(PYEONGCHANG_FEED, clear_cache=True)
 
         meta = MatchMeta.search_range(from_date=datetime.now(),
                                       until_date=datetime.now() + timedelta(days=2))
