@@ -208,7 +208,7 @@ class Match(FeedModel):
             else:
                 point_str = result.match_result - self.winner_result.match_result
 
-            if not point_str:
+            if point_str == 0 and result.match_result == 0:
                 return result.comment
 
             point_str = Match.fmt_millis(point_str, digits=conf.result_digits)
