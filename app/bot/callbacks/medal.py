@@ -166,14 +166,14 @@ def medals_table(event, parameters, **kwargs):
     else:
         if olympic_event == 'owg14':
             medals = MedalsTable.top(number=10, topic_id='548')
-            total_medals = MedalsTable.with_medals(topic_id='548')
+            total_medals_count = MedalsTable.with_medals_count(topic_id='548')
         else:
-            total_medals = MedalsTable.with_medals()
-            if not total_medals:
+            total_medals_count = MedalsTable.with_medals_count()
+            if not total_medals_count:
                 event.send_text('Noch hat bei den Olympischen Winterspielen in PyeongChang niemand '
                                 'eine Medaille gewonnen. Es bleibt spannend...')
                 return
-            elif len(total_medals) <= 10:
+            elif total_medals_count <= 10:
                 medals = MedalsTable.with_medals()
             else:
                 medals = MedalsTable.top(number=10)
@@ -186,7 +186,7 @@ def medals_table(event, parameters, **kwargs):
                 f'{Match.medal(3)} {m.third}'
             for m in medals)
 
-        if len(total_medals) > 10:
+        if total_medals_count > 10:
             event.send_buttons(f'{country_rank}',
                             buttons=[button_postback('Und der Rest?',
                                                      {'medal_list': olympic_event})])
