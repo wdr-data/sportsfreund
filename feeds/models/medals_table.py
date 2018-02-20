@@ -103,3 +103,17 @@ class MedalsTable(ListFeedModel):
                                       {'third': {'$ne': 0}}]}, topic_id=topic_id)
 
         return [cls(**result) for result in cursor]
+
+    @classmethod
+    def with_medals_count(cls, topic_id=None):
+        """
+        Searches the all countries with min. one medal and returns details about it
+
+        :return: The number of countries that have medals
+        """
+
+        cursor = cls._search({'$or': [{'first': {'$ne': 0}},
+                                      {'second': {'$ne': 0}},
+                                      {'third': {'$ne': 0}}]}, topic_id=topic_id)
+
+        return cursor.count()
