@@ -53,10 +53,6 @@ class MedalsTable(ListFeedModel):
             sorting +
             [
                 ('rank', ASCENDING),
-                ('first', ASCENDING),
-                ('second', ASCENDING),
-                ('third', ASCENDING),
-                ('country.name', ASCENDING),
             ]
         )
 
